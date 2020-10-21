@@ -3,7 +3,7 @@
 package handlers
 
 import (
-	"cs130_backend/models"
+	"cs130_back/models"
 	"encoding/json"
 	"net/http"
 	"strconv"

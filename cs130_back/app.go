@@ -1,15 +1,14 @@
 // app.go
 
-package cs130_backend
+package cs130_back
 
 import (
-	"cs130_backend/handlers"
-	"cs130_backend/models"
+	"cs130_back/handlers"
+	"cs130_back/models"
 	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 	"time"
 
@@ -22,13 +21,17 @@ type App struct {
 	DB *gorm.DB
 }
 
+const APP_DB_USERNAME = "user"
+const APP_DB_PASSWORD = "test"
+const APP_DB_NAME = "cs130"
+
 // Start starts the server
 func Start() {
 	a := App{}
 	a.Initialize(
-		os.Getenv("APP_DB_USERNAME"),
-		os.Getenv("APP_DB_PASSWORD"),
-		os.Getenv("APP_DB_NAME"))
+		APP_DB_USERNAME,
+		APP_DB_PASSWORD,
+		APP_DB_NAME)
 	a.Run(":8080")
 }
 

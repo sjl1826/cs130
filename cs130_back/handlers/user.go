@@ -3,11 +3,10 @@
 package handlers
 
 import (
-	"cs130_backend/hash"
-	"cs130_backend/models"
+	"cs130_back/hash"
+	"cs130_back/models"
 	"encoding/json"
 	"net/http"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -105,10 +104,6 @@ func LoginUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	email := r.FormValue("email")
 	password := r.FormValue("password")
-	if os.Getenv("CLIENT_ID") != r.FormValue("client_id") || os.Getenv("CLIENT_SECRET") != r.FormValue("client_secret") {
-		respondWithJSON(w, http.StatusUnauthorized, map[string]string{"error": "Invalid credentials"})
-		return
-	}
 
 	user := models.User{Email: email}
 	if err := user.GetByEmail(db); err != nil {
@@ -142,10 +137,6 @@ func LoginUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 func RefreshToken(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	r.ParseForm()
 	refresh := r.FormValue("refresh_token")
-	if os.Getenv("CLIENT_ID") != r.FormValue("client_id") || os.Getenv("CLIENT_SECRET") != r.FormValue("client_secret") {
-		respondWithJSON(w, http.StatusUnauthorized, map[string]string{"error": "Invalid credentials"})
-		return
-	}
 
 	token := models.Token{RefreshToken: refresh}
 	if err := token.GetTokenByRefresh(db); err != nil {

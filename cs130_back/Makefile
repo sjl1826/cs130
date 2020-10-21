@@ -1,13 +1,13 @@
 default: build
 
-run:
-	go run ./cmd/cs130_backend/main.go
+run: build
+	go run ./cmd/cs130_back/main.go
 
 build:
-	go build -o cs130_backend.out ./cmd/cs130_backend/main.go
+	go build -o cs130_back.out ./cmd/cs130_back/main.go
 
 clean:
-	rm -rf cs130_backend.out
+	rm -rf cs130_back.out
 
 test:
 	go test -v ./...
