@@ -112,5 +112,6 @@ func (u *User) GetPassword(db *gorm.DB) {
 func DBMigrate(db *gorm.DB) *gorm.DB {
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Subject{})
+	db.AutoMigrate(&Token{})
 	return db
 }
