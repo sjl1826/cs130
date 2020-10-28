@@ -8,10 +8,8 @@
 Initialize a postgres database and update username, password, and database title variables in app-env accordingly.
 
 ## Instructions to run server
-1. Source environment variables
-```bash
-source app-env
-```
+1. Update database variables
+Go into "app.go" and update variables APP_DB_USERNAME, APP_DB_PASSWORD, and APP_DB_NAME.
 
 2. Build the project
 ```bash
