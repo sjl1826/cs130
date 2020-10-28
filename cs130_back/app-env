@@ -1,5 +1,5 @@
-export APP_DB_USERNAME="super"
-export APP_DB_PASSWORD="test"
-export APP_DB_NAME="default"
+export APP_DB_USERNAME="postgres"
+export APP_DB_PASSWORD="admin"
+export APP_DB_NAME="cs130"
 export CLIENT_SECRET="default"
 export CLIENT_ID="default"

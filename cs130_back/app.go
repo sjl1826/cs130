@@ -16,13 +16,13 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-type App struct {
+type App struct {	
 	Router *mux.Router
 	DB *gorm.DB
 }
 
-const APP_DB_USERNAME = "user"
-const APP_DB_PASSWORD = "test"
+const APP_DB_USERNAME = "postgres"
+const APP_DB_PASSWORD = "admin"
 const APP_DB_NAME = "cs130"
 
 // Start starts the server
