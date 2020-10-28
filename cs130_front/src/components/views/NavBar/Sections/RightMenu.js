@@ -21,18 +21,19 @@ function RightMenu(props) {
 		return (
 			<Menu mode={props.mode}>
 				<Menu.Item key="mail">
-					<a href="/login">Sign in</a>
+					<a href="/login">Login</a>
 				</Menu.Item>
 				<Menu.Item key="app">
-					<a href="/register">Sign up</a>
+					<a href="/register">Register</a>
 				</Menu.Item>
 			</Menu>
 		);
-	}
+  }
+  // we need to pass current user's id here in the future.
 	return (
 		<Menu mode={props.mode}>
 			<Menu.Item key="classes">
-				<a href="/classes">Classes</a>
+				<a href="/classes">Classes</a> 
 			</Menu.Item>
 			<Menu.Item key="groups">
 				<a href="/groups">Groups</a>

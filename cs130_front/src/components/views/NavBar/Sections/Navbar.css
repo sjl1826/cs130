@@ -3,10 +3,10 @@
 
 .menu {
   padding: 0 20px;
-  border-bottom: solid 1px #005587;
+  border-bottom: solid 1px white;
   overflow: hidden;
-  box-shadow: 0 0 30px #005587;
-  background-color: #005587;
+  box-shadow: 0 0 5px #005587;
+  background-color: white;
 }
 
 .menu__logo {
@@ -15,7 +15,7 @@
 }
 
 .menu__logo a {
-	color: white;
+	color: #005587;
 	font-family: 'Poppins';
   display: inline-block;
 	font-size: 28px;
@@ -24,7 +24,7 @@
 }
 
 .menu__container .ant-menu-item {
-	background-color: #005587;
+	background-color: white;
 	padding: 0px 5px;
 }
 
@@ -34,14 +34,15 @@
 
 .menu__container .ant-menu-item a,
 .menu__container .ant-menu-submenu-title a {
-	color: white;
+	color: #005587;
 	font-family: 'Poppins';
-	font-size: 18px;
+  font-size: 18px;
+  font-weight: 900;
 	padding: 10px 15px;
 }
 .menu__container .ant-menu-item a:hover {
-	background-color: white;
-	color: #005587;
+	background-color: #005587;
+	color: white;
 }
 
 .menu__container .ant-menu-horizontal {
@@ -62,7 +63,7 @@
   padding: 6px;
   margin-top: 8px;
   display: none !important; /* use of important to overwrite ant-btn */
-  background: #005587;
+  background: white;
 }
 
 .menu_drawer .ant-drawer-body {

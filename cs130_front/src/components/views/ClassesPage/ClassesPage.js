@@ -1,24 +1,17 @@
 import React from 'react';
-import logo from '../../../logo.svg';
+import Tabs from '../../Tabs/Tabs';
+import Dropdown from '../../Dropdown/Dropdown'
 import '../../../App.css';
 
 function ClassesPage() {
+  const items = [{name: "Wow", groupId: 123}, {name: "CA", groupId: 123}, {name: "DM", groupId: 123},]
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Tabs>
+        <div type="Study Buddies"></div>
+        <div type="Listings"></div>
+      </Tabs>
+      <Dropdown width="100vw" options={items} />
     </div>
   );
 }
