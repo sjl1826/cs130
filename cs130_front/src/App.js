@@ -9,7 +9,7 @@ import ClassesPage from './components/views/ClassesPage/ClassesPage';
 import GroupsPage from './components/views/GroupsPage/GroupsPage.js';
 import ProfilePage from './components/views/ProfilePage/ProfilePage.js';
 import NavBar from './components/views/NavBar/NavBar';
-import SearchPage from './components/SearchPage/SearchPage.js';
+import SearchPage from './components/views/SearchPage/SearchPage.js';
 
 // null   Anyone Can go inside
 // true   only logged in user can go inside

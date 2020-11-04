@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import SearchBar from './SearchBar';
-import UserList from './UserList';
+import SearchBar from '../../Search/SearchBar';
+import UserList from '../../Search/UserList';
 
 const SearchPage = (props) => {
   const [input, setInput] = useState('');
@@ -26,7 +26,8 @@ const SearchPage = (props) => {
   }
 
   useEffect( () => {fetchData()},[]);
-	
+  const goToUserProfile = user => () => { props.history.push(`/profile/${user.name}`); }
+  
   return (
     <>
       <h1>Search User</h1>
@@ -34,7 +35,7 @@ const SearchPage = (props) => {
        input={input} 
        onChange={updateInput}
       />
-      <UserList userList={userList}/>
+      { input && <UserList userList={userList} goToUserProfile={goToUserProfile}/> }
     </>
   );
 }
