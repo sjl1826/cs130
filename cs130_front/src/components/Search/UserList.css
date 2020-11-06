@@ -1,0 +1,20 @@
+.listItem {
+    margin-top: 0px; 
+    display: inline-block;
+    width: 30rem; 
+    height: 2.5rem;
+    border: 0px solid #000; 
+    text-align: center; 
+    cursor: pointer; 
+    box-shadow: 5px 5px 5px #888888;
+    font-size: 25px;
+    transition: 0.3s;
+    border-radius: 10px;
+}
+
+.listItem:hover {
+    transition: 0.3s;
+    width: 32rem;
+    height: 2.8rem;
+    font-size: 28px;
+}
