@@ -18,7 +18,7 @@ type Request struct {
 	GroupID			int				`json:"group_id"`
 	ReceiveID		int				`json:"receive_id`
 	Type			bool			`json:"type"`
-	Status			bool			`json:"type"`
+	Status			bool			`json:"status"`
 }
 
 // CreateRequest creates a new request object in database
