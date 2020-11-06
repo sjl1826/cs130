@@ -8,6 +8,7 @@ import RegisterPage from './components/views/RegisterPage/RegisterPage.js';
 import ClassesPage from './components/views/ClassesPage/ClassesPage';
 import GroupsPage from './components/views/GroupsPage/GroupsPage.js';
 import ProfilePage from './components/views/ProfilePage/ProfilePage.js';
+import SchedulerPage from './components/views/SchedulerPage/SchedulerPage.js';
 import NavBar from './components/views/NavBar/NavBar';
 
 // null   Anyone Can go inside
@@ -26,6 +27,7 @@ function App() {
           <Route exact path="/classes/" component={Auth(ClassesPage, true)} />
 					<Route exact path="/groups/" component={Auth(GroupsPage, true)} />
           <Route exact path="/profile/" component={Auth(ProfilePage, true)} />
+          <Route exact path="/profile/scheduler" component={Auth(SchedulerPage, true)} />
 				</Switch>
 			</div>
 		</Suspense>
