@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 // Group structure
@@ -19,8 +20,8 @@ type Group struct {
 	CourseID		int				`json:"course_id"`
 	AdminID			int				`json:"admin_id"`
 	MeetingTime		string			`json:"meeting_time"`
-
-	// TODO: members and requests
+	Members			pq.Int64Array	`gorm:"type:integer[]" json:"members"`
+	Requests		pq.Int64Array	`gorm:"type:integer[]" json:"requests"`
 }
 
 // CreateGroup creates a new group object in database

@@ -122,5 +122,8 @@ func DBMigrate(db *gorm.DB) *gorm.DB {
 	db.AutoMigrate(&User{})
 	db.AutoMigrate(&Course{})
 	db.AutoMigrate(&Token{})
+	db.AutoMigrate(&Group{})
+	db.AutoMigrate(&Listing{})
+	db.AutoMigrate(&Request{})
 	return db
 }

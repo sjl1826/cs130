@@ -18,7 +18,8 @@ type Course struct {
 	Name			string			`json:"name"`
 	Keywords		pq.StringArray 	`gorm:"type:varchar(64)[]" json:"keywords"`
 	Categories		pq.StringArray 	`gorm:"type:varchar(64)[]" json:"categories"`
-	// TODO: studybuddies and listings
+	StudyBuddies	pq.Int64Array	`gorm:"type:integer[]" json:"study_buddies"`
+	Listings		pq.Int64Array	`gorm:"type:integer[]" json:"listings"`
 }
 
 // CreateCourse creates a new course object in database
