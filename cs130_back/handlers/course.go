@@ -46,8 +46,6 @@ func populateCourseResponse(c *models.Course, r *CreateCourseResponse) {
 	r.ID = c.ID
 	r.CreatedAt = c.CreatedAt
 	r.UpdatedAt = c.UpdatedAt
-	r.Description = c.Description
-	r.Title = c.Title
 }
 
 // CreateCourse initializes a new course in the database
@@ -60,7 +58,7 @@ func CreateCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	course := models.Course{Description: p.Description, Title: p.Title}
+	course := models.Course{}
 	if err := course.CreateCourse(db); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -96,13 +94,6 @@ func UpdateCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	course := models.Course{ID: p.ID}
 	if GetCourseByID(db, &course, w) == 0 {
 		return
-	}
-
-	if p.Description != "" {
-		course.Description = p.Description
-	}
-	if p.Title != "" {
-		course.Title = p.Title
 	}
 
 	if err := course.UpdateCourse(db); err != nil {
