@@ -7,15 +7,18 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 // Course structure
 type Course struct {
-	ID          	int 	`gorm:"primary_key;auto_increment" json:"id"`
+	ID          	int 			`gorm:"primary_key;auto_increment" json:"id"`
 	CreatedAt   	time.Time
 	UpdatedAt   	time.Time
-	Description		string	`json:"description"`
-	Title			string 	`json:"title"`
+	Name			string			`json:"name"`
+	Keywords		pq.StringArray 	`gorm:"type:varchar(64)[]" json:"keywords"`
+	Categories		pq.StringArray 	`gorm:"type:varchar(64)[]" json:"categories"`
+	// TODO: studybuddies and listings
 }
 
 // CreateCourse creates a new course object in database
