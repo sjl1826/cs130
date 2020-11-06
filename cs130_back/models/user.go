@@ -18,32 +18,41 @@ func RemoveElement(s []int64, i int) []int64 {
 
 // User holds all fields for registered users
 type User struct {
-	ID			int		`gorm:"primary_key;auto_increment" json:"u_id"`
-	CreatedAt	time.Time
-	UpdatedAt	time.Time
-	FirstName	string	`json:"first_name"`
-	LastName	string	`json:"last_name"`
-	Email		string	`gorm:"unique" json:"u_email"`
-	Password	string	`json:"password"`
-	Subjects		pq.Int64Array	`gorm:"type:integer[]" json:"subjects"`
+	ID				int		`gorm:"primary_key;auto_increment" json:"u_id"`
+	CreatedAt		time.Time
+	UpdatedAt		time.Time
+	FirstName		string	`json:"first_name"`
+	LastName		string	`json:"last_name"`
+	Email			string	`gorm:"unique" json:"u_email"`
+	Password		string	`json:"password"`
+	Biography		string	`json:"biography"`
+	Discord			string 	`json:"discord"`
+	Facebook		string 	`json:"facebook"`
+	Timezone		string 	`json:"timezone"`
+	SchoolName		string 	`json:"school_name"` 
+	Courses			pq.Int64Array	`gorm:"type:integer[]" json:"courses"`
+	Groups			pq.Int64Array	`gorm:"type:integer[]" json:"groups"`
+	Listings		pq.Int64Array	`gorm:"type:integer[]" json:"listings"`
+	Availability	pq.Int64Array	`gorm:"type:integer[]" json:"availability"`
+	Invitations		pq.Int64Array	`gorm:"type:integer[]" json:"invitations"`
 }
 
-// AddSubject adds a new subject to the user
-func (u *User) AddSubject(db *gorm.DB, subjectID int) error {
+// AddCourse adds a new course to the user
+func (u *User) AddCourse(db *gorm.DB, courseID int) error {
 	now := time.Now()
 	u.UpdatedAt = now
-	u.Subjects = append(u.Subjects, int64(subjectID))
+	u.Courses = append(u.Courses, int64(courseID))
 	retVal := db.Save(&u).Table("users")
 	return retVal.Error
 }
 
-// RemoveSubject removes the specified subject from the user
-func (u *User) RemoveSubject(db *gorm.DB, subjectID int) error {
+// RemoveCourse removes the specified Course from the user
+func (u *User) RemoveCourse(db *gorm.DB, courseID int) error {
 	now := time.Now()
 	u.UpdatedAt = now
-	for i, g := range u.Subjects {
-		if g == int64(subjectID) {
-			u.Subjects = RemoveElement(u.Subjects, i)
+	for i, g := range u.Courses {
+		if g == int64(courseID) {
+			u.Courses = RemoveElement(u.Courses, i)
 			break
 		}
 	}
@@ -51,13 +60,13 @@ func (u *User) RemoveSubject(db *gorm.DB, subjectID int) error {
 	return retVal.Error
 }
 
-// GetSubjects retrieves the subject objects under the user
-func (u *User) GetSubjects(db *gorm.DB, subjectList *[]Subject) error {
+// GetCourses retrieves the course objects under the user
+func (u *User) GetCourses(db *gorm.DB, courseList *[]Course) error {
 	retVal := db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(u.ID)).Scan(&u)
-	for _, g := range u.Subjects {
-		tempSubject := Subject{ID: int(g)}
-		db.Raw("SELECT * FROM subjects WHERE ID=" + strconv.Itoa(tempSubject.ID)).Scan(&tempSubject)
-		(*subjectList) = append((*subjectList), tempSubject)
+	for _, g := range u.Courses {
+		tempCourse := Course{ID: int(g)}
+		db.Raw("SELECT * FROM courses WHERE ID=" + strconv.Itoa(tempCourse.ID)).Scan(&tempCourse)
+		(*courseList) = append((*courseList), tempCourse)
 	}
 	return retVal.Error
 }
@@ -111,7 +120,7 @@ func (u *User) GetPassword(db *gorm.DB) {
 // DBMigrate will create and migrate the tables, and then make the relationships
 func DBMigrate(db *gorm.DB) *gorm.DB {
 	db.AutoMigrate(&User{})
-	db.AutoMigrate(&Subject{})
+	db.AutoMigrate(&Course{})
 	db.AutoMigrate(&Token{})
 	return db
 }
