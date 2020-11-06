@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import SearchBar from '../../Search/SearchBar';
 import UserList from '../../Search/UserList';
+import * as Fonts from '../../../constants/Fonts';
 
 const SearchPage = (props) => {
   const [input, setInput] = useState('');
@@ -29,14 +30,13 @@ const SearchPage = (props) => {
   const goToUserProfile = user => () => { props.history.push(`/profile/${user.name}`); }
   
   return (
-    <>
-      <h1>Search User</h1>
-      <SearchBar 
-       input={input} 
-       onChange={updateInput}
-      />
+    <div style={{fontFamily: Fonts.Primary, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
+      <h1 style = {{fontSize: '40px'}}>Search User</h1>
+      <div> 
+        <SearchBar input={input} onChange={updateInput} />
+      </div>
       { input && <UserList userList={userList} goToUserProfile={goToUserProfile}/> }
-    </>
+    </div>
   );
 }
 
