@@ -1,23 +1,29 @@
 import React from 'react';
-import logo from '../../../logo.svg';
-import '../../../App.css';
+import { css } from 'emotion';
+import studyPic from "../../../studyPic.jpg";
+import Button from "../../Button/Button";
+import './styles.css';
+import Text from "../../Text/Text"
 
-function LandingPage() {
+
+function LandingPage(props) {
+  function join() {
+    props.history.push('/register');
+  }
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
+    <div className="Box">
+      <header className="Study-header">
+        <img src={studyPic} className="Study-pic" />
+        <p className={css`
+          width: 100vw;
+          height: 100px;
+          font-family: Poppins;`
+        }>
+          Broaden your scope, broaden your network, broaden your mind.
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+        <Button height="80px" width="200px" onClick={join}>
+          <Text size="30px" color="white"> Join </Text>
+        </Button>
       </header>
     </div>
   );
