@@ -1,0 +1,28 @@
+.rounded-box {
+  display: flex;
+  flex-direction: column;
+  width: 25vw;
+  border: 2px solid #005587;
+  border-radius: 7px;
+  padding-top: 10px;
+  padding-bottom: 60px;
+  min-height: 300px;
+  margin-top: 10px;
+}
+
+.horizontal-row {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  height: 50px;
+  width: 25vw;
+}
+.horizontal-row a {
+  display: inline-block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-decoration: underline;
+  color: #005587;
+
+}
