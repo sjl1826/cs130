@@ -8,7 +8,10 @@ function Button({
 	color = Colors.Blue,
 	height = '42px',
 	width = '150px',
-	disabled = false,
+  disabled = false,
+  textColor = Colors.White,
+  textSize = '18px',
+	textWeight = 400,
 	...props
 }) {
 	return (
@@ -30,7 +33,7 @@ function Button({
 			`}
 			{...props}
 		>
-			<Text color={Colors.White}>{children}</Text>
+			<Text color={textColor} size={textSize} weight={textWeight}>{children}</Text>
 		</button>
 	);
 }
