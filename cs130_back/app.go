@@ -69,12 +69,12 @@ func (a *App) initializeRoutes() {
 	authUserRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateUser)).Methods("PUT")
 	authUserRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteUser)).Methods("DELETE")
 
-	subjectRoutes := userRoutes.PathPrefix("/subjects").Subrouter()
-	// subjectRoutes.Use(a.loginMiddleware)
-	subjectRoutes.HandleFunc("", a.handleRequest(handlers.GetSubjects)).Methods("GET")
-	subjectRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateSubject)).Methods("POST")
-	subjectRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateSubject)).Methods("PUT")
-	subjectRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteSubject)).Methods("DELETE")
+	courseRoutes := userRoutes.PathPrefix("/courses").Subrouter()
+	// courseRoutes.Use(a.loginMiddleware)
+	courseRoutes.HandleFunc("", a.handleRequest(handlers.GetCourses)).Methods("GET")
+	courseRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateCourse)).Methods("POST")
+	courseRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateCourse)).Methods("PUT")
+	courseRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteCourse)).Methods("DELETE")
 }
 
 func (a *App) loginMiddleware(next http.Handler) http.Handler {

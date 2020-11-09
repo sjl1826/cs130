@@ -210,13 +210,13 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, cr)
 }
 
-// SubjectsResponse is the structure in which the subjects are returned
-type SubjectsResponse struct {
-	Subjects             []models.Subject    `json:"subjects"`
+// CoursesResponse is the structure in which the courses are returned
+type CoursesResponse struct {
+	Courses             []models.Course    `json:"courses"`
 }
 
-// GetSubjects retrieves and returns the user's subject objects
-func GetSubjects(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+// GetCourses retrieves and returns the user's course objects
+func GetCourses(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
 	id, ok := strconv.Atoi(vars["u_id"][0])
 	if ok != nil {
@@ -227,13 +227,13 @@ func GetSubjects(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if GetUserByID(db, &p, w) == 0 {
 		return
 	}
-	var subjects []models.Subject
-	if err := p.GetSubjects(db, &subjects); err != nil {
+	var courses []models.Course
+	if err := p.GetCourses(db, &courses); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	sr := SubjectsResponse{Subjects: subjects}
+	sr := CoursesResponse{Courses: courses}
 
 	respondWithJSON(w, http.StatusOK, sr)
 }
