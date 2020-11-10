@@ -5,6 +5,7 @@ package cs130_back
 import (
 	"cs130_back/handlers"
 	"cs130_back/models"
+	"cs130_back/seeds"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -46,7 +47,8 @@ func (a *App) Initialize(user, password, dbname string) {
 		log.Fatal(err)
 	}
 
-	a.DB = models.DBMigrate(a.DB)
+	//a.DB = models.DBMigrate(a.DB)  <-- remove in a following commit if this doesn't break anything
+	a.DB = seeds.Seed(a.DB)
 	a.Router = mux.NewRouter()
 
 	a.initializeRoutes()
@@ -75,6 +77,10 @@ func (a *App) initializeRoutes() {
 	courseRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateCourse)).Methods("POST")
 	courseRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateCourse)).Methods("PUT")
 	courseRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteCourse)).Methods("DELETE")
+
+	//Group Routes
+	groupRoutes := routes.PathPrefix("/group").Subrouter()
+	groupRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateGroup)).Methods("POST")
 }
 
 func (a *App) loginMiddleware(next http.Handler) http.Handler {
