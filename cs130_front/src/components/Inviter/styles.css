@@ -1,0 +1,11 @@
+.small-rounded-box {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+  border-radius: 5px;
+  border: 2px solid #005587;
+  width: 25vw;
+  height: 20vh;
+  padding: 10px;
+}

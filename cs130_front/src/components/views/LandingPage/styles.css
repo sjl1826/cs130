@@ -1,0 +1,24 @@
+.Box {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: center;
+}
+
+.Study-pic {
+  pointer-events: none;
+  width: 100vw;
+  height: 500px;
+  margin-bottom: 30px;
+}
+
+.Study-header {
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(20px + 2vmin);
+  color: black;
+}
