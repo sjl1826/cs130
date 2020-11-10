@@ -24,9 +24,9 @@ function App() {
 					<Route exact path="/" component={Auth(LandingPage, null)} />
 					<Route exact path="/login" component={Auth(LoginPage, false)} />
 					<Route exact path="/register" component={Auth(RegisterPage, false)} />
-          			<Route exact path="/classes/" component={Auth(ClassesPage, true)} />
-					<Route exact path="/groups/" component={Auth(GroupsPage, true)} />
-          			<Route exact path="/profile/" component={Auth(ProfilePage, true)} />
+          <Route exact path="/classes/:id" component={Auth(ClassesPage, true)} />
+					<Route exact path="/groups/:id" component={Auth(GroupsPage, true)} />
+          <Route exact path="/profile/:id" component={Auth(ProfilePage, true)} />
 					<Route exact path="/search/" component={Auth(SearchPage, true)} />
 				</Switch>
 			</div>
