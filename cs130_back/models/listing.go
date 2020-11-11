@@ -26,7 +26,7 @@ type Listing struct {
 func (l *Listing) CreateListing(db *gorm.DB) error {
 	now := time.Now()
 	l.CreatedAt = now
-	retVal := db.Create(l).Table("listing").Scan(&l)
+	retVal := db.Create(l).Table("listings").Scan(&l)
 	return retVal.Error
 }
 
