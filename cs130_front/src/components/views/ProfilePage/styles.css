@@ -1,0 +1,11 @@
+.panel {
+  width: 100vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px;
+}
+.column {
+  display: flex;
+  flex-direction: column;
+}
