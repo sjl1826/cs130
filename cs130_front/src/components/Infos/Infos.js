@@ -16,7 +16,7 @@ export default function Infos(props) {
         {props.title}
       </Text>
     }
-    {props.options.map(option => <Info option={option}/>)}
+    {props.options.map(option => <Info key={option.name} option={option}/>)}
   </div>
   );
 }

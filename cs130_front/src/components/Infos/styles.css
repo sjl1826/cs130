@@ -21,9 +21,9 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-around;
+  justify-content: space-between;
   width: 40vw;
-  height: 50vh;
+  height: 40vh;
 }
 
 .form-input {

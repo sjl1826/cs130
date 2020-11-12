@@ -21,6 +21,9 @@ export default class Selection extends Component {
 
   componentWillMount() {
     this.selectedChildren = {};
+    this.props.initialSelected.forEach(slot => {
+      this.selectedChildren[slot] = true;
+    })
   }
 
   componentWillReceiveProps(nextProps) {
@@ -96,7 +99,7 @@ export default class Selection extends Component {
       });
       return (
         <div
-          className={'select-box ' + (isSelected ? 'selected' : '')}
+          className={'select-box ' + (tmpChild.props.isSelected ? 'selected' : '')}
           onClickCapture={
             function(e) {
               if((e.ctrlKey || e.altKey || e.shiftKey) && _this.props.enabled) {
