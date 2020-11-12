@@ -1,0 +1,9 @@
+.item{
+    cursor: pointer; 
+    font-size: 20px;
+    margin: 0px;
+}
+
+.item:hover{
+    font-weight: bold;
+}
