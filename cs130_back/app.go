@@ -70,6 +70,8 @@ func (a *App) initializeRoutes() {
 	authUserRoutes.HandleFunc("", a.handleRequest(handlers.GetUser)).Methods("GET")
 	authUserRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateUser)).Methods("PUT")
 	authUserRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteUser)).Methods("DELETE")
+	authUserRoutes.HandleFunc("/addCourse", a.handleRequest(handlers.AddCourse)).Methods("PUT")
+	authUserRoutes.HandleFunc("/removeCourse", a.handleRequest(handlers.RemoveCourse)).Methods("PUT")
 
 	//Group Routes
 	groupRoutes := routes.PathPrefix("/group").Subrouter()

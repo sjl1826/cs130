@@ -316,6 +316,58 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, cr)
 }
 
+// CourseRequest for addCourse requests parsing
+type CourseRequest struct {
+	ID				int      `json:"u_id"`
+	CourseID		int 	 `json:"course_id,omit_empty"`
+}
+
+// AddCourse will add a course for the user
+func AddCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var p CourseRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&p); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+
+	user := models.User{ID: p.ID}
+	if GetUserByID(db, &user, w) == 0 {
+		return
+	}
+
+	if err := user.AddCourse(db, p.CourseID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
+// RemoveCourse will remove a course for the user
+func RemoveCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var p CourseRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&p); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+
+	user := models.User{ID: p.ID}
+	if GetUserByID(db, &user, w) == 0 {
+		return
+	}
+
+	if err := user.RemoveCourse(db, p.CourseID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
 // DeleteUser deletes the user permanently
 func DeleteUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
