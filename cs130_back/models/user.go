@@ -37,6 +37,40 @@ type User struct {
 	Invitations		pq.Int64Array	`gorm:"type:integer[]" json:"invitations"`
 }
 
+// AddGroup adds a new group to the user
+func (u *User) AddGroup(db *gorm.DB, groupID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	u.Groups = append(u.Groups, int64(groupID))
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// RemoveGroup removes the specified group from the user
+func (u *User) RemoveGroup(db *gorm.DB, groupID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	for i, g := range u.Groups {
+		if g == int64(groupID) {
+			u.Groups = RemoveElement(u.Groups, i)
+			break
+		}
+	}
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// GetGroups retrieves the group objects under the user
+func (u *User) GetGroups(db *gorm.DB, groupList *[]Group) error {
+	retVal := db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(u.ID)).Scan(&u)
+	for _, g := range u.Groups {
+		tempGroup := Group{ID: int(g)}
+		db.Raw("SELECT * FROM groups WHERE ID=" + strconv.Itoa(tempGroup.ID)).Scan(&tempGroup)
+		(*groupList) = append((*groupList), tempGroup)
+	}
+	return retVal.Error
+}
+
 // AddCourse adds a new course to the user
 func (u *User) AddCourse(db *gorm.DB, courseID int) error {
 	now := time.Now()
