@@ -49,3 +49,26 @@ func (c *Course) DeleteCourse(db *gorm.DB) error {
 	retVal := db.Exec("DELETE FROM courses WHERE ID=" + strconv.Itoa(c.ID))
 	return retVal.Error
 }
+
+// AddStudyBuddy adds a new user to the course
+func (c *Course) AddStudyBuddy(db *gorm.DB, userID int) error {
+	now := time.Now()
+	c.UpdatedAt = now
+	c.StudyBuddies = append(c.StudyBuddies, int64(userID))
+	retVal := db.Save(&c).Table("courses")
+	return retVal.Error
+}
+
+// RemoveStudyBuddy removes the specified user from the course
+func (c *Course) RemoveStudyBuddy(db *gorm.DB, userID int) error {
+	now := time.Now()
+	c.UpdatedAt = now
+	for i, g := range c.StudyBuddies {
+		if g == int64(userID) {
+			c.StudyBuddies = RemoveElement(c.StudyBuddies, i)
+			break
+		}
+	}
+	retVal := db.Save(&c).Table("courses")
+	return retVal.Error
+}

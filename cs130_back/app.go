@@ -60,7 +60,7 @@ func (a *App) initializeRoutes() {
 
 	// User Routes
 	userRoutes := routes.PathPrefix("/user").Subrouter()
-	userRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateUser)).Methods("POST")
+	userRoutes.HandleFunc("/register", a.handleRequest(handlers.CreateUser)).Methods("POST")
 
 	userRoutes.HandleFunc("/login", a.handleRequest(handlers.LoginUser)).Methods("POST")
 	userRoutes.HandleFunc("/refresh", a.handleRequest(handlers.RefreshToken)).Methods("POST")
@@ -70,13 +70,8 @@ func (a *App) initializeRoutes() {
 	authUserRoutes.HandleFunc("", a.handleRequest(handlers.GetUser)).Methods("GET")
 	authUserRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateUser)).Methods("PUT")
 	authUserRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteUser)).Methods("DELETE")
-
-	courseRoutes := userRoutes.PathPrefix("/courses").Subrouter()
-	// courseRoutes.Use(a.loginMiddleware)
-	courseRoutes.HandleFunc("", a.handleRequest(handlers.GetCourses)).Methods("GET")
-	courseRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateCourse)).Methods("POST")
-	courseRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateCourse)).Methods("PUT")
-	courseRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteCourse)).Methods("DELETE")
+	authUserRoutes.HandleFunc("/addCourse", a.handleRequest(handlers.AddCourse)).Methods("PUT")
+	authUserRoutes.HandleFunc("/removeCourse", a.handleRequest(handlers.RemoveCourse)).Methods("PUT")
 
 	//Group Routes
 	groupRoutes := routes.PathPrefix("/group").Subrouter()

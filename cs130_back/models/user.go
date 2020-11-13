@@ -37,40 +37,6 @@ type User struct {
 	Invitations		pq.Int64Array	`gorm:"type:integer[]" json:"invitations"`
 }
 
-// AddCourse adds a new course to the user
-func (u *User) AddCourse(db *gorm.DB, courseID int) error {
-	now := time.Now()
-	u.UpdatedAt = now
-	u.Courses = append(u.Courses, int64(courseID))
-	retVal := db.Save(&u).Table("users")
-	return retVal.Error
-}
-
-// RemoveCourse removes the specified Course from the user
-func (u *User) RemoveCourse(db *gorm.DB, courseID int) error {
-	now := time.Now()
-	u.UpdatedAt = now
-	for i, g := range u.Courses {
-		if g == int64(courseID) {
-			u.Courses = RemoveElement(u.Courses, i)
-			break
-		}
-	}
-	retVal := db.Save(&u).Table("users")
-	return retVal.Error
-}
-
-// GetCourses retrieves the course objects under the user
-func (u *User) GetCourses(db *gorm.DB, courseList *[]Course) error {
-	retVal := db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(u.ID)).Scan(&u)
-	for _, g := range u.Courses {
-		tempCourse := Course{ID: int(g)}
-		db.Raw("SELECT * FROM courses WHERE ID=" + strconv.Itoa(tempCourse.ID)).Scan(&tempCourse)
-		(*courseList) = append((*courseList), tempCourse)
-	}
-	return retVal.Error
-}
-
 // CreateUser creates the user specified
 func (u *User) CreateUser(db *gorm.DB) error {
 	now := time.Now()
@@ -117,6 +83,142 @@ func (u *User) GetPassword(db *gorm.DB) {
 	u.Password = pass
 }
 
+// AddGroup adds a new group to the user
+func (u *User) AddGroup(db *gorm.DB, groupID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	u.Groups = append(u.Groups, int64(groupID))
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// RemoveGroup removes the specified group from the user
+func (u *User) RemoveGroup(db *gorm.DB, groupID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	for i, g := range u.Groups {
+		if g == int64(groupID) {
+			u.Groups = RemoveElement(u.Groups, i)
+			break
+		}
+	}
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// GetGroups retrieves the group objects under the user
+func (u *User) GetGroups(db *gorm.DB, groupList *[]Group) error {
+	retVal := db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(u.ID)).Scan(&u)
+	for _, g := range u.Groups {
+		tempGroup := Group{ID: int(g)}
+		db.Raw("SELECT * FROM groups WHERE ID=" + strconv.Itoa(tempGroup.ID)).Scan(&tempGroup)
+		(*groupList) = append((*groupList), tempGroup)
+	}
+	return retVal.Error
+}
+
+// AddCourse adds a new course to the user
+func (u *User) AddCourse(db *gorm.DB, courseID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	u.Courses = append(u.Courses, int64(courseID))
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// RemoveCourse removes the specified Course from the user
+func (u *User) RemoveCourse(db *gorm.DB, courseID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	for i, g := range u.Courses {
+		if g == int64(courseID) {
+			u.Courses = RemoveElement(u.Courses, i)
+			break
+		}
+	}
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// GetCourses retrieves the course objects under the user
+func (u *User) GetCourses(db *gorm.DB, courseList *[]Course) error {
+	retVal := db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(u.ID)).Scan(&u)
+	for _, g := range u.Courses {
+		tempCourse := Course{ID: int(g)}
+		db.Raw("SELECT * FROM courses WHERE ID=" + strconv.Itoa(tempCourse.ID)).Scan(&tempCourse)
+		(*courseList) = append((*courseList), tempCourse)
+	}
+	return retVal.Error
+}
+
+// AddListing adds a new listing to the user
+func (u *User) AddListing(db *gorm.DB, listingID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	u.Listings = append(u.Listings, int64(listingID))
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// RemoveListing removes the specified Listing from the user
+func (u *User) RemoveListing(db *gorm.DB, listingID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	for i, g := range u.Listings {
+		if g == int64(listingID) {
+			u.Listings = RemoveElement(u.Listings, i)
+			break
+		}
+	}
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// GetListings retrieves the listing objects under the user
+func (u *User) GetListings(db *gorm.DB, listingList *[]Listing) error {
+	retVal := db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(u.ID)).Scan(&u)
+	for _, g := range u.Listings {
+		tempListing := Listing{ID: int(g)}
+		db.Raw("SELECT * FROM listings WHERE ID=" + strconv.Itoa(tempListing.ID)).Scan(&tempListing)
+		(*listingList) = append((*listingList), tempListing)
+	}
+	return retVal.Error
+}
+
+// AddInvitation adds a new invitation to the user
+func (u *User) AddInvitation(db *gorm.DB, invitationID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	u.Invitations = append(u.Invitations, int64(invitationID))
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// RemoveInvitation removes the specified invitation from the user
+func (u *User) RemoveInvitation(db *gorm.DB, invitationID int) error {
+	now := time.Now()
+	u.UpdatedAt = now
+	for i, g := range u.Invitations {
+		if g == int64(invitationID) {
+			u.Invitations = RemoveElement(u.Invitations, i)
+			break
+		}
+	}
+	retVal := db.Save(&u).Table("users")
+	return retVal.Error
+}
+
+// GetInvitations retrieves the invitation objects under the user
+func (u *User) GetInvitations(db *gorm.DB, invitationList *[]Invitation) error {
+	retVal := db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(u.ID)).Scan(&u)
+	for _, g := range u.Invitations {
+		tempInvitation := Invitation{ID: int(g)}
+		db.Raw("SELECT * FROM invitations WHERE ID=" + strconv.Itoa(tempInvitation.ID)).Scan(&tempInvitation)
+		(*invitationList) = append((*invitationList), tempInvitation)
+	}
+	return retVal.Error
+}
+
 // DBMigrate will create and migrate the tables, and then make the relationships
 func DBMigrate(db *gorm.DB) *gorm.DB {
 	db.AutoMigrate(&User{})
@@ -124,6 +226,6 @@ func DBMigrate(db *gorm.DB) *gorm.DB {
 	db.AutoMigrate(&Token{})
 	db.AutoMigrate(&Group{})
 	db.AutoMigrate(&Listing{})
-	db.AutoMigrate(&Request{})
+	db.AutoMigrate(&Invitation{})
 	return db
 }

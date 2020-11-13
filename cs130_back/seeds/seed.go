@@ -19,7 +19,7 @@ func Seed (db *gorm.DB) *gorm.DB {
 		&models.Token{},
 		&models.Group{},
 		&models.Listing{},
-		&models.Request{}).Error
+		&models.Invitation{}).Error
 	if err != nil {
 		log.Fatalf("Cannot drop table: %v", err)
 	}
@@ -31,7 +31,7 @@ func Seed (db *gorm.DB) *gorm.DB {
 		&models.Token{},
 		&models.Group{},
 		&models.Listing{},
-		&models.Request{}).Error
+		&models.Invitation{}).Error
 	if err != nil {
 		log.Fatalf("Cannot migrate table: %v", err)
 	}

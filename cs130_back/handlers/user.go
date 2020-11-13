@@ -28,6 +28,20 @@ func GetUserByID(db *gorm.DB, u *models.User, w http.ResponseWriter) int {
 	return 1
 }
 
+// CourseByID gets the course by ID
+func CourseByID(db *gorm.DB, c *models.Course, w http.ResponseWriter) int {
+	if err := c.GetCourse(db); err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			respondWithError(w, http.StatusNotFound, "Course not found")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return 0
+	}
+	return 1
+}
+
 // CreateRequest required fields to create a user
 type CreateRequest struct {
 	FirstName string `json:"first_name"`
@@ -39,12 +53,22 @@ type CreateRequest struct {
 // CreateResponse fields to send back
 // HTTP status code 201 and user model in data
 type CreateResponse struct {
-	ID                int       `json:"u_id"`
-	CreatedAt         time.Time `json:"CreatedAt"`
-	UpdatedAt         time.Time `json:"UpdatedAt"`
-	FirstName         string    `json:"first_name"`
-	LastName          string    `json:"last_name"`
-	Email             string    `json:"u_email"`
+	ID                int                 `json:"u_id"`
+	CreatedAt         time.Time           `json:"CreatedAt"`
+	UpdatedAt         time.Time           `json:"UpdatedAt"`
+	FirstName         string              `json:"first_name"`
+	LastName          string              `json:"last_name"`
+	Email             string              `json:"u_email"`
+	Biography         string              `json:"biography"`
+	Discord			  string              `json:"discord"`
+	Facebook          string              `json:"facebook"`
+	Timezone          string              `json:"timezone"`
+	SchoolName        string              `json:"school_name"`
+	Courses           []models.Course     `json:"courses"`
+	Groups            []models.Group      `json:"groups"`
+	Listings          []models.Listing    `json:"listings"`
+	Availability      []int64             `json:"availability"`
+	Invitations       []models.Invitation `json:"invitations"`
 }
 
 func populateResponse(u *models.User, r *CreateResponse) {
@@ -54,6 +78,12 @@ func populateResponse(u *models.User, r *CreateResponse) {
 	r.FirstName = u.FirstName
 	r.LastName = u.LastName
 	r.Email = u.Email
+	r.Biography = u.Biography
+	r.Discord = u.Discord
+	r.Facebook = u.Facebook
+	r.Timezone = u.Timezone
+	r.SchoolName = u.SchoolName
+	r.Availability = u.Availability
 }
 
 // CreateUser initializes a new user in the database
@@ -207,35 +237,32 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var cr CreateResponse
 	populateResponse(&p, &cr)
 
+	if err := p.GetCourses(db, &cr.Courses); err != nil {
+		switch err {
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+	}
+	if err := p.GetGroups(db, &cr.Groups); err != nil {
+		switch err {
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+	}
+	if err := p.GetListings(db, &cr.Listings); err != nil {
+		switch err {
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+	}
+	if err := p.GetInvitations(db, &cr.Invitations); err != nil {
+		switch err {
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+	}
+
 	respondWithJSON(w, http.StatusOK, cr)
-}
-
-// CoursesResponse is the structure in which the courses are returned
-type CoursesResponse struct {
-	Courses             []models.Course    `json:"courses"`
-}
-
-// GetCourses retrieves and returns the user's course objects
-func GetCourses(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	vars := r.URL.Query()
-	id, ok := strconv.Atoi(vars["u_id"][0])
-	if ok != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid user id")
-		return
-	}
-	p := models.User{ID: id}
-	if GetUserByID(db, &p, w) == 0 {
-		return
-	}
-	var courses []models.Course
-	if err := p.GetCourses(db, &courses); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	sr := CoursesResponse{Courses: courses}
-
-	respondWithJSON(w, http.StatusOK, sr)
 }
 
 // UpdateRequest for user requests parsing
@@ -244,6 +271,12 @@ type UpdateRequest struct {
 	FirstName		string 	`json:"first_name,omit_empty"`
 	LastName		string 	`json:"last_name,omit_empty"`
 	Email			string 	`json:"u_email"`
+	Biography       string  `json:"biography"`
+	Discord			string  `json:"discord"`
+	Facebook        string  `json:"facebook"`
+	Timezone        string  `json:"timezone"`
+	SchoolName      string  `json:"school_name"`
+	Availability    []int64 `json:"availability"`
 }
 
 // UpdateUser will update the values of the specified user
@@ -267,6 +300,24 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if p.LastName != "" {
 		user.LastName = p.LastName
 	}
+	if p.Biography != "" {
+		user.Biography = p.Biography
+	}
+	if p.Discord != "" {
+		user.Discord = p.Discord
+	}
+	if p.Facebook != "" {
+		user.Facebook = p.Facebook
+	}
+	if p.Timezone != "" {
+		user.Timezone = p.Timezone
+	}
+	if p.SchoolName != "" {
+		user.SchoolName = p.SchoolName
+	}
+	if p.Availability != nil {
+		user.Availability = p.Availability
+	}
 
 	if err := user.UpdateUser(db); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -277,6 +328,78 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	populateResponse(&user, &cr)
 
 	respondWithJSON(w, http.StatusOK, cr)
+}
+
+// CourseRequest for addCourse requests parsing
+type CourseRequest struct {
+	ID				int      `json:"u_id"`
+	CourseID		int 	 `json:"course_id,omit_empty"`
+}
+
+// AddCourse will add a course for the user
+func AddCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var p CourseRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&p); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+
+	user := models.User{ID: p.ID}
+	if GetUserByID(db, &user, w) == 0 {
+		return
+	}
+
+	course := models.Course{ID: p.CourseID}
+	if CourseByID(db, &course, w) == 0 {
+		return
+	}
+
+	if err := course.AddStudyBuddy(db, p.ID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if err := user.AddCourse(db, p.CourseID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
+// RemoveCourse will remove a course for the user
+func RemoveCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var p CourseRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&p); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+
+	user := models.User{ID: p.ID}
+	if GetUserByID(db, &user, w) == 0 {
+		return
+	}
+
+	course := models.Course{ID: p.CourseID}
+	if CourseByID(db, &course, w) == 0 {
+		return
+	}
+
+	if err := course.RemoveStudyBuddy(db, p.ID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if err := user.RemoveCourse(db, p.CourseID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
 // DeleteUser deletes the user permanently
