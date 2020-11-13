@@ -28,6 +28,20 @@ func GetUserByID(db *gorm.DB, u *models.User, w http.ResponseWriter) int {
 	return 1
 }
 
+// CourseByID gets the course by ID
+func CourseByID(db *gorm.DB, c *models.Course, w http.ResponseWriter) int {
+	if err := c.GetCourse(db); err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			respondWithError(w, http.StatusNotFound, "Course not found")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return 0
+	}
+	return 1
+}
+
 // CreateRequest required fields to create a user
 type CreateRequest struct {
 	FirstName string `json:"first_name"`
@@ -337,6 +351,16 @@ func AddCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	course := models.Course{ID: p.CourseID}
+	if CourseByID(db, &course, w) == 0 {
+		return
+	}
+
+	if err := course.AddStudyBuddy(db, p.ID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	if err := user.AddCourse(db, p.CourseID); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
@@ -357,6 +381,16 @@ func RemoveCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	user := models.User{ID: p.ID}
 	if GetUserByID(db, &user, w) == 0 {
+		return
+	}
+
+	course := models.Course{ID: p.CourseID}
+	if CourseByID(db, &course, w) == 0 {
+		return
+	}
+
+	if err := course.RemoveStudyBuddy(db, p.ID); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
