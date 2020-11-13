@@ -50,6 +50,7 @@ type CreateResponse struct {
 	Facebook          string              `json:"facebook"`
 	Timezone          string              `json:"timezone"`
 	SchoolName        string              `json:"school_name"`
+	Courses           []models.Course     `json:"courses"`
 	Groups            []models.Group      `json:"groups"`
 	Listings          []models.Listing    `json:"listings"`
 	Availability      []int64             `json:"availability"`
@@ -222,6 +223,12 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var cr CreateResponse
 	populateResponse(&p, &cr)
 
+	if err := p.GetCourses(db, &cr.Courses); err != nil {
+		switch err {
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+	}
 	if err := p.GetGroups(db, &cr.Groups); err != nil {
 		switch err {
 		default:
@@ -242,34 +249,6 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, cr)
-}
-
-// CoursesResponse is the structure in which the courses are returned
-type CoursesResponse struct {
-	Courses             []models.Course    `json:"courses"`
-}
-
-// GetCourses retrieves and returns the user's course objects
-func GetCourses(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	vars := r.URL.Query()
-	id, ok := strconv.Atoi(vars["u_id"][0])
-	if ok != nil {
-		respondWithError(w, http.StatusBadRequest, "Invalid user id")
-		return
-	}
-	p := models.User{ID: id}
-	if GetUserByID(db, &p, w) == 0 {
-		return
-	}
-	var courses []models.Course
-	if err := p.GetCourses(db, &courses); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	sr := CoursesResponse{Courses: courses}
-
-	respondWithJSON(w, http.StatusOK, sr)
 }
 
 // UpdateRequest for user requests parsing
