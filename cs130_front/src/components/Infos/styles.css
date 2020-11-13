@@ -1,0 +1,40 @@
+.title-clickable {
+  color: #005587;
+  font-size: 24px;
+  font-weight: 700;
+  text-decoration: underline;
+}
+
+.title-clickable:hover {
+  cursor: pointer;
+  color: #66C8FF;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 22vw;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 40vw;
+  height: 40vh;
+}
+
+.form-input {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.indented-line {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  padding-left: 20px;
+}

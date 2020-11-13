@@ -57,8 +57,16 @@ const times = [
   {time: "11:30pm", slot: 47 },
 ]
 
-function SchedulerPage() {
+function SchedulerPage(props) {
+  const { state } = props.location;
   var selections = new Array(336).fill(0);
+  var initSelections = new Array(336).fill(0);
+  if (state != undefined && state.availability != undefined) {
+    initSelections = state.availability;
+    selections = state.availability;
+  }
+  const userId = props.match.params.id;
+
   function updateSelection(items) {
     if (items.length < 1) {
       return;
@@ -97,59 +105,75 @@ function SchedulerPage() {
 
   function saveSelections() {
     // send selections array to backend
-    console.log(selections)
+    //go back to profile and reload it? 
+    props.history.push(`/profile/${userId}`)
   }
+
+  const initSelectedSlots = [];
 
   var data = [];
   for(var i = 0; i < 7; i++) {
     for(var j = 0; j < 48; j++) {
-      const newEntry = {time: times[j].time, slot: i * 48 + times[j].slot}
+      const newEntry = {time: times[j].time, slot: i * 48 + times[j].slot};
+      if (initSelections[i * 48 + times[j].slot]) {
+        initSelectedSlots.push((i * 48 + times[j].slot).toString())
+      } else {
+        initSelectedSlots.push("");
+      }
       data.push(
         <SelectionItem key={newEntry.slot} data={newEntry}/>
       );
     }
   }
+  const monInitial = initSelectedSlots.slice(0,48);
+  const tuesInitial = initSelectedSlots.slice(48,96);
+  const wedInitial = initSelectedSlots.slice(96,144);
+  const thursInitial = initSelectedSlots.slice(144,192);
+  const friInitial = initSelectedSlots.slice(192,240);
+  const satInitial = initSelectedSlots.slice(240,288);
+  const sunInitial = initSelectedSlots.slice(288,336);
+
   return (
     <div className="scheduler-container">
       <div className="scheduler-parent-container">
         <Text>Monday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection}>
+        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={monInitial}>
           {data.slice(0,48)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Tuesday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection}>
+        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={tuesInitial}>
           {data.slice(48,96)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Wednesday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection}>
+        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={wedInitial}>
           {data.slice(96,144)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Thursday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection}>
+        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={thursInitial}>
           {data.slice(144,192)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Friday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection}>
+        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={friInitial}>
           {data.slice(192,240)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Saturday</Text>
-      <Selection enabled={true} onSelectionChange={updateSelection}>
+      <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={satInitial}>
         {data.slice(240,288)}
       </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Sunday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection}>
+        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={sunInitial}>
           {data.slice(288,336)}
         </Selection>
       </div>

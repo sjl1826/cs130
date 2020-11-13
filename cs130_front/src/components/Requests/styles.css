@@ -1,10 +1,11 @@
 .rounded-box {
   display: flex;
   flex-direction: column;
-  width: 25vw;
+  align-items: center;
+  min-width: 20vw;
   border: 2px solid #005587;
   border-radius: 7px;
-  padding-top: 10px;
+  padding: 10px;
   padding-bottom: 60px;
   min-height: 300px;
   margin-top: 10px;
@@ -15,8 +16,9 @@
   justify-content: space-evenly;
   align-items: center;
   height: 50px;
-  width: 25vw;
+  min-width: 20vw;
 }
+
 .horizontal-row a {
   display: inline-block;
   white-space: nowrap;
