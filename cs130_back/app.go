@@ -60,7 +60,7 @@ func (a *App) initializeRoutes() {
 
 	// User Routes
 	userRoutes := routes.PathPrefix("/user").Subrouter()
-	userRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateUser)).Methods("POST")
+	userRoutes.HandleFunc("/register", a.handleRequest(handlers.CreateUser)).Methods("POST")
 
 	userRoutes.HandleFunc("/login", a.handleRequest(handlers.LoginUser)).Methods("POST")
 	userRoutes.HandleFunc("/refresh", a.handleRequest(handlers.RefreshToken)).Methods("POST")
