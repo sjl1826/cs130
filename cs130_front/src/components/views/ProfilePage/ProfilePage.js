@@ -4,6 +4,7 @@ import Requests from '../../Requests/Requests';
 import Infos from '../../Infos/Infos';
 import SimpleForm from '../../Infos/SimpleForm';
 import MyListings from './MyListings';
+import SchedulerPage from '../SchedulerPage/SchedulerPage';
 import * as Colors from '../../../constants/Colors';
 import Text from '../../Text/Text';
 import Button from '../../Button/Button';
@@ -16,9 +17,10 @@ function ProfilePage(props) {
     {name: "Discord", value: "shirly#1234"}
   ];
   const additionalInformation = [
+    {name: "Name", value: "Edgar Garcia"},
     {name: "School name", value: "UCLA"}, 
     {name: "Timezone", value: "PST"},
-    {name: "Biography", value: "I enjoy graphs and cookies"}
+    {name: "Biography", value: "I enjoy graphs and cookies"},
   ];
   var availability1 = [1,1,1,1,1,1];
   var availability2 = new Array(330).fill(0);
@@ -35,6 +37,7 @@ function ProfilePage(props) {
   const [listings, setListings] = useState(l);
   const [mainPanelState, setMainPanel] = useState('Classes');
   const userId = props.match.params.id;
+  const myId = 2;
   // check clickable by checking user's id with path's id
 
 
@@ -63,44 +66,70 @@ function ProfilePage(props) {
     //edit listing endpoint
   }
 
-  // will have conditional logic based on self profile vs different.. maybe a diff endpoint?
-  return (
-    <div className="panel">
+  function viewOnlyProfile() {
+    return (
+      <div className="view-panel">
+        <div className="column"> 
+          <div className="text-container">
+            <Text color="black" size="32px" weight="800"> 
+            {additionalInfo[0].value} Profile
+            </Text>
+            <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={false}/>
+            <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={false}/>
+            <Text color="black" size="24px" weight="800"> 
+              Current Classes
+            </Text>
+          </div>
+        </div>
+        <div className="column">
+          <SchedulerPage passedSelections={fullAvailability}/>
+        </div>
+      </div>
+    );
 
-      <div className="column"> 
-        <div className="text-container">
-          <Text color="black" size="24px" weight="800"> 
-            Hi Student, edit your class and other information to start studying with others!
-          </Text>
+  }
+
+  function myProfile() {
+    return (
+      <div className="panel">
+        <div className="column"> 
+          <div className="text-container">
+            <Text color="black" size="24px" weight="800"> 
+              Hi Student, edit your class and other information to start studying with others!
+            </Text>
+          </div>
+          <MyListings items={listings} editListing={editListing}/>
+          <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/>
         </div>
-        <MyListings items={listings} editListing={editListing}/>
-        <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/>
-      </div>
-      <div className="column"> 
-        <SimpleForm options={mainPanelState == 'Contact Information' ? contactInfo : additionalInfo} saveInfoClicked={saveInfoClicked}/>
-      </div>
-      <div className="column">
-        <div className="group-with-margin">
-          <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={true}/>
-          <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={true}/>
+        <div className="column"> 
+          <SimpleForm options={mainPanelState == 'Contact Information' ? contactInfo : additionalInfo} saveInfoClicked={saveInfoClicked}/>
         </div>
-        <Button 
-        textColor={Colors.White}
-        textSize="28px"
-        width="280px"
-        height="70px"
-        textWeight="800" 
-        color={Colors.Blue}
-        onClick={() => props.history.push({
-          pathname: `/profile/${userId}/scheduler`,
-          state: { availability: fullAvailability }
-          })}
-        >
-          Set Availability
-        </Button>
+        <div className="column">
+          <div className="group-with-margin">
+            <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={true}/>
+            <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={true}/>
+          </div>
+          <Button 
+          textColor={Colors.White}
+          textSize="28px"
+          width="280px"
+          height="70px"
+          textWeight="800" 
+          color={Colors.Blue}
+          onClick={() => props.history.push({
+            pathname: `/profile/${userId}/scheduler`,
+            state: { availability: fullAvailability }
+            })}
+          >
+            Set Availability
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // will have conditional logic based on self profile vs different.. maybe a diff endpoint?
+  return userId == myId ? myProfile() : viewOnlyProfile();
 }
 
 export default ProfilePage;

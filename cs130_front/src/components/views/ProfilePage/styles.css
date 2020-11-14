@@ -39,3 +39,12 @@
   width: 25vw;
   min-height: 10vh;
 }
+
+.view-panel {
+  width: 100vw;
+  display: flex;
+  justify-content: space-around;
+  align-items: flex-start;
+  padding: 20px;
+  padding-top: 50px;
+}

@@ -58,14 +58,21 @@ const times = [
 ]
 
 function SchedulerPage(props) {
-  const { state } = props.location;
   var selections = new Array(336).fill(0);
   var initSelections = new Array(336).fill(0);
-  if (state != undefined && state.availability != undefined) {
-    initSelections = state.availability;
-    selections = state.availability;
+  var userId = '';
+  if(props.location != undefined) {
+    const { state } = props.location;
+    if (state != undefined && state.availability != undefined) {
+      initSelections = state.availability;
+      selections = state.availability;
+    } 
+    userId = props.match.params.id;
   }
-  const userId = props.match.params.id;
+  if(props.passedSelections != undefined) {
+    initSelections = props.passedSelections;
+    selections = props.passedSelections;
+  }
 
   function updateSelection(items) {
     if (items.length < 1) {
@@ -137,54 +144,56 @@ function SchedulerPage(props) {
     <div className="scheduler-container">
       <div className="scheduler-parent-container">
         <Text>Monday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={monInitial}>
+        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={monInitial}>
           {data.slice(0,48)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Tuesday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={tuesInitial}>
+        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={tuesInitial}>
           {data.slice(48,96)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Wednesday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={wedInitial}>
+        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={wedInitial}>
           {data.slice(96,144)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Thursday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={thursInitial}>
+        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={thursInitial}>
           {data.slice(144,192)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Friday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={friInitial}>
+        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={friInitial}>
           {data.slice(192,240)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Saturday</Text>
-      <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={satInitial}>
+      <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={satInitial}>
         {data.slice(240,288)}
       </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Sunday</Text>
-        <Selection enabled={true} onSelectionChange={updateSelection} initialSelected={sunInitial}>
+        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={sunInitial}>
           {data.slice(288,336)}
         </Selection>
       </div>
+      {props.passedSelections == undefined &&       
       <div className="column-center">
         <Button onClick={() => saveSelections()}>
           <Text color="white">Save</Text>
         </Button>
         <Text color>Indicate your availability! Drag to select or click. </Text>
       </div>
-    </div>
+      }
 
+    </div>
   );
 }
 
