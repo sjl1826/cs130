@@ -39,3 +39,25 @@
   width: 25vw;
   min-height: 10vh;
 }
+
+.formTwo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  width: 40vw;
+  height: 40vh;
+}
+
+.row {
+  display: flex;
+  flex-direction: space-between;
+}
+
+.group-with-margin-centered {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40vw;
+  margin-top: 20px;
+}

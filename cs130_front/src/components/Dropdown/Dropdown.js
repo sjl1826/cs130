@@ -32,7 +32,7 @@ export default function Dropdown({width = '20vw', options=[], ...props}) {
 		event.preventDefault();
 		setMenu(!showMenuState);
     setSelected(item);
-	}
+  }
 
 	if (items === null || selected === null) {
 		return null;
@@ -40,13 +40,14 @@ export default function Dropdown({width = '20vw', options=[], ...props}) {
 
 	return (
 		<div className={dropdown}>
-			{<DropdownRow item={selected != undefined ? selected : 'None available'} changeSelection={showMenu} showTriangle={true}/>}
+			{<DropdownRow width={width} item={selected != undefined ? selected : 'None available'} changeSelection={showMenu} showTriangle={true}/>}
 			{
 				showMenuState && items.length > 0 ?
 					<div className={dropdownAbsolute}>
 						{
 							items.map(item =>
 								<DropdownRow
+                  width={width}
 									key={item.name}
 									item={item}
 									changeSelection={showMenu}

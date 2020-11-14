@@ -4,6 +4,8 @@ import Requests from '../../Requests/Requests';
 import Infos from '../../Infos/Infos';
 import SimpleForm from '../../Infos/SimpleForm';
 import MyListings from './MyListings';
+import CourseAdder from './CourseAdder';
+import CourseView from './CourseView';
 import * as Colors from '../../../constants/Colors';
 import Text from '../../Text/Text';
 import Button from '../../Button/Button';
@@ -29,10 +31,52 @@ function ProfilePage(props) {
     {id:124, courseName: "Human Anatomy", content: "HMU PLS i love anatomy"}
   ];
 
+  const classesList = [
+    {
+      institution: "College",
+      categories: [
+        {
+          category: "Mathematics",
+          classes: [
+            {name: "Discrete Mathematics", classId: 123, keywords:["graphs", "acyclis", "paths"]},
+            {name: "Integral Calculus", classId: 124, keywords:["double integral", "radial", "Greene thereom"]},
+            {name: "Derivative Calculus", classId: 125, keywords:["area of a curve", "limits", "partial derivative"]}
+          ]
+        },
+        {
+          category: "Science",
+          classes: [
+            {name: "Organic Chemistry", classId: 126, keywords:["graphs", "acyclis", "paths"]},
+          ]
+        },
+        {
+          category: "Psychology",
+          classes: []
+        },
+      ]
+    },
+    {
+      institution: "High School",
+      categories: [
+        {
+          category: "Mathematics",
+          classes: [
+            {name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]},
+            {name: "Algebra II", classId: 1241, keywords:["idk", "whats in", "this class"]},
+            {name: "AP Calculus AB", classId: 1251, keywords:["derivatives", "single integral", "partial derivative"]}
+          ]
+        }
+      ]
+    },
+  ];
+
+  const myCourses= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]}];
+
   const [invitations, setInvitations] = useState(invs);
   const [contactInfo, setContactInfo] = useState(contactInformation);
   const [additionalInfo, setAdditionalInfo] = useState(additionalInformation);
   const [listings, setListings] = useState(l);
+  const [classes, setClasses] = useState(classesList);
   const [mainPanelState, setMainPanel] = useState('Classes');
   const userId = props.match.params.id;
   // check clickable by checking user's id with path's id
@@ -45,6 +89,23 @@ function ProfilePage(props) {
     setListings(l);
   }
 
+  function getClassesList() {
+    setClasses(classesList);
+  }
+
+  function renderMainPanel() {
+    switch (mainPanelState) {
+      case 'Contact Information':
+        return <SimpleForm options={contactInfo} saveInfoClicked={saveInfoClicked}/>
+      case 'Additional Information': 
+        return <SimpleForm options={additionalInfo} saveInfoClicked={saveInfoClicked}/>
+      case 'CourseAdder': 
+        return <CourseAdder courses={classes} addCourse={addCourse}/>
+      default: //Course view for selected course
+        return <CourseView item={myCourses[0]} removeCourse={removeCourse}/>
+    }
+  }
+
   function titleClicked(title) {
     //set main content to be for title
     setMainPanel(title);
@@ -54,13 +115,21 @@ function ProfilePage(props) {
     //post to endpoint updating info
   }
 
-  function handleInvitation(invitation){
+  function handleInvitation(invitation) {
     //update invitation with accept/decline
     // and remove from list then fetch again to update ui
   }
 
-  function editListing(listing){
+  function editListing(listing) {
     //edit listing endpoint
+  }
+
+  function addCourse(course) {
+
+  }
+
+  function removeCourse(course) {
+
   }
 
   // will have conditional logic based on self profile vs different.. maybe a diff endpoint?
@@ -77,7 +146,7 @@ function ProfilePage(props) {
         <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/>
       </div>
       <div className="column"> 
-        <SimpleForm options={mainPanelState == 'Contact Information' ? contactInfo : additionalInfo} saveInfoClicked={saveInfoClicked}/>
+        {renderMainPanel()}
       </div>
       <div className="column">
         <div className="group-with-margin">
