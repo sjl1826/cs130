@@ -3,6 +3,7 @@ import Dropdown from '../../Dropdown/Dropdown';
 import Button from '../../Button/Button';
 import Text from '../../Text/Text';
 import * as Colors from '../../../constants/Colors';
+import CourseCreater from './CourseCreater';
 import './styles.css';
 
 export default function CourseAdder(props) {
@@ -43,6 +44,21 @@ export default function CourseAdder(props) {
     setCourse(item);
   }
 
+  function renderCourseOrCreate(){
+    if (selectedCourse != null && selectedCourse.name == "Create a course") {
+      return(<CourseCreater addCustomCourse={addCustomCourse}/>);
+    }
+
+    return (selectedCourse != null ? <Text>Keywords: {selectedCourse.keywords.join(', ')}</Text> : null);
+  }
+
+  function addCustomCourse(name, keywords) {
+    const categories = [selectedInstitution, selectedCategory, name];
+    const course = {name: name, keywords: [keywords], classId: 0, categories: categories}
+    setCourse(course);
+    props.addCourse(course)
+  }
+
   useEffect(() => {
     props.courses.forEach(each => {
       if (each.institution == selectedInstitution) {
@@ -69,6 +85,7 @@ export default function CourseAdder(props) {
                 classId: course.classId
               }
             });
+            mappedCourses.push({name: "Create a course"});
             setClasses(mappedCourses);
           }
         })
@@ -84,18 +101,20 @@ export default function CourseAdder(props) {
         {selectedInstitution != null && selectedCategories != null ? <Dropdown width="15vw" options={selectedCategories} sendSelection={selectCategory}/> : null}
         {selectedCategories != null && classes != null ? <Dropdown width="15vw" options={classes} sendSelection={selectCourse}/> : null}
       </div>
-      {selectedCourse != null ? <Text>Keywords: {selectedCourse.keywords.join()}</Text> : null}
-      <Button 
-        textColor={Colors.White}
-        textSize="28px"
-        width="280px"
-        height="70px"
-        textWeight="800" 
-        color={Colors.Blue}
-        onClick={() => props.addCourse(selectedCourse)}
-      >
-        Add Course
-      </Button>
+      {renderCourseOrCreate()}
+      {selectedCourse != null && selectedCourse.name == 'Create a course' ? null :       
+        <Button 
+          textColor={Colors.White}
+          textSize="28px"
+          width="280px"
+          height="70px"
+          textWeight="800" 
+          color={Colors.Blue}
+          onClick={() => props.addCourse(selectedCourse)}
+        >
+          Add Course
+        </Button>
+      }
     </div>
   );
 }

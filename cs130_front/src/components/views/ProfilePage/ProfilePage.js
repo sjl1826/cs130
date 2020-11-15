@@ -3,6 +3,7 @@ import './styles.css';
 import Requests from '../../Requests/Requests';
 import Infos from '../../Infos/Infos';
 import SimpleForm from '../../Infos/SimpleForm';
+import ClassList from '../../CurrentClasses/ClassList';
 import MyListings from './MyListings';
 import CourseAdder from './CourseAdder';
 import CourseView from './CourseView';
@@ -70,14 +71,16 @@ function ProfilePage(props) {
     },
   ];
 
-  const myCourses= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]}];
+  const myCourses= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]},
+  {name: "Calculus I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]}
+  ];
 
   const [invitations, setInvitations] = useState(invs);
   const [contactInfo, setContactInfo] = useState(contactInformation);
   const [additionalInfo, setAdditionalInfo] = useState(additionalInformation);
   const [listings, setListings] = useState(l);
   const [classes, setClasses] = useState(classesList);
-  const [mainPanelState, setMainPanel] = useState('Classes');
+  const [mainPanelState, setMainPanel] = useState('CourseAdder');
   const userId = props.match.params.id;
   // check clickable by checking user's id with path's id
 
@@ -102,7 +105,8 @@ function ProfilePage(props) {
       case 'CourseAdder': 
         return <CourseAdder courses={classes} addCourse={addCourse}/>
       default: //Course view for selected course
-        return <CourseView item={myCourses[0]} removeCourse={removeCourse}/>
+        const course = myCourses.find(element => element.name == mainPanelState)
+        return <CourseView item={course} removeCourse={removeCourse}/>
     }
   }
 
@@ -120,12 +124,13 @@ function ProfilePage(props) {
     // and remove from list then fetch again to update ui
   }
 
-  function editListing(listing) {
+  function editListing(content, listing) {
+    console.log(content, listing)
     //edit listing endpoint
   }
 
   function addCourse(course) {
-
+    console.log(course);
   }
 
   function removeCourse(course) {
@@ -149,7 +154,8 @@ function ProfilePage(props) {
         {renderMainPanel()}
       </div>
       <div className="column">
-        <div className="group-with-margin">
+        <div className="group-with-margin-bottom">
+          <ClassList classList={myCourses} titleClicked={titleClicked}/>
           <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={true}/>
           <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={true}/>
         </div>

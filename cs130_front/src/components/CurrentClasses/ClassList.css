@@ -1,9 +1,7 @@
 .class-box {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: flex-start;
-  width: 25vw;
-  height: 20vh;
-  padding: 10px;
+  min-width: 20vw;
 }

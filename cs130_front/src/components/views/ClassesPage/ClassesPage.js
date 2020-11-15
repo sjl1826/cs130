@@ -10,7 +10,7 @@ import './styles.css';
 function ClassesPage(props) {
   const items = [{name: "Wow Squad", groupId: 123}, {name: "CA Squad", groupId: 124}, {name: "DM Squad", groupId: 125}]
   const user = {firstName: "Ethan", lastName: "Wow", id: 123}
-  const classes = [{name: "Discrete Mathematics", courseId: 1}, {name: "Computer Architecture", courseId: 2}]
+  const classes = [{name: "Discrete Mathematics", courseId: 1, groups:[{name: "DM Squad"}]}, {name: "Computer Architecture", courseId: 2}]
   const [mainPanelState, setMainPanel] = useState(classes[0].name);
   //inviter is used by including it as an optional element for each user row in the user list 
   //show if invite to group button is clicked etc, then pass the user info from the row to the inviter
