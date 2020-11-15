@@ -3,7 +3,7 @@ import './styles.css';
 
 export default class  SelectionItem extends Component {
   render() {
-    var className='item noselect';
+    var className='item2 noselect';
     className += (this.props.isSelected ? ' selected' : '');
     return (
       <div className={className}>

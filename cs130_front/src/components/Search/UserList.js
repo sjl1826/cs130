@@ -10,7 +10,7 @@ const UserList = (props) => {
         if (data) {
           return (
             <div style={ListStyling} key={data.name} onClick={props.goToUserProfile(data)}>
-              <h1 class="listItem" onmouseover="">{data.name}</h1>
+              <h1 className="listItem" onmouseover="">{data.name}</h1>
 	          </div>	
     	    );	
     	  }

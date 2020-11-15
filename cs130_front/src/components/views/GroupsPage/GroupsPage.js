@@ -1,8 +1,23 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import logo from '../../../logo.svg';
 import '../../../App.css';
 
 function GroupsPage() {
+
+
+  const classes = [
+    {name: "Discrete Mathematics", courseId: 1, groups: [{name: "DM Squad", groupId: 1}, {name: "DM Squad II", groupId: 1}] }, 
+    {name: "Computer Architecture", courseId: 2, groups: [{name: "CA Squad", groupId: 3}]}
+  ]
+  const [mainPanelState, setMainPanel] = useState();
+
+  // Pass this to ClassList
+  function groupClicked(title) {
+    //set main content to be for title
+    setMainPanel(title);
+  }
+
+
   return (
     <div className="App">
       <header className="App-header">

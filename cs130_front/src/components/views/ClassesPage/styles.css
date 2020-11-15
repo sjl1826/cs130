@@ -1,0 +1,25 @@
+.panel {
+    width: 100vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: 0px;
+    padding-top: 0px;
+  }
+  .column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    padding: 10px;
+  }
+  
+  .group-with-margin {
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+  
+  .text-container {
+    width: 25vw;
+    margin-bottom: 50px;
+  }

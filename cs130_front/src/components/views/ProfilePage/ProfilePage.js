@@ -3,8 +3,11 @@ import './styles.css';
 import Requests from '../../Requests/Requests';
 import Infos from '../../Infos/Infos';
 import SimpleForm from '../../Infos/SimpleForm';
+import ClassList from '../../CurrentClasses/ClassList';
 import MyListings from './MyListings';
 import SchedulerPage from '../SchedulerPage/SchedulerPage';
+import CourseAdder from './CourseAdder';
+import CourseView from './CourseView';
 import * as Colors from '../../../constants/Colors';
 import Text from '../../Text/Text';
 import Button from '../../Button/Button';
@@ -31,11 +34,55 @@ function ProfilePage(props) {
     {id:124, courseName: "Human Anatomy", content: "HMU PLS i love anatomy"}
   ];
 
+  const classesList = [
+    {
+      institution: "College",
+      categories: [
+        {
+          category: "Mathematics",
+          classes: [
+            {name: "Discrete Mathematics", classId: 123, keywords:["graphs", "acyclis", "paths"]},
+            {name: "Integral Calculus", classId: 124, keywords:["double integral", "radial", "Greene thereom"]},
+            {name: "Derivative Calculus", classId: 125, keywords:["area of a curve", "limits", "partial derivative"]}
+          ]
+        },
+        {
+          category: "Science",
+          classes: [
+            {name: "Organic Chemistry", classId: 126, keywords:["graphs", "acyclis", "paths"]},
+          ]
+        },
+        {
+          category: "Psychology",
+          classes: []
+        },
+      ]
+    },
+    {
+      institution: "High School",
+      categories: [
+        {
+          category: "Mathematics",
+          classes: [
+            {name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]},
+            {name: "Algebra II", classId: 1241, keywords:["idk", "whats in", "this class"]},
+            {name: "AP Calculus AB", classId: 1251, keywords:["derivatives", "single integral", "partial derivative"]}
+          ]
+        }
+      ]
+    },
+  ];
+
+  const myCourses= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"], groups:[{name: "DM Squad", id: 123}]},
+  {name: "Calculus I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]}
+  ];
+
   const [invitations, setInvitations] = useState(invs);
   const [contactInfo, setContactInfo] = useState(contactInformation);
   const [additionalInfo, setAdditionalInfo] = useState(additionalInformation);
   const [listings, setListings] = useState(l);
-  const [mainPanelState, setMainPanel] = useState('Classes');
+  const [classes, setClasses] = useState(classesList);
+  const [mainPanelState, setMainPanel] = useState('CourseAdder');
   const userId = props.match.params.id;
   const myId = 2;
   // check clickable by checking user's id with path's id
@@ -48,22 +95,54 @@ function ProfilePage(props) {
     setListings(l);
   }
 
+  function getClassesList() {
+    setClasses(classesList);
+  }
+
+  function renderMainPanel() {
+    switch (mainPanelState) {
+      case 'Contact Information':
+        return <SimpleForm options={contactInfo} saveInfoClicked={saveInfoClicked}/>
+      case 'Additional Information': 
+        return <SimpleForm options={additionalInfo} saveInfoClicked={saveInfoClicked}/>
+      case 'CourseAdder': 
+        return <CourseAdder courses={classes} addCourse={addCourse}/>
+      default: //Course view for selected course
+        const course = myCourses.find(element => element.name == mainPanelState)
+        return <CourseView item={course} removeCourse={removeCourse}/>
+    }
+  }
+
   function titleClicked(title) {
     //set main content to be for title
     setMainPanel(title);
+  }
+
+  function groupClicked(item) {
+    //navigate to group page
+    console.log(item);
   }
 
   function saveInfoClicked(first, second, third) {
     //post to endpoint updating info
   }
 
-  function handleInvitation(invitation){
+  function handleInvitation(invitation) {
     //update invitation with accept/decline
     // and remove from list then fetch again to update ui
   }
 
-  function editListing(listing){
+  function editListing(content, listing) {
+    console.log(content, listing)
     //edit listing endpoint
+  }
+  
+  function addCourse(course) {
+    console.log(course);
+  }
+
+  function removeCourse(course) {
+
   }
 
   function viewOnlyProfile() {
@@ -74,11 +153,9 @@ function ProfilePage(props) {
             <Text color="black" size="32px" weight="800"> 
             {additionalInfo[0].value} Profile
             </Text>
+            <ClassList classList={myCourses} titleClicked={groupClicked} clickable={false}/>
             <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={false}/>
             <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={false}/>
-            <Text color="black" size="24px" weight="800"> 
-              Current Classes
-            </Text>
           </div>
         </div>
         <div className="column">
@@ -92,6 +169,7 @@ function ProfilePage(props) {
   function myProfile() {
     return (
       <div className="panel">
+  
         <div className="column"> 
           <div className="text-container">
             <Text color="black" size="24px" weight="800"> 
@@ -102,10 +180,11 @@ function ProfilePage(props) {
           <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/>
         </div>
         <div className="column"> 
-          <SimpleForm options={mainPanelState == 'Contact Information' ? contactInfo : additionalInfo} saveInfoClicked={saveInfoClicked}/>
+          {renderMainPanel()}
         </div>
         <div className="column">
-          <div className="group-with-margin">
+          <div className="group-with-margin-bottom">
+            <ClassList classList={myCourses} titleClicked={titleClicked}/>
             <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={true}/>
             <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={true}/>
           </div>

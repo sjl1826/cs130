@@ -1,0 +1,18 @@
+.item{
+    font-size: 20px;
+    padding-left: 20px;
+}
+
+.clickable-item{
+    cursor: pointer;
+    margin: 0px;
+    text-decoration: underline;
+}
+
+.clickable-item:hover{
+    font-weight: bold;
+}
+
+.inner {
+  padding-left: 40px;
+}
