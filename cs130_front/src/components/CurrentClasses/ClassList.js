@@ -15,7 +15,7 @@ const ClassList = (props) => {
         if (data) {
           return (
             <div >
-              <ClassItem title={data.name} classClicked={props.classClicked} clickable = {true}/>
+              <ClassItem data={data} titleClicked={props.titleClicked} clickable = {true}/>
 	          </div>	
     	    );	
     	  }

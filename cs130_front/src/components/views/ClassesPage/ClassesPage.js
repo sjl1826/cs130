@@ -42,7 +42,7 @@ function ClassesPage(props) {
             </Tabs>
           </div>
           <div className="column">
-            <ClassList classList={classes} classClicked={classClicked}/>
+            <ClassList classList={classes} titleClicked={classClicked}/>
           </div>
         </div>
     </div>
