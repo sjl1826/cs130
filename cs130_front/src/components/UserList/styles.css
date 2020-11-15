@@ -1,0 +1,59 @@
+.userBox {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: center;
+    width: 100vw;
+    height: 70px;
+    margin-bottom: 10px;
+}
+
+.userInfo {
+    display: flex;
+    flex-direction: column;
+    justify-content: left;
+    align-items: flex-start;
+    width: 100vw;
+    height: 70px;
+}
+
+.topLine {
+    margin-bottom: 0px;
+    text-align: left;
+    font-size: 28px;
+    font-family: Poppins;
+    color: black;
+}
+
+.topLineName {
+    margin-bottom: 0px;
+    text-align: left;
+    font-size: 28px;
+    font-family: Poppins;
+    color: black;
+    transition: 0.3s;
+}
+
+.topLineName:hover {
+    color: gray;
+    text-decoration: underline;
+    transition: 0.3s;
+}
+
+.bottomLine {
+    margin-bottom: 0px;
+    text-align: left;
+    font-size: 27px;
+    font-family: Poppins;
+    color: gray;
+}
+
+.container {
+    width: 100vw;
+    margin: 10px auto 40px auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
