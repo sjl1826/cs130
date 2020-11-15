@@ -6,17 +6,10 @@ import './ClassItem.css'
 
 export default function GroupItem(props) {
   return(
-  <div > 
-    {props.clickable ?     
-    <div onClick={() => props.titleClicked(props.group.name)}>
-      <Text className="item clickable-item" style={{fontFamily: Fonts.Primary, color: Colors.Blue}}>
+  <div className="item clickable-item inner" onClick={() => props.titleClicked(props.group)}> 
+    <Text  style={{fontFamily: Fonts.Primary, color: Colors.Blue}}>
       {props.group.name}
-      </Text> 
-    </div> : 
-      <Text size="24px" weight="800">
-        {props.group.name}
-      </Text>
-    }
+    </Text> 
   </div>
   );
 } 

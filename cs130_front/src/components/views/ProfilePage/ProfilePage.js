@@ -5,6 +5,7 @@ import Infos from '../../Infos/Infos';
 import SimpleForm from '../../Infos/SimpleForm';
 import ClassList from '../../CurrentClasses/ClassList';
 import MyListings from './MyListings';
+import SchedulerPage from '../SchedulerPage/SchedulerPage';
 import CourseAdder from './CourseAdder';
 import CourseView from './CourseView';
 import * as Colors from '../../../constants/Colors';
@@ -19,9 +20,10 @@ function ProfilePage(props) {
     {name: "Discord", value: "shirly#1234"}
   ];
   const additionalInformation = [
+    {name: "Name", value: "Edgar Garcia"},
     {name: "School name", value: "UCLA"}, 
     {name: "Timezone", value: "PST"},
-    {name: "Biography", value: "I enjoy graphs and cookies"}
+    {name: "Biography", value: "I enjoy graphs and cookies"},
   ];
   var availability1 = [1,1,1,1,1,1];
   var availability2 = new Array(330).fill(0);
@@ -71,7 +73,7 @@ function ProfilePage(props) {
     },
   ];
 
-  const myCourses= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]},
+  const myCourses= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"], groups:[{name: "DM Squad", id: 123}]},
   {name: "Calculus I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]}
   ];
 
@@ -82,6 +84,7 @@ function ProfilePage(props) {
   const [classes, setClasses] = useState(classesList);
   const [mainPanelState, setMainPanel] = useState('CourseAdder');
   const userId = props.match.params.id;
+  const myId = 2;
   // check clickable by checking user's id with path's id
 
 
@@ -115,6 +118,11 @@ function ProfilePage(props) {
     setMainPanel(title);
   }
 
+  function groupClicked(item) {
+    //navigate to group page
+    console.log(item);
+  }
+
   function saveInfoClicked(first, second, third) {
     //post to endpoint updating info
   }
@@ -128,7 +136,7 @@ function ProfilePage(props) {
     console.log(content, listing)
     //edit listing endpoint
   }
-
+  
   function addCourse(course) {
     console.log(course);
   }
@@ -137,45 +145,70 @@ function ProfilePage(props) {
 
   }
 
-  // will have conditional logic based on self profile vs different.. maybe a diff endpoint?
-  return (
-    <div className="panel">
+  function viewOnlyProfile() {
+    return (
+      <div className="view-panel">
+        <div className="column"> 
+          <div className="text-container">
+            <Text color="black" size="32px" weight="800"> 
+            {additionalInfo[0].value} Profile
+            </Text>
+            <ClassList classList={myCourses} titleClicked={groupClicked} clickable={false}/>
+            <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={false}/>
+            <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={false}/>
+          </div>
+        </div>
+        <div className="column">
+          <SchedulerPage passedSelections={fullAvailability}/>
+        </div>
+      </div>
+    );
 
-      <div className="column"> 
-        <div className="text-container">
-          <Text color="black" size="24px" weight="800"> 
-            Hi Student, edit your class and other information to start studying with others!
-          </Text>
+  }
+
+  function myProfile() {
+    return (
+      <div className="panel">
+  
+        <div className="column"> 
+          <div className="text-container">
+            <Text color="black" size="24px" weight="800"> 
+              Hi Student, edit your class and other information to start studying with others!
+            </Text>
+          </div>
+          <MyListings items={listings} editListing={editListing}/>
+          <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/>
         </div>
-        <MyListings items={listings} editListing={editListing}/>
-        <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/>
-      </div>
-      <div className="column"> 
-        {renderMainPanel()}
-      </div>
-      <div className="column">
-        <div className="group-with-margin-bottom">
-          <ClassList classList={myCourses} titleClicked={titleClicked}/>
-          <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={true}/>
-          <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={true}/>
+        <div className="column"> 
+          {renderMainPanel()}
         </div>
-        <Button 
-        textColor={Colors.White}
-        textSize="28px"
-        width="280px"
-        height="70px"
-        textWeight="800" 
-        color={Colors.Blue}
-        onClick={() => props.history.push({
-          pathname: `/profile/${userId}/scheduler`,
-          state: { availability: fullAvailability }
-          })}
-        >
-          Set Availability
-        </Button>
+        <div className="column">
+          <div className="group-with-margin-bottom">
+            <ClassList classList={myCourses} titleClicked={titleClicked}/>
+            <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={true}/>
+            <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={true}/>
+          </div>
+          <Button 
+          textColor={Colors.White}
+          textSize="28px"
+          width="280px"
+          height="70px"
+          textWeight="800" 
+          color={Colors.Blue}
+          onClick={() => props.history.push({
+            pathname: `/profile/${userId}/scheduler`,
+            state: { availability: fullAvailability }
+            })}
+          >
+            Set Availability
+          </Button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  // will have conditional logic based on self profile vs different.. maybe a diff endpoint?
+  return userId == myId ? myProfile() : viewOnlyProfile();
 }
 
 export default ProfilePage;

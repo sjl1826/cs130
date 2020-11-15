@@ -12,3 +12,7 @@
 .clickable-item:hover{
     font-weight: bold;
 }
+
+.inner {
+  padding-left: 40px;
+}

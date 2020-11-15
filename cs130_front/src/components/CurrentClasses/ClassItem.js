@@ -8,23 +8,19 @@ import './ClassItem.css';
 export default function ClassItem(props) {
 
   return( props.data.groups ?
-    <div >    
+    <div>    
       <Text className="item" style={{fontFamily: Fonts.Primary, color: Colors.Black, fontSize: "24px"}}>{props.data.name}</Text>
       <div>
       {props.data.groups.map(group => <GroupItem group={group} titleClicked={props.titleClicked} clickable={true}/>)} 
       </div>
     </div>  
     : 
-    <div>
-      {props.clickable ?     
-      <div onClick={() => props.titleClicked(props.data.name)}>
-        <Text className="item clickable-item" style={{fontFamily: Fonts.Primary, color: Colors.Blue, fontSize: "24px"}}>{props.data.name}</Text>
-      </div>
-      : 
-      <Text size="24px" weight="800">
-        {props.data.name}
-      </Text>
-      }
+    <div className="item" onClick={() => props.titleClicked(props.data)}>
+      {props.clickable ?  <Text className="clickable-item" style={{fontFamily: Fonts.Primary, color: Colors.Blue, fontSize: "24px"}}>{props.data.name}</Text> :
+        <Text size="24px">
+          {props.data.name}
+        </Text>
+        }
     </div>
     );
 } 

@@ -20,9 +20,9 @@ function ClassesPage(props) {
 
   }
 
-  function classClicked(title) {
+  function classClicked(item) {
     //set main content to be for title
-    setMainPanel(title);
+    setMainPanel(item.name);
   }
 
   return (
@@ -42,7 +42,7 @@ function ClassesPage(props) {
             </Tabs>
           </div>
           <div className="column">
-            <ClassList classList={classes} titleClicked={classClicked}/>
+            <ClassList classList={classes} titleClicked={classClicked} clickable={true}/>
           </div>
         </div>
     </div>
