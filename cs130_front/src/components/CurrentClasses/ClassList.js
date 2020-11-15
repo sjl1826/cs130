@@ -10,12 +10,12 @@ const ClassList = (props) => {
   return (
     <>
     <div style = {{fontFamily: Fonts.Primary}} className="class-box">
-    <Text size="24px" weight="800">Current Classes</Text>
+    <Text size="28px" weight="800">Current Classes</Text>
     { props.classList.map((data,index) => {
         if (data) {
           return (
             <div >
-              <ClassItem data={data} titleClicked={props.titleClicked} clickable = {true}/>
+              <ClassItem data={data} titleClicked={props.titleClicked} clickable={true}/>
 	          </div>	
     	    );	
     	  }

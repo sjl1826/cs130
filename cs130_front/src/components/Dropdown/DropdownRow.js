@@ -15,7 +15,8 @@ export default function DropdownRow({width='20vw', ...props}) {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        border: 2px solid ${Colors.Black};
+        padding-left: 5px;
+        border: 2px solid ${Colors.Blue};
         width: ${width};
         &:hover {
           cursor: pointer;

@@ -9,7 +9,7 @@ export default function GroupItem(props) {
   <div > 
     {props.clickable ?     
     <div onClick={() => props.titleClicked(props.group.name)}>
-      <Text class="item clickable-item" style={{fontFamily: Fonts.Primary, color: Colors.Blue}}>
+      <Text className="item clickable-item" style={{fontFamily: Fonts.Primary, color: Colors.Blue}}>
       {props.group.name}
       </Text> 
     </div> : 
