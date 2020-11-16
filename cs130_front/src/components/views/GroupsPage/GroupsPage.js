@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import logo from '../../../logo.svg';
+import UserList from '../../UserList/UserList';
 import '../../../App.css';
 
-function GroupsPage() {
+function GroupsPage(props) {
 
 
   const classes = [
@@ -11,6 +11,10 @@ function GroupsPage() {
   ]
   const [mainPanelState, setMainPanel] = useState();
 
+  const members= [
+    {name: "Shirly fang", school: "UCLA", id:123, discord:"shirly#123", email:"shirly@gmail.com"},
+    {name: "Shirly fang", id:123, discord:"shirly#123", email:"shirly@gmail.com"}
+  ]
   // Pass this to ClassList
   function groupClicked(title) {
     //set main content to be for title
@@ -18,22 +22,12 @@ function GroupsPage() {
   }
 
 
+  const goToUserProfile = user => () => { props.history.push(`/profile/${user.id}`); }
+
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <UserList users={members} goToUserProfile={goToUserProfile} optionalElement={true} optionalClick={() => {}}/>
     </div>
   );
 }
