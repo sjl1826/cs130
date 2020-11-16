@@ -6,7 +6,7 @@ function UserList(props) {
     return (
         <div className='container'>
             {props.users.map((user, index) => (
-                <UserItem user={user} />
+                <UserItem user={user} goToUserProfile={props.goToUserProfile} optionalElement={props.optionalElement} optionalClick={props.optionalClick}/>
             ))}
         </div>
     );

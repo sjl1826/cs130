@@ -1,13 +1,14 @@
 import React from 'react';
 import './styles.css';
+import Button from '../Button/Button';
 
 const userItem = (props) => (
     <div className='userBox'>
-        <div className='userInfo'>
+        <div>
             <p className='topLineName' onClick={props.goToUserProfile(props.user)}> {props.user.name} </p>
             <p className='bottomLine'> {props.user.school} </p>
         </div>
-        <div className='userInfo'>
+        <div>
             {props.user.discord
                 ? <p className='topLine'> Discord: </p>
                 : <p className='topLine'> Email: </p>
@@ -17,6 +18,9 @@ const userItem = (props) => (
                 ? <p className='bottomLine'> {props.user.discord} </p>
                 : <p className='bottomLine'> {props.user.email} </p>
             }
+        </div>
+        <div className="col-centered">
+          {props.optionalElement ? <Button onClick={ () => props.optionalClick(props.user)}> Invite to group </Button> : null}
         </div>
     </div>
 )
