@@ -35,7 +35,7 @@ type CreateListingRequest struct {
 
 //CreateListingResponse provides fields sent back
 type CreateListingResponse struct {
-	ID          	int 			`json:"listing_id"`
+	ID          	int 			`json:"id"`
 	CreatedAt   	time.Time
 	UpdatedAt   	time.Time
 	CourseName		string			`json:"course_name"`
@@ -111,7 +111,7 @@ func CreateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 //GetListing retrieves a listing
 func GetListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
-	id, ok := strconv.Atoi(vars["listing_id"][0])
+	id, ok := strconv.Atoi(vars["id"][0])
 	if ok != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid listing id")
 		return
@@ -130,7 +130,7 @@ func GetListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 //UpdateListingRequest holds listing fields that can be updated
 type UpdateListingRequest struct {
-	ID          	int 			`json:"listing_id"`
+	ID          	int 			`json:"id"`
 	Description		string			`json:"text_description"`
 	GroupID			int				`json:"group_id"`		//optional group (set to 0 if not used)
 	Tags			pq.StringArray 	`json:"tags"`
@@ -165,6 +165,11 @@ func UpdateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		listing.Tags = p.Tags
 	}
 
+	if err := listing.UpdateListing(db); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
 	var clr CreateListingResponse
 	populateListingResponse(&listing, &clr)
 
@@ -174,7 +179,7 @@ func UpdateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 //DeleteListing deletes a listing and removes the listing from user and course
 func DeleteListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
-	id, ok := strconv.Atoi(vars["listing_id"][0])
+	id, ok := strconv.Atoi(vars["id"][0])
 	if ok != nil {
 		respondWithError(w, http.StatusBadRequest, "Invalid listing id")
 		return

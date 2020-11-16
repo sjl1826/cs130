@@ -12,7 +12,7 @@ import (
 
 // Listing structure
 type Listing struct {
-	ID          	int 			`gorm:"primary_key;auto_increment" json:"listing_id"`
+	ID          	int 			`gorm:"primary_key;auto_increment" json:"id"`
 	CreatedAt   	time.Time
 	UpdatedAt   	time.Time
 	CourseName		string			`json:"course_name"`
