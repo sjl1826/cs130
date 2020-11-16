@@ -72,3 +72,28 @@ func (c *Course) RemoveStudyBuddy(db *gorm.DB, userID int) error {
 	retVal := db.Save(&c).Table("courses")
 	return retVal.Error
 }
+
+//Duplicate code here, opportunity to combine :)
+
+// AddListing adds a new listing to the course
+func (c *Course) AddListing(db *gorm.DB, listingID int) error {
+	now := time.Now()
+	c.UpdatedAt = now
+	c.Listings = append(c.Listings, int64(listingID))
+	retVal := db.Save(&c).Table("courses")
+	return retVal.Error
+}
+
+// RemoveListing removes the specified listing from the course
+func (c *Course) RemoveListing(db *gorm.DB, listingID int) error {
+	now := time.Now()
+	c.UpdatedAt = now
+	for i, g := range c.Listings {
+		if g == int64(listingID) {
+			c.Listings = RemoveElement(c.Listings, i)
+			break
+		}
+	}
+	retVal := db.Save(&c).Table("courses")
+	return retVal.Error
+}

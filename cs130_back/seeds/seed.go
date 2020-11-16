@@ -112,7 +112,6 @@ var listings = []models.Listing{
 		CourseName: "Human Anatomy",
 		Poster: 	1,
 		CourseID: 	155,
-		Keywords: 	[]string{"Biology", "Reproductive System", "Skeletal System"},
 		Tags:		[]string {"3.9+ GPA only", "No public school kids"},
 	},
 	models.Listing{
@@ -120,7 +119,6 @@ var listings = []models.Listing{
 		CourseName: "Human Anatomy",
 		Poster: 	1,
 		CourseID: 	155,
-		Keywords: 	[]string{"Biology", "Reproductive System", "Skeletal System"},
 		Tags:		[]string {"Casual"},
 	},
 }
