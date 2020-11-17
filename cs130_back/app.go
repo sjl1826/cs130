@@ -72,10 +72,15 @@ func (a *App) initializeRoutes() {
 	authUserRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteUser)).Methods("DELETE")
 	authUserRoutes.HandleFunc("/addCourse", a.handleRequest(handlers.AddCourse)).Methods("PUT")
 	authUserRoutes.HandleFunc("/removeCourse", a.handleRequest(handlers.RemoveCourse)).Methods("PUT")
+	authUserRoutes.HandleFunc("/updateListing", a.handleRequest(handlers.UpdateListing)).Methods("PUT")
 
 	//Group Routes
 	groupRoutes := routes.PathPrefix("/group").Subrouter()
 	groupRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateGroup)).Methods("POST")
+
+	//Course Routes
+	courseRoutes := routes.PathPrefix("/course").Subrouter()
+	courseRoutes.HandleFunc("/addListing", a.handleRequest(handlers.CreateListing)).Methods("POST")
 }
 
 func (a *App) loginMiddleware(next http.Handler) http.Handler {
