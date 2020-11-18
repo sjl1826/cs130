@@ -19,7 +19,6 @@ type Course struct {
 	Keywords		pq.StringArray 	`gorm:"type:varchar(64)[]" json:"keywords"`
 	Categories		pq.StringArray 	`gorm:"type:varchar(64)[]" json:"categories"`
 	StudyBuddies	pq.Int64Array	`gorm:"type:integer[]" json:"study_buddies"`
-	Listings		pq.Int64Array	`gorm:"type:integer[]" json:"listings"`
 }
 
 // CreateCourse creates a new course object in database
@@ -73,27 +72,8 @@ func (c *Course) RemoveStudyBuddy(db *gorm.DB, userID int) error {
 	return retVal.Error
 }
 
-//Duplicate code here, opportunity to combine :)
-
-// AddListing adds a new listing to the course
-func (c *Course) AddListing(db *gorm.DB, listingID int) error {
-	now := time.Now()
-	c.UpdatedAt = now
-	c.Listings = append(c.Listings, int64(listingID))
-	retVal := db.Save(&c).Table("courses")
-	return retVal.Error
-}
-
-// RemoveListing removes the specified listing from the course
-func (c *Course) RemoveListing(db *gorm.DB, listingID int) error {
-	now := time.Now()
-	c.UpdatedAt = now
-	for i, g := range c.Listings {
-		if g == int64(listingID) {
-			c.Listings = RemoveElement(c.Listings, i)
-			break
-		}
-	}
-	retVal := db.Save(&c).Table("courses")
+// GetListings retrieves the listing objects under the course
+func (c *Course) GetListings(db *gorm.DB, listingList *[]Listing) error {
+	retVal := db.Raw("SELECT * FROM listings WHERE " + strconv.Itoa(c.ID) + " = course_id").Scan(&listingList)
 	return retVal.Error
 }
