@@ -10,6 +10,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"log"
 
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -43,18 +44,12 @@ func CourseByID(db *gorm.DB, c *models.Course, w http.ResponseWriter) int {
 	return 1
 }
 
-// InvitationByID gets the invitation by ID
-func InvitationByID(db *gorm.DB, i *models.Invitation, w http.ResponseWriter) int {
-	if err := i.GetInvitation(db); err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
-			respondWithError(w, http.StatusNotFound, "Invitation not found")
-		default:
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-		}
-		return 0
-	}
-	return 1
+type ClassesInfoResponse struct {
+	Courses map[string]map[string][]interface{} `json:"courses"`
+}
+
+func populateClassesInfoResponse(c map[string]map[string][]interface{}, r *ClassesInfoResponse) {
+	r.Courses = c
 }
 
 // CreateRequest required fields to create a user
@@ -442,6 +437,54 @@ func DeleteUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
+func GetClassesInfo(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var course models.Course
+	var institutions map[string][]models.Course
+	institutions = make(map[string][]models.Course)
+	var categories map[string]map[string][]interface{}
+	categories = make(map[string]map[string][]interface{})
+
+	rows, err := db.Raw("SELECT * FROM courses").Rows()
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		db.ScanRows(rows, &course)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if val, ok := institutions[course.Categories[0]]; ok {
+			institutions[course.Categories[0]] = append(val, course)
+		} else {
+			institutions[course.Categories[0]] = append(institutions[course.Categories[0]], course)
+		}
+	}
+	for _, courses := range institutions {
+		for _, course := range courses {
+			var shortened map[string]interface{}
+			shortened = make(map[string]interface{})
+			shortened["id"] = course.ID
+			shortened["keywords"] = course.Keywords
+			shortened["name"] = course.Name
+			if val, ok := categories[course.Categories[0]]; ok {
+				if val2, ok2 := val[course.Categories[1]]; ok2 {
+					val[course.Categories[1]] = append(val2, shortened)
+				} else {
+					categories[course.Categories[0]][course.Categories[1]] = append(categories[course.Categories[0]][course.Categories[1]], shortened)
+				}
+			} else {
+				categories[course.Categories[0]] = make(map[string][]interface{})
+				categories[course.Categories[0]][course.Categories[1]] = append(categories[course.Categories[0]][course.Categories[1]], shortened)
+			}
+		}
+	}
+
+	var response ClassesInfoResponse
+	populateClassesInfoResponse(categories, &response)
+	respondWithJSON(w, http.StatusOK, response)
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {

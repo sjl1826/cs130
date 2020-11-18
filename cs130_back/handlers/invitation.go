@@ -10,6 +10,20 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
+// InvitationByID gets the invitation by ID
+func InvitationByID(db *gorm.DB, i *models.Invitation, w http.ResponseWriter) int {
+	if err := i.GetInvitation(db); err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			respondWithError(w, http.StatusNotFound, "Invitation not found")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+		return 0
+	}
+	return 1
+}
+
 // UpdateInvitationRequest for user invitation parsing
 type UpdateInvitationRequest struct {
 	ID				int    	`json:"u_id"`
