@@ -49,7 +49,6 @@ func (a *App) Initialize(user, password, dbname string) {
 
 	//a.DB = models.DBMigrate(a.DB)  <-- remove in a following commit if this doesn't break anything
 	a.DB = seeds.Seed(a.DB)
-	fmt.Printf("seeded")
 	a.Router = mux.NewRouter()
 
 	a.initializeRoutes()
