@@ -7,6 +7,7 @@ import (
 	"log"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 //Migrates tables and plants seed data
@@ -53,6 +54,10 @@ func Seed (db *gorm.DB) *gorm.DB {
 		if err := listings[i].CreateListing(db); err != nil {	//Listings
 			log.Fatal("Error seeding listings", err)
 		}
+
+		if err := invitations[i].CreateInvitation(db); err != nil {	//Invitations
+			log.Fatal("Error seeding invitations", err)
+		}
 	}
 
 	return db;
@@ -81,13 +86,14 @@ var courses = []models.Course{
 		Name: 		"Lower Division Linear Algebra",
 		Keywords: 	[]string{"Math", "Graphs", "Matrices"},
 		Categories: []string{"College", "Mathematics", "Linear Algebra"}, 
+		StudyBuddies:	pq.Int64Array {3},
 	},
 	models.Course{
 		ID: 		155,	
 		Name: 		"Human Anatomy",
 		Keywords: 	[]string{"Biology", "Reproductive System", "Skeletal System"},
-		Categories: []string{"College", "Physical Sciences", "Human Anatomy"}, 
-		Listings:	[]int64{99, 100},
+		Categories: []string{"College", "Physical Sciences", "Human Anatomy"},
+		StudyBuddies:	pq.Int64Array {3},
 	},
 }
 
@@ -97,12 +103,14 @@ var groups = []models.Group{
 		CourseName: "Human Anatomy",
 		CourseID: 	155,
 		AdminID: 	1,
+		Members:	pq.Int64Array {3},
 	},
 	models.Group{
 		Name: 		"Hedrick Homies",
 		CourseName: "Lower Division Linear Algebra",
 		CourseID: 	115,
 		AdminID: 	2,
+		Members:	pq.Int64Array {3},
 	},
 }
 
@@ -110,15 +118,33 @@ var listings = []models.Listing{
 	models.Listing{
 		ID:			99,
 		CourseName: "Human Anatomy",
-		Poster: 	1,
+		Poster: 	3,
 		CourseID: 	155,
 		Tags:		[]string {"3.9+ GPA only", "No public school kids"},
 	},
 	models.Listing{
 		ID:			100,
 		CourseName: "Human Anatomy",
-		Poster: 	1,
+		Poster: 	3,
 		CourseID: 	155,
 		Tags:		[]string {"Casual"},
+	},
+}
+
+
+var invitations = []models.Invitation{
+	models.Invitation{
+		GroupName: 	"48ers",
+		GroupID: 	1,
+		ReceiveID: 	3,
+		Type: 		true,
+		Status:		false,
+	},
+	models.Invitation{
+		GroupName: 	"Hedrick Homies",
+		GroupID: 	2,
+		ReceiveID: 	3,
+		Type: 		true,
+		Status:		false,
 	},
 }
