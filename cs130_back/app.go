@@ -81,6 +81,7 @@ func (a *App) initializeRoutes() {
 	//Course Routes
 	courseRoutes := routes.PathPrefix("/course").Subrouter()
 	courseRoutes.HandleFunc("/addListing", a.handleRequest(handlers.CreateListing)).Methods("POST")
+	courseRoutes.HandleFunc("/info", a.handleRequest(handlers.GetCourses)).Methods("GET")
 }
 
 func (a *App) loginMiddleware(next http.Handler) http.Handler {

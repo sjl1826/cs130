@@ -16,6 +16,7 @@ type Course struct {
 	CreatedAt   	time.Time
 	UpdatedAt   	time.Time
 	Name			string			`json:"name"`
+	Institution     string          `json:"institution"`
 	Keywords		pq.StringArray 	`gorm:"type:varchar(64)[]" json:"keywords"`
 	Categories		pq.StringArray 	`gorm:"type:varchar(64)[]" json:"categories"`
 	StudyBuddies	pq.Int64Array	`gorm:"type:integer[]" json:"study_buddies"`
@@ -95,5 +96,34 @@ func (c *Course) RemoveListing(db *gorm.DB, listingID int) error {
 		}
 	}
 	retVal := db.Save(&c).Table("courses")
+	return retVal.Error
+}
+
+// GetCategories retrieves all categories that exist in the database
+func (c *Course) GetCategories(db *gorm.DB, categories *[]string, institution string) error {
+	// retVal := db.Raw("SELECT * FROM courses WHERE " + institution + " = institution").Scan(&courseList)
+	// return retVal.Error
+	retVal := db.Raw("SELECT *")
+	return retVal.Error
+}
+
+// Getsubcategories retrieves all subcategories that exist in the database for a category and an institution
+func (c *Course) GetSubcategories(db *gorm.DB, subcategories *[]string, category string, institution string) error {
+	// retVal := db.Raw("SELECT * FROM courses WHERE " + institution + " = institution").Scan(&courseList)
+	// return retVal.Error
+	retVal := db.Raw("SELECT *")
+	return retVal.Error
+}
+
+// GetCoursesByCategory retrieves all course objects with the category specified from database
+func (c *Course) GetCoursesByCategory(db *gorm.DB, courseList *[]Course, category string, institution string) error {
+	retVal := db.Raw("SELECT * FROM courses WHERE " + category + " = ANY (categories) AND " + institution + " = institution").Scan(&courseList)
+	return retVal.Error
+}
+
+// GetCoursesBySubcategory retrieves all course objects with the subcategory specified from database
+func (c *Course) GetCoursesBySubcategory(db *gorm.DB, courseList *[]Course, keywords *[]string, subcategory string, institution string) error {
+	retVal := db.Raw("SELECT * FROM courses WHERE " + subcategory + " = name AND " + institution + " = institution").Scan(&courseList)
+	db.Raw("SELECT keywords FROM courses WHERE " + subcategory + " = name AND " + institution + " = institution LIMIT 1").Scan(&keywords)
 	return retVal.Error
 }

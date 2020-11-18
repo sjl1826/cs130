@@ -128,3 +128,80 @@ func DeleteCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
+
+type Subcategory struct {
+	Name      string            `json:"name"`
+	Keywords  []string          `json:"keywords"`
+	Courses   []models.Course   `json:"courses"`
+}
+
+type Category struct {
+	Name            string    		  `json:"category"`
+	Courses         []models.Course   `json:"courses"`
+	Subcategories   []Subcategory     `json:"subcategories"`
+}
+
+type CollegeResponse struct {
+	Categories    []Category   `json:"categories"`
+}
+
+type HighSchoolResponse struct {
+	Categories    []Category   `json:"categories"`
+}
+
+// CoursesResponse fields to send back
+// HTTP status code 201 and user model in data
+type CoursesResponse struct {
+	College           CollegeResponse     `json:"College"`
+	HighSchool        HighSchoolResponse  `json:"High School"`
+}
+
+func BuildCategoryResponse(CG *[]Category, institution string) {
+	var final []Category
+
+	c := models.Course{}
+	var categories []string
+	if err := c.GetCategories(db, &categories, institution); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+	for _, category := range categories {
+		var courses []models.Course
+		if err := c.GetCoursesByCategory(db, &courses, category, institution); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+		cr := Category{Name: category, Courses: courses}
+
+		// get the classes by subcategory for the category
+		var subcategories []string
+		if err :+ c.GetSubcategories(db, &subcategories, category, institution); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		for _, subcategory := range subcategories {
+			var courses2 []models.Course
+			var words []string
+			if err := c.GetCoursesBySubcategory(db, &courses2, &words, subcategory, institution); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
+			subc := Subcategory{Name: subcategory, Courses: courses2, Keywords: words}
+			cr.Subcategories = append(cr.Subcategories, subc)
+		}
+
+		final = append(final, cr)
+	}
+	(*CG) = final
+}
+
+// GetCourses retrieves and returns the master course list sorted by institution, categories, and subcategories
+func GetCourses(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var response CoursesResponse
+
+	BuildCategoryResponse(&response.College.Categories, "College")
+	BuildCategoryResponse(&response.HighSchool.Categories, "High School")
+
+	respondWithJSON(w, http.StatusOK, response)
+}
