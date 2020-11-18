@@ -16,7 +16,7 @@ type Invitation struct {
 	UpdatedAt   	time.Time
 	GroupName		string			`json:"group_name"`
 	GroupID			int				`json:"group_id"`
-	ReceiveID		int				`json:"receive_id`
+	ReceiveID		int				`json:"receive_id"`
 	Type			bool			`json:"type"`
 	Status			bool			`json:"status"`
 }

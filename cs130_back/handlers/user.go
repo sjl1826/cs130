@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 // GetUserByID gets the user by ID
@@ -334,6 +335,9 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 type CourseRequest struct {
 	ID				int      `json:"u_id"`
 	CourseID		int 	 `json:"course_id,omit_empty"`
+	CourseName		string   `json:"course_name"`
+	Keywords		[]string `json:"keywords"`
+	Categories		[]string `json:"categories"`
 }
 
 // AddCourse will add a course for the user
@@ -351,19 +355,26 @@ func AddCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	course := models.Course{ID: p.CourseID}
-	if CourseByID(db, &course, w) == 0 {
-		return
-	}
+	if p.CourseID == 0 {
+		// Creates a new course if it doesn't exist
+		var arr pq.Int64Array
+		arr = append(arr, int64(p.ID))
+		c := models.Course{Name: p.CourseName, Keywords: p.Keywords, Categories: p.Categories, StudyBuddies: arr}
+		if err := c.CreateCourse(db); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	} else {
+		// Adds user to course if the course already exists
+		course := models.Course{ID: p.CourseID}
+		if CourseByID(db, &course, w) == 0 {
+			return
+		}
 
-	if err := course.AddStudyBuddy(db, p.ID); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if err := user.AddCourse(db, p.CourseID); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+		if err := course.AddStudyBuddy(db, p.ID); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
@@ -390,11 +401,6 @@ func RemoveCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := course.RemoveStudyBuddy(db, p.ID); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if err := user.RemoveCourse(db, p.CourseID); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}

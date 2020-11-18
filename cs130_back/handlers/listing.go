@@ -85,20 +85,10 @@ func CreateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if GetUserByID(db, &user, w) == 0 {
 		return
 	}
-	//Add listing ID to user
-	if err := user.AddListing(db, listing.ID); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
 
 	//Get course object
 	course := models.Course{ID: p.CourseID}
 	if GetCourseByID(db, &course, w) == 0 {
-		return
-	}
-	//Add listing ID to course
-	if err := course.AddListing(db, listing.ID); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
@@ -195,19 +185,11 @@ func DeleteListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if GetUserByID(db, &user, w) == 0 {
 		return 				//what if user has been deleted?
 	}
-	if err := user.RemoveListing(db, id); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
 
 	//Remove ListingID from course
 	course := models.Course{ID: listing.CourseID}
 	if CourseByID(db, &course, w) == 0 {
 		return
-	}
-	if err := course.RemoveListing(db, id); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return				//what if course has been deleted?
 	}
 
 	//Delete listing object
