@@ -3,6 +3,7 @@
 package models
 
 import (
+	"fmt"
 	"strconv"
 	"time"
 
@@ -12,16 +13,16 @@ import (
 
 // Group structure
 type Group struct {
-	ID          	int 			`gorm:"primary_key;auto_increment" json:"id"`
-	CreatedAt   	time.Time
-	UpdatedAt   	time.Time
-	Name			string			`json:"name"`
-	CourseName		string			`json:"course_name"`
-	CourseID		int				`json:"course_id"`
-	AdminID			int				`json:"admin_id"`
-	MeetingTime		string			`json:"meeting_time"`
-	Members			pq.Int64Array	`gorm:"type:integer[]" json:"members"`
-	Requests		pq.Int64Array	`gorm:"type:integer[]" json:"requests"`
+	ID          int `gorm:"primary_key;auto_increment" json:"id"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	Name        string        `json:"name"`
+	CourseName  string        `json:"course_name"`
+	CourseID    int           `json:"course_id"`
+	AdminID     int           `json:"admin_id"`
+	MeetingTime string        `json:"meeting_time"`
+	Members     pq.Int64Array `gorm:"type:integer[]" json:"members"`
+	Invitations pq.Int64Array `gorm:"type:integer[]" json:"requests"`
 }
 
 // CreateGroup creates a new group object in database
@@ -52,29 +53,84 @@ func (g *Group) DeleteGroup(db *gorm.DB) error {
 	return retVal.Error
 }
 
-// GetAvailability retrieves the availability object of the group
+const numSlots = 336
 
-// func (g *Group) GetAvailability(db *gorm.DB, availability *[]int64) error {
-// 	retVal := db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(u.ID)).Scan(&u)
-// 	for _, g := range u.Courses {
-// 		tempCourse := Course{ID: int(g)}
-// 		db.Raw("SELECT * FROM courses WHERE ID=" + strconv.Itoa(tempCourse.ID)).Scan(&tempCourse)
-// 		(*courseList) = append((*courseList), tempCourse)
-// 	}
-// 	return retVal.Error
+//GetAvailability retrieves the availability object of the group
+func (g *Group) GetAvailability(db *gorm.DB, availability *[numSlots]int64) error {
+	var avSet *[][numSlots]int64
+	retVal := db.Raw("SELECT * FROM groups WHERE ID=" + strconv.Itoa(g.ID)).Scan(&g)
+	for _, j := range g.Members {
+		tempMember := User{ID: int(j)}
+		db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(tempMember.ID)).Scan(&tempMember)
+		var tempAvailability [numSlots]int64
+		tempMember.Availability.Scan(&tempAvailability)
+		(*avSet) = append((*avSet), tempAvailability)
 
-	
-// }
+	}
 
+	availability = computeOverlap(avSet)
 
-func computeOverlap(avSet [][]int64) []int64 {
-	var overlap []int64
+	return retVal.Error
+}
 
-	for i := 0; i < len(avSet); i++ {
-        for j := 0; j < len(avSet[0]); j++ {
-            overlap[j] = overlap[j] + avSet[i][j]
-        }
-    }
+func computeOverlap(avSet *[][numSlots]int64) *[numSlots]int64 {
+	var overlap [numSlots]int64
 
-	return overlap
+	for _, i := range *avSet {
+		for j := 0; j < len(i); j++ {
+			overlap[j] = overlap[j] + i[j]
+		}
+	}
+
+	return &overlap
+}
+
+//GetMeetingTime retrieves the meeting time string for the group
+func (g *Group) GetMeetingTime(db *gorm.DB, m string) error {
+	var availability *[numSlots]int64
+
+	retVal := g.GetAvailability(db, availability)
+
+	var highest int64 = 0
+
+	var highestLoc int = -1
+
+	for loc, val := range *availability {
+		if val > highest {
+			highest = val
+			highestLoc = loc
+		}
+	}
+
+	days := [7]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+
+	day := highestLoc / 48 // 335 /48 = 6 = Saturday
+
+	timeBlock := highestLoc % 48 //335 mod 48 = 47(11:30 PM)
+
+	hour := (timeBlock / 2) % 12 // 47/2 = 23 mod 12 = 11
+
+	if hour == 0 {
+		hour = 12
+	}
+
+	var minutes string
+
+	if timeBlock%2 == 1 { //  odd parity
+		minutes = ":30"
+	} else {
+		minutes = ":00"
+	}
+
+	var meridie string
+
+	if timeBlock > 23 {
+		meridie = "pm"
+	} else {
+		meridie = "am"
+	}
+
+	m = fmt.Sprintf("The Group Meeting Day is %s at %d%s %s", days[day], hour, minutes, meridie)
+
+	return retVal
 }
