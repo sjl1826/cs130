@@ -64,6 +64,7 @@ func (a *App) initializeRoutes() {
 
 	userRoutes.HandleFunc("/login", a.handleRequest(handlers.LoginUser)).Methods("POST")
 	userRoutes.HandleFunc("/refresh", a.handleRequest(handlers.RefreshToken)).Methods("POST")
+	userRoutes.HandleFunc("/classes-info", a.handleRequest(handlers.GetClassesInfo)).Methods("GET")
 
 	authUserRoutes := userRoutes.PathPrefix("/o").Subrouter()
 	authUserRoutes.Use(a.loginMiddleware)
