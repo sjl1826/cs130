@@ -49,6 +49,7 @@ func (a *App) Initialize(user, password, dbname string) {
 
 	//a.DB = models.DBMigrate(a.DB)  <-- remove in a following commit if this doesn't break anything
 	a.DB = seeds.Seed(a.DB)
+	fmt.Printf("seeded")
 	a.Router = mux.NewRouter()
 
 	a.initializeRoutes()
@@ -64,6 +65,7 @@ func (a *App) initializeRoutes() {
 
 	userRoutes.HandleFunc("/login", a.handleRequest(handlers.LoginUser)).Methods("POST")
 	userRoutes.HandleFunc("/refresh", a.handleRequest(handlers.RefreshToken)).Methods("POST")
+	userRoutes.HandleFunc("/classes-info", a.handleRequest(handlers.GetClassesInfo)).Methods("GET")
 
 	authUserRoutes := userRoutes.PathPrefix("/o").Subrouter()
 	authUserRoutes.Use(a.loginMiddleware)

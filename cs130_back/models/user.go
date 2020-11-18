@@ -5,7 +5,6 @@ package models
 import (
 	"strconv"
 	"time"
-
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
 )

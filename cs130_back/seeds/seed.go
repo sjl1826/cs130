@@ -41,15 +41,21 @@ func Seed (db *gorm.DB) *gorm.DB {
 		if err := users[i].CreateUser(db); err != nil {   		//Users
 			log.Fatal("Error seeding users", err)
 		}
+	}
 
+	for i := range courses {
 		if err := courses[i].CreateCourse(db); err != nil {  	//Courses
 			log.Fatal("Error seeding courses", err)
 		}
+	}
 
+	for i := range groups { 
 		if err := groups[i].CreateGroup(db); err != nil {		//Groups
 			log.Fatal("Error seeding groups", err)
 		}
+	}
 
+	for i := range listings {
 		if err := listings[i].CreateListing(db); err != nil {	//Listings
 			log.Fatal("Error seeding listings", err)
 		}
@@ -80,13 +86,39 @@ var courses = []models.Course{
 		ID: 		115,
 		Name: 		"Lower Division Linear Algebra",
 		Keywords: 	[]string{"Math", "Graphs", "Matrices"},
-		Categories: []string{"College", "Mathematics", "Linear Algebra"}, 
+		Categories: []string{"College", "Mathematics", "Lower Division Linear Algebra"}, 
 	},
 	models.Course{
 		ID: 		155,	
 		Name: 		"Human Anatomy",
 		Keywords: 	[]string{"Biology", "Reproductive System", "Skeletal System"},
 		Categories: []string{"College", "Physical Sciences", "Human Anatomy"}, 
+		Listings:	[]int64{99, 100},
+	},
+	models.Course{
+		ID: 		117,
+		Name: 		"Linear Algebra",
+		Keywords: 	[]string{"Math", "Graphs", "Matrices"},
+		Categories: []string{"College", "Mathematics", "Linear Algebra"}, 
+	},
+	models.Course{
+		ID: 		156,	
+		Name: 		"Beginner Psychology",
+		Keywords: 	[]string{"Emotions", "Psychopathy", "Disorders"},
+		Categories: []string{"College", "Social Sciences", "Beginner Psychology"}, 
+		Listings:	[]int64{99, 100},
+	},
+	models.Course{
+		ID: 		157,
+		Name: 		"Calculus 1",
+		Keywords: 	[]string{"Derivatives", "Integrals", "Limits"},
+		Categories: []string{"College", "Mathematics", "Calculus 1"}, 
+	},
+	models.Course{
+		ID: 		158,	
+		Name: 		"AP Calculus AB",
+		Keywords: 	[]string{"Derivatives", "Integrals", "Limits"},
+		Categories: []string{"High School", "Mathematics", "AP Calculus AB"}, 
 		Listings:	[]int64{99, 100},
 	},
 }
