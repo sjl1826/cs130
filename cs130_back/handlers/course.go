@@ -156,7 +156,7 @@ type CoursesResponse struct {
 	HighSchool        HighSchoolResponse  `json:"High School"`
 }
 
-func BuildCategoryResponse(CG *[]Category, institution string) {
+func BuildCategoryResponse(db *gorm.DB, w http.ResponseWriter, r *http.Request, CG *[]Category, institution string) {
 	var final []Category
 
 	c := models.Course{}
@@ -175,7 +175,7 @@ func BuildCategoryResponse(CG *[]Category, institution string) {
 
 		// get the classes by subcategory for the category
 		var subcategories []string
-		if err :+ c.GetSubcategories(db, &subcategories, category, institution); err != nil {
+		if err := c.GetSubcategories(db, &subcategories, category, institution); err != nil {
 			respondWithError(w, http.StatusInternalServerError, err.Error())
 			return
 		}
@@ -196,12 +196,23 @@ func BuildCategoryResponse(CG *[]Category, institution string) {
 	(*CG) = final
 }
 
+type Test struct {
+	Categories []string `json:"categories"`
+}
+
 // GetCourses retrieves and returns the master course list sorted by institution, categories, and subcategories
 func GetCourses(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	var response CoursesResponse
+	// var response CoursesResponse
 
-	BuildCategoryResponse(&response.College.Categories, "College")
-	BuildCategoryResponse(&response.HighSchool.Categories, "High School")
+	// BuildCategoryResponse(db, w, r, &response.College.Categories, "College")
+	// BuildCategoryResponse(db, w, r, &response.HighSchool.Categories, "High School")
 
-	respondWithJSON(w, http.StatusOK, response)
+	var resp Test
+	c := models.Course{}
+	if err := c.GetCategories(db, &resp.Categories, "College"); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, resp)
 }
