@@ -101,17 +101,14 @@ func (c *Course) RemoveListing(db *gorm.DB, listingID int) error {
 
 // GetCategories retrieves all categories that exist in the database
 func (c *Course) GetCategories(db *gorm.DB, categories *[]string, institution string) error {
-	// retVal := db.Raw("SELECT * FROM courses WHERE " + institution + " = institution").Scan(&courseList)
-	// return retVal.Error
-	retVal := db.Raw("SELECT *")
+	// retVal := db.Raw("SELECT DISTINCT * FROM (SELECT ARRAY_AGG(val) FROM (SELECT UNNEST(categories) FROM courses WHERE institution = " + institution + " AS val))").Scan(&categories)
+	retVal := db.Raw("SELECT ARRAY_AGG(DISTINCT c) FROM (SELECT categories FROM courses WHERE institution LIKE " + "'"+institution+"' AS c) AS u").Scan(&categories)
 	return retVal.Error
 }
 
 // Getsubcategories retrieves all subcategories that exist in the database for a category and an institution
 func (c *Course) GetSubcategories(db *gorm.DB, subcategories *[]string, category string, institution string) error {
-	// retVal := db.Raw("SELECT * FROM courses WHERE " + institution + " = institution").Scan(&courseList)
-	// return retVal.Error
-	retVal := db.Raw("SELECT *")
+	retVal := db.Raw("SELECT name FROM courses WHERE institution = " + "'" + institution + "'" + " AND " + category + " = ANY(categories)").Scan(&subcategories)
 	return retVal.Error
 }
 
