@@ -60,7 +60,9 @@ func Seed (db *gorm.DB) *gorm.DB {
 		if err := listings[i].CreateListing(db); err != nil {	//Listings
 			log.Fatal("Error seeding listings", err)
 		}
+	}
 
+	for i := range invitations {
 		if err := invitations[i].CreateInvitation(db); err != nil {	//Invitations
 			log.Fatal("Error seeding invitations", err)
 		}
