@@ -29,7 +29,7 @@ func TestUpdateGroup(t *testing.T) {
 	//Calls Update on object to update it, then SELECT to retrieve it
 	mock.ExpectBegin()
 	mock.ExpectExec("UPDATE").
-		WithArgs(AnyTime{}, g.Name, g.CourseName, g.CourseID, g.AdminID, g.MeetingTime, nil, g.ID).WillReturnResult(sqlmock.NewResult(0,0))
+		WithArgs(AnyTime{}, g.Name, g.CourseName, g.CourseID, g.AdminID, g.MeetingTime, g.Members, g.ID).WillReturnResult(sqlmock.NewResult(0,0))
 	mock.ExpectCommit()
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "groups" WHERE "groups"."id" = $1 ORDER BY "groups"."id" ASC LIMIT 1`)).
 		WithArgs(g.ID).WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
