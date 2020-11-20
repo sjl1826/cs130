@@ -22,7 +22,6 @@ type Group struct {
 	AdminID     int           `json:"admin_id"`
 	MeetingTime string        `json:"meeting_time"`
 	Members     pq.Int64Array `gorm:"type:integer[]" json:"members"`
-	Invitations pq.Int64Array `gorm:"type:integer[]" json:"requests"`
 }
 
 // CreateGroup creates a new group object in database
@@ -50,6 +49,40 @@ func (g *Group) GetGroup(db *gorm.DB) error {
 // DeleteGroup deletes group from database
 func (g *Group) DeleteGroup(db *gorm.DB) error {
 	retVal := db.Exec("DELETE FROM groups WHERE ID=" + strconv.Itoa(g.ID))
+	return retVal.Error
+}
+
+// AddMember adds a new user to the group
+func (g *Group) AddMember(db *gorm.DB, userID int) error {
+	now := time.Now()
+	g.UpdatedAt = now
+	g.Members = append(g.Members, int64(userID))
+	retVal := db.Save(&g).Table("groups")
+	return retVal.Error
+}
+
+// RemoveMember removes the specified user from the group
+func (g *Group) RemoveMember(db *gorm.DB, userID int) error {
+	now := time.Now()
+	g.UpdatedAt = now
+	for i, j := range g.Members {
+		if j == int64(userID) {
+			g.Members = RemoveElement(g.Members, i)
+			break
+		}
+	}
+	retVal := db.Save(&g).Table("groups")
+	return retVal.Error
+}
+
+// GetMembers returns the groups members
+func (g *Group) GetMembers(db *gorm.DB, members *[]User) error {
+	retVal := db.Raw("SELECT * FROM groups WHERE ID=" + strconv.Itoa(g.ID)).Scan(&g)
+	for _, j := range g.Members {
+		tempMember := User{ID: int(j)}
+		db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(tempMember.ID)).Scan(&tempMember)
+		(*members) = append((*members), tempMember)
+	}
 	return retVal.Error
 }
 
@@ -86,7 +119,7 @@ func computeOverlap(avSet *[][numSlots]int64) *[numSlots]int64 {
 }
 
 //GetMeetingTime retrieves the meeting time string for the group
-func (g *Group) GetMeetingTime(db *gorm.DB, m string) error {
+func (g *Group) GetMeetingTime(db *gorm.DB, m *string) error {
 	var availability *[numSlots]int64
 
 	retVal := g.GetAvailability(db, availability)
@@ -130,7 +163,7 @@ func (g *Group) GetMeetingTime(db *gorm.DB, m string) error {
 		meridie = "am"
 	}
 
-	m = fmt.Sprintf("The Group Meeting Day is %s at %d%s %s", days[day], hour, minutes, meridie)
+	*m = fmt.Sprintf("The Group Meeting Day is %s at %d%s %s", days[day], hour, minutes, meridie)
 
 	return retVal
 }
