@@ -1,4 +1,5 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import './styles.css';
 import Requests from '../../Requests/Requests';
 import Infos from '../../Infos/Infos';
@@ -11,102 +12,165 @@ import CourseView from './CourseView';
 import * as Colors from '../../../constants/Colors';
 import Text from '../../Text/Text';
 import Button from '../../Button/Button';
-import { forEach } from 'lodash';
+import { USER_SERVER_AUTH , USER_SERVER } from '../../../Config';
 
 function ProfilePage(props) {
-  const invs = [{name: "Al Squad", id: 223, types: "invitation"}, {name: "Calc Gang", id: 223, types: "invitation"}]
-  const contactInformation = [
-    {name: "Email", value: "Edgar@gmail.com"}, 
-    {name: "Facebook", value: "facebook.com/Edgar"},
-    {name: "Discord", value: "Edgar#1234"}
-  ];
-  const additionalInformation = [
-    {name: "Name", value: "Edgar Garcia"},
-    {name: "School name", value: "UCLA"}, 
-    {name: "Timezone", value: "PST"},
-    {name: "Biography", value: "I enjoy graphs and cookies"},
-  ];
-  var availability1 = [1,1,1,1,1,1];
-  var availability2 = new Array(330).fill(0);
-  var fullAvailability = availability1.concat(availability2);
-  const l = [
-    {id:123, courseName: "Algebra I", 
-    content: "HMU PLS I really want to talk about derivatves with people from all over the country. I am from Wisconsin. I am very cool."},
-    {id:124, courseName: "Calculus I", content: "HMU PLS i love calculus"}
-  ];
-
-  const classesList = [
-    {
-      institution: "College",
-      categories: [
-        {
-          category: "Mathematics",
-          classes: [
-            {name: "Discrete Mathematics", classId: 123, keywords:["graphs", "acyclis", "paths"]},
-            {name: "Integral Calculus", classId: 124, keywords:["double integral", "radial", "Greene thereom"]},
-            {name: "Derivative Calculus", classId: 125, keywords:["area of a curve", "limits", "partial derivative"]}
-          ]
-        },
-        {
-          category: "Science",
-          classes: [
-            {name: "Organic Chemistry", classId: 126, keywords:["graphs", "acyclis", "paths"]},
-          ]
-        },
-        {
-          category: "Psychology",
-          classes: []
-        },
-      ]
-    },
-    {
-      institution: "High School",
-      categories: [
-        {
-          category: "Mathematics",
-          classes: [
-            {name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]},
-            {name: "Algebra II", classId: 1241, keywords:["idk", "whats in", "this class"]},
-            {name: "AP Calculus AB", classId: 1251, keywords:["derivatives", "single integral", "partial derivative"]}
-          ]
-        }
-      ]
-    },
-  ];
-
-  const myCourses2= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"], groups:[{name: "Al Squad", id: 123}]},
-  {name: "Calculus I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]}
-  ];
-
-  const [invitations, setInvitations] = useState(invs);
-  const [contactInfo, setContactInfo] = useState(contactInformation);
-  const [additionalInfo, setAdditionalInfo] = useState(additionalInformation);
-  const [listings, setListings] = useState(l);
-  const [classes, setClasses] = useState(classesList);
-  const [myCourses, setMyCourses] = useState(myCourses2);
+  const [invitations, setInvitations] = useState([]);
+  const [contactInfo, setContactInfo] = useState([]);
+  const [additionalInfo, setAdditionalInfo] = useState([]);
+  const [listings, setListings] = useState([]);
+  const [classes, setClasses] = useState([]);
+  const [myCourses, setMyCourses] = useState([]);
+  const [availability, setAvailability] = useState([]);
   const [mainPanelState, setMainPanel] = useState('CourseAdder');
   const userId = props.match.params.id;
   const myId = localStorage.getItem('userId');
-  // check clickable by checking user's id with path's id
 
-  function getProfile() {
-    setInvitations(invs);
-    setContactInfo(contactInfo);
-    setAdditionalInfo(additionalInfo);
-    setListings(l);
-    setMyCourses(myCourses2)
+  useEffect(() => {
+		async function initProfile() {
+			try {
+        const response = await getProfile(userId);
+        handleGetUserResponse(response);
+        const classesInfoResponse = await getClassesInfo();
+        handleClassesInfoResponse(classesInfoResponse.data.courses);
+			} catch (err) {
+				// Handle err here. Either ignore the error, or surface the error up to the user somehow.
+			}
+		}
+		initProfile();
+  }, []);
+  
+  async function getClassesInfo() {
+    return axios.get(`${USER_SERVER}/classes-info`);
   }
 
-  function getClassesList() {
-    setClasses(classesList);
+  function getProfile() {
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    }
+    return axios.get(`${USER_SERVER_AUTH}?u_id=${userId}`, config);
+  }
+
+  function handleGetUserResponse(response) {
+    const contactInfoData = [
+      { name: "Email", value: response.data.u_email }, 
+      { name: "Facebook", value: response.data.facebook },
+      { name: "Discord", value: response.data.discord }
+    ];
+    const additionalInfoData = [
+      { name: "Name", value: `${response.data.first_name} ${response.data.last_name}` },
+      { name: "School name", value: response.data.school_name }, 
+      { name: "Timezone", value: response.data.timezone },
+      { name: "Biography", value: response.data.biography },
+    ];
+    const fetchedListings = response.data.listings.map(listing => {
+      return { id: listing.id, courseName: listing.course_name, content: listing.text_description }
+    })
+    const inviteData = response.data.invitations.map(invite => {
+      return { name: invite.group_name, inviteId:invite.id, id: invite.receive_id, type: "invitation" };
+    })
+    const fetchedCourses = response.data.courses.map(course => {
+      const groups = [];
+      response.data.groups.forEach(group => {
+        if (group.course_id === course.id) {
+          groups.push(group);
+        }
+      })
+      return { name: course.name, classId: course.id, keywords: course.keywords, groups: groups.length > 0 ? groups : null }
+    })
+    setContactInfo(contactInfoData);
+    setAdditionalInfo(additionalInfoData);
+    setInvitations(inviteData);
+    setListings(fetchedListings);
+    setMyCourses(fetchedCourses);
+    setAvailability(response.data.availability);
+  }
+
+  function handleClassesInfoResponse(courses) {
+    const classes = []
+    Object.keys(courses).forEach(function(key) {
+      const institution = key;
+      const categories = [];
+      Object.keys(courses[key]).forEach(function(key2) {
+        const category = key2;
+        const classes = courses[key][key2];
+        categories.push({ category: category, classes: classes});
+      });
+      classes.push({ institution: institution, categories: categories })
+    });
+    setClasses(classes);
+  }
+
+  function saveInfoClicked(first, second, third) {
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    }
+    var body;
+    if(first.name == 'Email') {
+      body = {
+        u_id: parseInt(userId),
+        u_email: first.value,
+        discord: third.value,
+        facebook: second.value, 
+      }
+    } else {
+      const splitName = first.value.split(' ');
+      body = {
+        u_id: parseInt(userId),
+        u_email: contactInfo[0].value,
+        first_name: splitName[0],
+        last_name: splitName[1],
+        timezone: third.value,
+        school_name: second.value,
+      }
+    }
+    axios.put(`${USER_SERVER_AUTH}/update`, body, config).then(response => {
+      return getProfile();
+    }).then( getResponse => {
+      handleGetUserResponse(getResponse);
+    });
+  }
+
+  function handleInvitation(status, invitation) {
+    //update invitation with accept/decline
+    // and remove from list then fetch again to update ui
+  }
+
+  function editListing(content, listing) {
+    console.log(content, listing)
+    //edit listing endpoint
+  }
+  
+  function addCourse(course) {
+    console.log(course);
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    }
+    var body;
+
+ /*  axios.put(`${USER_SERVER_AUTH}/addCourse`, body, config).then(response => {
+      return getProfile();
+    }).then( getResponse => {
+      handleGetUserResponse(getResponse);
+    }); */
+  }
+
+  function removeCourse(course) {
+
   }
 
   function renderMainPanel() {
     switch (mainPanelState) {
       case 'Contact Information':
-        return <SimpleForm options={contactInfo} saveInfoClicked={saveInfoClicked}/>
+        return <SimpleForm key="contact" options={contactInfo} saveInfoClicked={saveInfoClicked}/>
       case 'Additional Information': 
-        return <SimpleForm options={additionalInfo} saveInfoClicked={saveInfoClicked}/>
+        return <SimpleForm key="additional" options={additionalInfo} saveInfoClicked={saveInfoClicked}/>
       case 'CourseAdder': 
         return <CourseAdder courses={classes} addCourse={addCourse}/>
       default: //Course view for selected course
@@ -116,7 +180,7 @@ function ProfilePage(props) {
   }
 
   function coursesOnly() {
-    var newCourses = [...myCourses2];
+    var newCourses = [...myCourses];
     newCourses.forEach( element => {
       delete element["groups"]
     })
@@ -133,28 +197,6 @@ function ProfilePage(props) {
     console.log(item);
   }
 
-  function saveInfoClicked(first, second, third) {
-    //post to endpoint updating info
-  }
-
-  function handleInvitation(invitation) {
-    //update invitation with accept/decline
-    // and remove from list then fetch again to update ui
-  }
-
-  function editListing(content, listing) {
-    console.log(content, listing)
-    //edit listing endpoint
-  }
-  
-  function addCourse(course) {
-    console.log(course);
-  }
-
-  function removeCourse(course) {
-
-  }
-
   function viewOnlyProfile() {
     return (
       <div className="view-panel">
@@ -164,18 +206,17 @@ function ProfilePage(props) {
             {additionalInfo[0].value} Profile
             </Text>
             <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={groupClicked} clickable={false}/>
-            <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={false}/>
-            <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={false}/>
+            <Infos title="Contact Information" options={contactInfo} titleClicked={titleClicked} clickable={false}/>
+            <Infos title="Additional Information" options={additionalInfo} titleClicked={titleClicked} clickable={false}/>
           </div>
         </div>
         <div className="column">
-          <SchedulerPage passedSelections={fullAvailability}/>
+          <SchedulerPage passedSelections={availability}/>
         </div>
       </div>
     );
-
   }
-
+  
   function myProfile() {
     return (
       <div className="panel">
@@ -195,8 +236,8 @@ function ProfilePage(props) {
         <div className="column">
           <div className="group-with-margin-bottom">
             <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={titleClicked} clickable={true}/>
-            <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={true}/>
-            <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={true}/>
+            <Infos title="Contact Information" options={contactInfo} titleClicked={titleClicked} clickable={true}/>
+            <Infos title="Additional Information" options={additionalInfo} titleClicked={titleClicked} clickable={true}/>
           </div>
           <div className="group-with-margin-bottom">
             <Button 
@@ -220,7 +261,7 @@ function ProfilePage(props) {
           color={Colors.Blue}
           onClick={() => props.history.push({
             pathname: `/profile/${userId}/scheduler`,
-            state: { availability: fullAvailability }
+            state: { availability: availability, email: contactInfo[0].value }
             })}
           >
             Set Availability
@@ -231,7 +272,10 @@ function ProfilePage(props) {
   }
 
   // will have conditional logic based on self profile vs different.. maybe a diff endpoint?
-  return userId == myId ? myProfile() : viewOnlyProfile();
+  if (additionalInfo.length > 0 && classes.length > 0) {
+    return userId == myId ? myProfile() : viewOnlyProfile();
+  }
+  return null;
 }
 
 export default ProfilePage;

@@ -17,8 +17,8 @@ export default function RequestRow(props) {
       >
         {props.item.name}
       </Link>
-      <Button height="35px" width="85px" onClick={() => props.handleResponse(true)}>Accept</Button>
-      <Button height="35px" width="85px" onClick={() => props.handleResponse(false)}>Decline</Button>
+      <Button height="35px" width="85px" onClick={() => props.handleResponse(true, props.item)}>Accept</Button>
+      <Button height="35px" width="85px" onClick={() => props.handleResponse(false, props.item)}>Decline</Button>
     </div>
   );
 }
