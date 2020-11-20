@@ -1,37 +1,17 @@
 import React from 'react';
 import { Menu } from 'antd';
-import axios from 'axios';
-import { USER_SERVER } from '../../../../Config';
 import { withRouter } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
 function RightMenu(props) {
-	const user = useSelector(state => state.user);
 	const logoutHandler = () => {
-		axios.get(`${USER_SERVER}/logout`).then(response => {
-			if (response.status === 200) {
-				props.history.push('/login');
-			} else {
-				alert('Log Out Failed');
-			}
-		});
+    localStorage.setItem('userId', 'nothing');
+		props.history.push('/');
 	};
 
-	if (user.userData && !user.userData.isAuth) {
+  console.log(localStorage.getItem('userId'));
+	if (localStorage.getItem('userId') !== 'nothing') {
 		return (
-			<Menu mode={props.mode}>
-				<Menu.Item key="mail">
-					<a href="/login">Login</a>
-				</Menu.Item>
-				<Menu.Item key="app">
-					<a href="/register">Register</a>
-				</Menu.Item>
-			</Menu>
-		);
-  }
-  // we need to pass current user's id here in the future.
-	return (
-		<Menu mode={props.mode}>
+      <Menu mode={props.mode}>
 			<Menu.Item key="classes">
 				<a href="/classes">Classes</a> 
 			</Menu.Item>
@@ -45,6 +25,20 @@ function RightMenu(props) {
 				<a onClick={logoutHandler}>Logout</a>
 			</Menu.Item>
 		</Menu>
+		);
+  }
+  // we need to pass current user's id here in the future.
+	return (
+		<Menu mode={props.mode}>
+			<Menu mode={props.mode}>
+				<Menu.Item key="mail">
+					<a href="/login">Login</a>
+				</Menu.Item>
+				<Menu.Item key="app">
+					<a href="/register">Register</a>
+				</Menu.Item>
+			</Menu>
+    </Menu>
 	);
 }
 
