@@ -11,13 +11,14 @@ import CourseView from './CourseView';
 import * as Colors from '../../../constants/Colors';
 import Text from '../../Text/Text';
 import Button from '../../Button/Button';
+import { forEach } from 'lodash';
 
 function ProfilePage(props) {
-  const invs = [{name: "CA Squad", id: 223, types: "invitation"}, {name: "Alexander Hamilton-Tuff", id: 223, types: "invitation"}]
+  const invs = [{name: "Al Squad", id: 223, types: "invitation"}, {name: "Calc Gang", id: 223, types: "invitation"}]
   const contactInformation = [
-    {name: "Email", value: "shirly@gmail.com"}, 
-    {name: "Facebook", value: "facebook.com/shirly"},
-    {name: "Discord", value: "shirly#1234"}
+    {name: "Email", value: "Edgar@gmail.com"}, 
+    {name: "Facebook", value: "facebook.com/Edgar"},
+    {name: "Discord", value: "Edgar#1234"}
   ];
   const additionalInformation = [
     {name: "Name", value: "Edgar Garcia"},
@@ -29,9 +30,9 @@ function ProfilePage(props) {
   var availability2 = new Array(330).fill(0);
   var fullAvailability = availability1.concat(availability2);
   const l = [
-    {id:123, courseName: "Discrete Mathematics", 
-    content: "HMU PLS I really want to talk about bipartite graphs with people from all over the country. I am from Wisconsin. I am very cool."},
-    {id:124, courseName: "Human Anatomy", content: "HMU PLS i love anatomy"}
+    {id:123, courseName: "Algebra I", 
+    content: "HMU PLS I really want to talk about derivatves with people from all over the country. I am from Wisconsin. I am very cool."},
+    {id:124, courseName: "Calculus I", content: "HMU PLS i love calculus"}
   ];
 
   const classesList = [
@@ -73,7 +74,7 @@ function ProfilePage(props) {
     },
   ];
 
-  const myCourses= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"], groups:[{name: "DM Squad", id: 123}]},
+  const myCourses2= [{name: "Algebra I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"], groups:[{name: "Al Squad", id: 123}]},
   {name: "Calculus I", classId: 1231, keywords:["find x", "zeros", "idk", "derivatives", "single integral", "partial derivative", "derivatives", "single integral", "partial derivative"]}
   ];
 
@@ -82,17 +83,18 @@ function ProfilePage(props) {
   const [additionalInfo, setAdditionalInfo] = useState(additionalInformation);
   const [listings, setListings] = useState(l);
   const [classes, setClasses] = useState(classesList);
+  const [myCourses, setMyCourses] = useState(myCourses2);
   const [mainPanelState, setMainPanel] = useState('CourseAdder');
   const userId = props.match.params.id;
-  const myId = 2;
+  const myId = localStorage.getItem('userId');
   // check clickable by checking user's id with path's id
-
 
   function getProfile() {
     setInvitations(invs);
     setContactInfo(contactInfo);
     setAdditionalInfo(additionalInfo);
     setListings(l);
+    setMyCourses(myCourses2)
   }
 
   function getClassesList() {
@@ -108,9 +110,17 @@ function ProfilePage(props) {
       case 'CourseAdder': 
         return <CourseAdder courses={classes} addCourse={addCourse}/>
       default: //Course view for selected course
-        const course = myCourses.find(element => element.name == mainPanelState)
+        const course = myCourses.find(element => element.name == mainPanelState.name)
         return <CourseView item={course} removeCourse={removeCourse}/>
     }
+  }
+
+  function coursesOnly() {
+    var newCourses = [...myCourses2];
+    newCourses.forEach( element => {
+      delete element["groups"]
+    })
+    return newCourses;
   }
 
   function titleClicked(title) {
@@ -153,7 +163,7 @@ function ProfilePage(props) {
             <Text color="black" size="32px" weight="800"> 
             {additionalInfo[0].value} Profile
             </Text>
-            <ClassList classList={myCourses} titleClicked={groupClicked} clickable={false}/>
+            <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={groupClicked} clickable={false}/>
             <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={false}/>
             <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={false}/>
           </div>
@@ -184,9 +194,22 @@ function ProfilePage(props) {
         </div>
         <div className="column">
           <div className="group-with-margin-bottom">
-            <ClassList classList={myCourses} titleClicked={titleClicked}/>
+            <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={titleClicked} clickable={true}/>
             <Infos title="Contact Information" options={contactInformation} titleClicked={titleClicked} clickable={true}/>
             <Infos title="Additional Information" options={additionalInformation} titleClicked={titleClicked} clickable={true}/>
+          </div>
+          <div className="group-with-margin-bottom">
+            <Button 
+            textColor={Colors.White}
+            textSize="28px"
+            width="280px"
+            height="70px"
+            textWeight="800" 
+            color={Colors.Blue}
+            onClick={() => setMainPanel('CourseAdder')}
+            >
+              Add Courses
+            </Button>
           </div>
           <Button 
           textColor={Colors.White}

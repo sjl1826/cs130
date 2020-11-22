@@ -1,0 +1,16 @@
+.main-container {
+  flex-direction: column;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 50px;
+}
+.form-box {
+  position: relative;
+  height: 100px;
+}
+
+.input-feedback {
+  position: absolute;
+  bottom: -10px;
+}
