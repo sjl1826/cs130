@@ -9,7 +9,7 @@ export default function RequestRow(props) {
   return(
     <div className="horizontal-row">
       <Link 
-        to={ props.item.type === 'invitation' ? `/groups/${props.item.groupId}` : `/profile/${props.item.id}`}
+        to={ props.item.type === 'invitation' ? `/groups/group/${props.item.groupId}` : `/profile/${props.item.id}`}
         className={css`
           font-size: 20px;
           width: 180px;
