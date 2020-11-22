@@ -15,7 +15,7 @@ export default function ClassItem(props) {
       </div>
     </div>  
     : 
-    <div className="item" onClick={() => props.titleClicked(props.data)}>
+    <div data-testid="click-class" className="item" onClick={() => props.titleClicked(props.data)}>
       {props.clickable ?  <Text className="clickable-item" style={{fontFamily: Fonts.Primary, color: Colors.Blue, fontSize: "24px"}}>{props.data.name}</Text> :
         <Text size="24px">
           {props.data.name}
