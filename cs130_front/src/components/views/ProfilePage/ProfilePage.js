@@ -70,7 +70,8 @@ function ProfilePage(props) {
       return { id: listing.id, courseName: listing.course_name, content: listing.text_description }
     })
     const inviteData = response.data.invitations.map(invite => {
-      return { name: invite.group_name, inviteId:invite.id, id: invite.receive_id, type: "invitation" };
+      console.log(invite)
+      return { name: invite.group_name, groupId: invite.group_id, inviteId:invite.id, id: invite.receive_id, type: "invitation" };
     })
     const fetchedCourses = response.data.courses.map(course => {
       const groups = [];
@@ -271,19 +272,6 @@ function ProfilePage(props) {
             <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={titleClicked} clickable={true}/>
             <Infos title="Contact Information" options={contactInfo} titleClicked={titleClicked} clickable={true}/>
             <Infos title="Additional Information" options={additionalInfo} titleClicked={titleClicked} clickable={true}/>
-          </div>
-          <div className="group-with-margin-bottom">
-            <Button 
-            textColor={Colors.White}
-            textSize="28px"
-            width="280px"
-            height="70px"
-            textWeight="800" 
-            color={Colors.Blue}
-            onClick={() => setMainPanel('CourseAdder')}
-            >
-              Add Courses
-            </Button>
           </div>
           <div className="group-with-margin-bottom">
             <Button 
