@@ -4,13 +4,14 @@
   "private": true,
   "dependencies": {
     "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
+    "@testing-library/react": "^11.2.2",
     "@testing-library/user-event": "^7.1.2",
     "antd": "3.9.0",
     "axios": "^0.21.0",
     "emotion": "^10.0.27",
     "formik": "^2.2.5",
     "http-proxy-middleware": "^1.0.6",
+    "jest": "24.9.0",
     "lodash": "^4.17.20",
     "msw": "^0.22.1",
     "qs": "^6.9.4",
@@ -46,6 +47,7 @@
     ]
   },
   "devDependencies": {
+    "jest-environment-jsdom-fifteen": "^1.0.2",
     "react-test-renderer": "^17.0.1"
   }
 }
