@@ -7,6 +7,7 @@ import LoginPage from './components/views/LoginPage/LoginPage.js';
 import RegisterPage from './components/views/RegisterPage/RegisterPage.js';
 import ClassesPage from './components/views/ClassesPage/ClassesPage';
 import GroupsPage from './components/views/GroupsPage/GroupsPage.js';
+import ViewGroupPage from './components/views/ViewGroupPage/ViewGroupPage.js';
 import ProfilePage from './components/views/ProfilePage/ProfilePage.js';
 import SchedulerPage from './components/views/SchedulerPage/SchedulerPage.js';
 import NavBar from './components/views/NavBar/NavBar';
@@ -30,6 +31,7 @@ function App() {
           <Route exact path="/profile/:id" component={Auth(ProfilePage, true)} />
 					<Route exact path="/search/" component={Auth(SearchPage, true)} />
           <Route exact path="/profile/:id/scheduler" component={Auth(SchedulerPage, true)} />
+          <Route exact path="/groups/group/:id" component={Auth(ViewGroupPage, true)} />
 				</Switch>
 			</div>
 		</Suspense>
