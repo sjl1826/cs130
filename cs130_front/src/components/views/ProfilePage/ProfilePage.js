@@ -26,6 +26,12 @@ function ProfilePage(props) {
   const userId = props.match.params.id;
   const myId = localStorage.getItem('userId');
 
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+    }
+  }
+
   useEffect(() => {
 		async function initProfile() {
 			try {
@@ -45,11 +51,6 @@ function ProfilePage(props) {
   }
 
   function getProfile() {
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-      }
-    }
     return axios.get(`${USER_SERVER_AUTH}?u_id=${userId}`, config);
   }
 
@@ -104,11 +105,6 @@ function ProfilePage(props) {
   }
 
   function saveInfoClicked(first, second, third) {
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-      }
-    }
     var body;
     if(first.name == 'Email') {
       body = {
@@ -136,33 +132,68 @@ function ProfilePage(props) {
   }
 
   function handleInvitation(status, invitation) {
-    //update invitation with accept/decline
-    // and remove from list then fetch again to update ui
+    console.log(status, invitation);
+      const body = {
+        u_id: parseInt(invitation.id),
+        invitation_id: invitation.inviteId,
+        status: status ? 'ACCEPT' : 'DECLINE'
+      }
+      axios.put(`${USER_SERVER_AUTH}/updateInvitation`, body, config).then(response => {
+        return getProfile();
+      }).then( getResponse => {
+        handleGetUserResponse(getResponse);
+      }); 
   }
 
   function editListing(content, listing) {
-    console.log(content, listing)
-    //edit listing endpoint
+    console.log(content, listing);
+    if(content == 'Close') {
+      axios.delete(`${USER_SERVER_AUTH}/deleteListing?id=${listing.id}`, config).then(response => {
+        return getProfile();
+      }).then( getResponse => {
+        handleGetUserResponse(getResponse);
+      }); 
+    } else {
+      const body = {
+        id: parseInt(listing.id),
+        text_description: content
+      }
+      axios.put(`${USER_SERVER_AUTH}/updateListing`, body, config).then(response => {
+        return getProfile();
+      }).then( getResponse => {
+        handleGetUserResponse(getResponse);
+      }); 
+    }
   }
   
   function addCourse(course) {
-    console.log(course);
-    const config = {
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
-      }
-    }
-    var body;
 
- /*  axios.put(`${USER_SERVER_AUTH}/addCourse`, body, config).then(response => {
+    const body = {
+      u_id: parseInt(myId),
+      course_id: parseInt(course.classId),
+      course_name: course.name,
+      keywords: course.keywords instanceof String ? [course.keywords] : course.keywords,
+      categories: course.categories
+
+    }
+    axios.put(`${USER_SERVER_AUTH}/addCourse`, body, config).then(response => {
       return getProfile();
     }).then( getResponse => {
       handleGetUserResponse(getResponse);
-    }); */
+    }); 
   }
 
   function removeCourse(course) {
-
+    const body = {
+      u_id: parseInt(myId),
+      course_id: parseInt(course.classId),
+    }
+    axios.put(`${USER_SERVER_AUTH}/removeCourse`, body, config).then(response => {
+      setMainPanel('CourseAdder');
+      return getProfile();
+    }).then( getResponse => {
+      handleGetUserResponse(getResponse);
+    }); 
   }
 
   function renderMainPanel() {
@@ -227,8 +258,10 @@ function ProfilePage(props) {
               Hi Student, edit your class and other information to start studying with others!
             </Text>
           </div>
-          <MyListings items={listings} editListing={editListing}/>
-          <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/>
+          <MyListings items={listings} editListing={editListing}/> 
+          { invitations.length > 0 ? 
+            <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/> : null
+          }
         </div>
         <div className="column"> 
           {renderMainPanel()}

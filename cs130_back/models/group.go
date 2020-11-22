@@ -51,6 +51,14 @@ func (g *Group) DeleteGroup(db *gorm.DB) error {
 	return retVal.Error
 }
 
+func (g *Group) AddMember(db *gorm.DB, userID int) error {
+	now := time.Now()
+	g.UpdatedAt = now
+	g.Members = append(g.Members, int64(userID))
+	retVal := db.Save(&g).Table("groups")
+	return retVal.Error
+}
+
 // GetAvailability retrieves the availability object of the group
 
 // func (g *Group) GetAvailability(db *gorm.DB, availability *[]int64) error {

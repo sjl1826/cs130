@@ -99,7 +99,7 @@ func (u *User) GetListings(db *gorm.DB, listingList *[]Listing) error {
 
 // GetInvitations retrieves the invitation objects under the user
 func (u *User) GetInvitations(db *gorm.DB, invitationList *[]Invitation) error {
-	retVal := db.Raw("SELECT * FROM invitations WHERE " + strconv.Itoa(u.ID) + " = receive_id").Scan(&invitationList)
+	retVal := db.Raw("SELECT * FROM invitations WHERE " + strconv.Itoa(u.ID) + " = receive_id" + " AND " + "false" + " = type" ).Scan(&invitationList)
 	return retVal.Error
 }
 
