@@ -285,6 +285,19 @@ function ProfilePage(props) {
               Add Courses
             </Button>
           </div>
+          <div className="group-with-margin-bottom">
+            <Button 
+            textColor={Colors.White}
+            textSize="28px"
+            width="280px"
+            height="70px"
+            textWeight="800" 
+            color={Colors.Blue}
+            onClick={() => setMainPanel('CourseAdder')}
+            >
+              Add Courses
+            </Button>
+          </div>
           <Button 
           textColor={Colors.White}
           textSize="28px"
