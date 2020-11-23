@@ -6,14 +6,15 @@ import ListingItem from './ListingItem';
 
 const ListingList = (props) => {
 
+    props.setTabVar("listing");
   return (
     <>
     <div style = {{fontFamily: Fonts.Primary}}>
     { props.listingList.map((data,index) => {
         if (data) {
           return (
-            <div >
-              <ListingItem data={data} />
+            <div style={{display: "flex"}}>
+              <ListingItem data={data} goToUserProfile={props.goToUserProfile} goToGroup={props.goToGroup}/>
 	          </div>	
     	    );	
     	  }
