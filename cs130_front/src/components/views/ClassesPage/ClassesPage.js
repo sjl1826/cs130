@@ -19,7 +19,7 @@ function ClassesPage(props) {
   const [mainTitleState, setMainTitle] = useState(classes[0].name);
   const [mainListingsDefault, setMainListingsDefault] = useState(classes[0].listings);
   const [mainListings, setMainListings] = useState(classes[0].listings);
-  const [currentTab, setCurrentTab] = useState("studybuddies")
+  const [currentTab, setCurrentTab] = useState("Study Buddies")
   const [input, setInput] = useState('');
   //inviter is used by including it as an optional element for each user row in the user list 
   //show if invite to group button is clicked etc, then pass the user info from the row to the inviter
@@ -46,7 +46,7 @@ function ClassesPage(props) {
 
   function setTabVar(name){
     setCurrentTab(name);
-    if (name == "studybuddies"){
+    if (name == "Listings"){
       setMainListings(mainListingsDefault);
     }
   }
@@ -65,24 +65,20 @@ function ClassesPage(props) {
             <Dropdown options={items} sendSelection={() => {}}/>
           </div>
           <div className="column">
-            <Tabs>
-              <div type="Study Buddies">
-                <StudyBuddyList setTabVar={setTabVar} />
-              </div>
-              <div type="Listings">
-                <ListingList listingList={mainListings} goToUserProfile={goToUserProfile} goToGroup={goToGroup} setTabVar={setTabVar}/>
-              </div>
+            <Tabs setTabVar={setTabVar} >
+                <StudyBuddyList type="Study Buddies" />
+                <ListingList  type="Listings" listingList={mainListings} goToUserProfile={goToUserProfile} goToGroup={goToGroup}/>
             </Tabs>
           </div>
           <div className="column">
             <ClassList classList={classes} titleClicked={classClicked} clickable={true}/>
-            {currentTab == "listing" ?
-              <div style={{paddingTop: "50px"}}>
+            {currentTab == "Listings" ?
+              <div style={{paddingTop: "50px", display: "flex", flexDirection: "column", alignItems: "flex-start"}}>
                 <Text size="28px" weight="800" style={{display: "flex", flexDirection: "column", justifyContent: "flex-start", alignItems: "flex-start", minWidth: "20vw"}}>Search Listings</Text>
                 <SearchBar input={input} onChange={updateInput} width="18rem" fontSize="25px"/> 
               </div>
               : 
-              <div></div>
+              null
             }
           </div>
         </div>

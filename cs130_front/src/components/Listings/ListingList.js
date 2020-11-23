@@ -5,8 +5,6 @@ import * as Colors from '../../constants/Colors';
 import ListingItem from './ListingItem';
 
 const ListingList = (props) => {
-
-    props.setTabVar("listing");
   return (
     <>
     <div style = {{fontFamily: Fonts.Primary}}>

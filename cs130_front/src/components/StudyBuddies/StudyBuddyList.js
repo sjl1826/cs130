@@ -4,8 +4,6 @@ import * as Fonts from '../../constants/Fonts';
 import * as Colors from '../../constants/Colors';
 
 const StudyBuddyList = (props) => {
-
-    props.setTabVar("studybuddies")
   return (
     <>
     <div style = {{fontFamily: Fonts.Primary}} className="class-box">
