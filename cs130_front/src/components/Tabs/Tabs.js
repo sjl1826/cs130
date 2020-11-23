@@ -3,12 +3,17 @@ import { css } from 'emotion';
 import Tab from './Tab';
 
 export default function Tabs(props) {
+  function setTab(tab) {
+    setActiveTab(tab);
+    props.setTabVar(tab);
+  }
 	const [activeTab, setActiveTab] = useState(React.Children.toArray(props.children)[0].props.type);
 	return (
 		<div>
 			<ol
 				className={css`
           display: flex;
+          justify-content: center;
         `}
 			>
 				{React.Children.map(props.children, child => {
@@ -17,7 +22,7 @@ export default function Tabs(props) {
 							activeTab={activeTab}
 							key={child.props.type}
 							label={child.props.type}
-							onClick={tab => setActiveTab(tab)}
+							onClick={tab => setTab(tab)}
 						/>
 					);
 				})}
