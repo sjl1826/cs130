@@ -11,6 +11,8 @@ import UserItem from './components/UserList/UserItem';
 import UserList from './components/Search/UserList';
 import Inviter from './components/Inviter/Inviter';
 
+// Current Classes functionality testing scenario 
+
 test('Class Item Click', async () => {
   const mockClick = jest.fn();
   const mockData = { name: 'fakeName', clickable: true }
@@ -41,6 +43,8 @@ test('Class List renders all items', async () => {
   expect(items).toHaveLength(3);
 }); 
 
+// Dropdown functionality testing scenario 
+
 const mockEvent = { preventDefault: jest.fn() };
 jest.mock('./components/Dropdown/DropdownRow', () => {
   return {
@@ -61,6 +65,8 @@ test('Dropdown row press shows dropdown', async () => {
   const items = await screen.findAllByText(/fakeName/)
   expect(items).toHaveLength(3);
 }); 
+
+// Invitations/requests functionality testing scenario
 
 test('Link click works for view group in invitations', async () => {
   const mockData = { name: 'fakeName', type: 'invitation', groupId: 1};
@@ -87,6 +93,8 @@ test('Link click works for view profile in requests', async () => {
     "/profile/1"
   );
 }); 
+
+// List of users displayed correctly testing scenario
 
 test('User does not have additional contact information, email shown', async () => {
   const mockUser = { name: "Edgar G", school: 'UCLA', email: "ed@gmail.com"};
@@ -118,6 +126,8 @@ test('User row click leads to correct user profile', async () => {
   fireEvent.click(screen.getByTestId('user'));
   expect(mockClick.mock.calls[0]).toEqual([ mockUser[0] ])
 }); 
+
+//Inviting functionality testing scenario 
 
 test('Click leads to invite user to first group', async () => {
   const mockClick = jest.fn();

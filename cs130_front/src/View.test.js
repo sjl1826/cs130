@@ -20,6 +20,7 @@ beforeAll(() => server.listen())
 afterEach(() => server.resetHandlers())
 afterAll(() => server.close())
 
+//Landing page functionality testing scenario
 
 test('Landing Page join goes to Register', async () => {
   const mockHistoryPush = { push: jest.fn() };
@@ -32,6 +33,8 @@ test('Landing Page join goes to Register', async () => {
   await fireEvent.click(screen.getByRole('button'));
   expect(mockHistoryPush.push.mock.calls[0]).toEqual([ '/register'])
 }); 
+
+// Current user edit listing testing scenario
 
 test('User Listing update action', async () => {
   const mockEditListing = jest.fn();
@@ -52,6 +55,18 @@ test('User Listing delete action', async () => {
   await fireEvent.click(screen.getByText('Close'));
   expect(mockEditListing.mock.calls[0]).toEqual([ 'Close', mockItem ])
 }); 
+
+test('My Listings has all listings', async () => {
+  const mockEditListing = jest.fn();
+  const mockItems = [{ id: 121, courseName: "Biology", content: "ILY"}, { id: 123, courseName: "Biology", content: "ILY"}, { id: 124, courseName: "Biology", content: "ILY"}]
+  render(
+    <MyListings items={mockItems} editListing={mockEditListing}/>
+  );
+  const nameShown = await screen.findAllByText(/Biology/);
+  expect(nameShown).toHaveLength(3);
+}); 
+
+//User view current course info testing scenario
 
 test('Course View has all course info', async () => {
   const mockRemoveCourse = jest.fn();
@@ -75,15 +90,7 @@ test('Course View remove course', async () => {
   expect(mockRemoveCourse.mock.calls[0]).toEqual([ mockItem ])
 }); 
 
-test('My Listings has all listings', async () => {
-  const mockEditListing = jest.fn();
-  const mockItems = [{ id: 121, courseName: "Biology", content: "ILY"}, { id: 123, courseName: "Biology", content: "ILY"}, { id: 124, courseName: "Biology", content: "ILY"}]
-  render(
-    <MyListings items={mockItems} editListing={mockEditListing}/>
-  );
-  const nameShown = await screen.findAllByText(/Biology/);
-  expect(nameShown).toHaveLength(3);
-}); 
+// Scheduler functionality testing scenario
 
 test('Scheduler Page view has weekly 24 hr views', async () => {
   render(
