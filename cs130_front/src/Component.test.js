@@ -7,6 +7,9 @@ import GroupItem from './components/CurrentClasses/GroupItem';
 import ClassList from './components/CurrentClasses/ClassList';
 import Dropdown from './components/Dropdown/Dropdown';
 import RequestRow from './components/Requests/RequestRow';
+import UserItem from './components/UserList/UserItem';
+import UserList from './components/Search/UserList';
+import Inviter from './components/Inviter/Inviter';
 
 test('Class Item Click', async () => {
   const mockClick = jest.fn();
@@ -83,4 +86,47 @@ test('Link click works for view profile in requests', async () => {
   expect(document.querySelector("a").getAttribute("href")).toBe(
     "/profile/1"
   );
+}); 
+
+test('User does not have additional contact information, email shown', async () => {
+  const mockUser = { name: "Edgar G", school: 'UCLA', email: "ed@gmail.com"};
+  render(
+    <UserItem user={mockUser} goToUserProfile={() => {}}/>
+  );
+  const items = await screen.findAllByText(/ed@gmail.com/)
+  expect(items).toHaveLength(1);
+}); 
+
+test('User has additional contact information, email not shown', async () => {
+  const mockUser = { name: "Edgar G", school: 'UCLA', email: "ed@gmail.com", discord:"ed#123"};
+  render(
+    <UserItem user={mockUser} goToUserProfile={() => {}}/>
+  );
+  const items = await screen.findAllByText(/ed#123/)
+  const notFound = await screen.queryByText(/ed@gmail.com/)
+  expect(items).toHaveLength(1);
+  expect(notFound).not.toBeInTheDocument()
+}); 
+
+test('User row click leads to correct user profile', async () => {
+  const mockClick = jest.fn();
+  const mockUser = [{ id: 123, name: "Edgar G", school: 'UCLA', email: "ed@gmail.com", discord:"ed#123"}];
+  render(
+    <UserList userList={mockUser} goToUserProfile={mockClick}/>
+  );
+
+  fireEvent.click(screen.getByTestId('user'));
+  expect(mockClick.mock.calls[0]).toEqual([ mockUser[0] ])
+}); 
+
+test('Click leads to invite user to first group', async () => {
+  const mockClick = jest.fn();
+  const mockUser = { id: 123, name: "Edgar G", school: 'UCLA', email: "ed@gmail.com", discord:"ed#123"};
+  const mockGroup = [{id: 12, groupName: "Calc Crew"}, {id: 13, groupName: "Calc 123"}];
+  render(
+    <Inviter items={mockGroup} user={mockUser} handleGroupInvite={mockClick}/>
+  );
+
+  fireEvent.click(screen.getByText('Invite'));
+  expect(mockClick.mock.calls[0]).toEqual([ mockUser, mockGroup[0] ]);
 }); 
