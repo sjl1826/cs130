@@ -1,0 +1,15 @@
+.small-box {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: center;
+    width: 25vw;
+    height: 20vh;
+    padding: 10px;
+    margin-top: 40px;
+}
+
+.input-box {
+    padding-bottom: 20px;
+}
+

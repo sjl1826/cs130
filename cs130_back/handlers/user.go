@@ -471,6 +471,7 @@ func GetClassesInfo(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 			shortened["id"] = course.ID
 			shortened["keywords"] = course.Keywords
 			shortened["name"] = course.Name
+			shortened["categories"] = course.Categories
 			if val, ok := categories[course.Categories[0]]; ok {
 				if val2, ok2 := val[course.Categories[1]]; ok2 {
 					val[course.Categories[1]] = append(val2, shortened)

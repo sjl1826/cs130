@@ -27,7 +27,6 @@ function LoginPage(props) {
       }
       const response = await axios.post(`${USER_SERVER}/login`,  qs.stringify(dataToSubmit), config)
       if (response) {
-        console.log(response.data.access_token, response.data.ID);
         localStorage.setItem('accessToken', response.data.access_token);
         localStorage.setItem('userId', response.data.ID);
         props.history.push(`/profile/${response.data.ID}`)
@@ -35,9 +34,7 @@ function LoginPage(props) {
     } catch(error) {
       console.log(error);
     }
-
   }
-
 
   return (
     <div className="main-container">

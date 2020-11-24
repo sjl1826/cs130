@@ -180,18 +180,6 @@ func DeleteListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Remove ListingID from user
-	user := models.User{ID: listing.Poster}
-	if GetUserByID(db, &user, w) == 0 {
-		return 				//what if user has been deleted?
-	}
-
-	//Remove ListingID from course
-	course := models.Course{ID: listing.CourseID}
-	if CourseByID(db, &course, w) == 0 {
-		return
-	}
-
 	//Delete listing object
 	if err := listing.DeleteListing(db); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
