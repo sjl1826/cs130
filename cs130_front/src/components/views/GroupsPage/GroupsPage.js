@@ -64,7 +64,9 @@ function GroupsPage(props) {
       case 'noGroupSelected':
         return <Text color="black" size="24px" weight="800"> Select a group! </Text>
       default:
-        return <GroupItem className="group-with-margin-centered" group={currentGroup} />
+        return <GroupItem className="group-with-margin-centered"
+          group={currentGroup}
+          adminPrivilege={true} />
     }
   }
   //{getCourse(currentGroup.courseId).name}
