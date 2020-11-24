@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+import { USER_SERVER_AUTH } from '../../../Config';
 import Selection from './Selection';
 import SelectionItem from './SelectionItem';
 import _ from 'lodash';
@@ -64,14 +66,33 @@ function SchedulerPage(props) {
   if(props.location != undefined) {
     const { state } = props.location;
     if (state != undefined && state.availability != undefined) {
-      initSelections = state.availability;
-      selections = state.availability;
+      if (state.availability.length > 0) {
+        initSelections = state.availability;
+        selections = state.availability;
+      }
     } 
     userId = props.match.params.id;
   }
   if(props.passedSelections != undefined) {
     initSelections = props.passedSelections;
     selections = props.passedSelections;
+  }
+
+  function saveSelections() {
+    const config = {
+      headers: {
+        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+      }
+    }
+    const body = {
+      u_id: parseInt(userId),
+      u_email: props.location.state.email,
+      availability: selections
+    }
+  
+    axios.put(`${USER_SERVER_AUTH}/update`, body, config);
+
+    props.history.push(`/profile/${userId}`)
   }
 
   function updateSelection(items) {
@@ -108,12 +129,6 @@ function SchedulerPage(props) {
         selections[i] = 0;
       }
     }
-  }
-
-  function saveSelections() {
-    // send selections array to backend
-    //go back to profile and reload it? 
-    props.history.push(`/profile/${userId}`)
   }
 
   const initSelectedSlots = [];

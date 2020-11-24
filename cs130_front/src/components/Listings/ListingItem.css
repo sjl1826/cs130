@@ -1,0 +1,41 @@
+.box-shadow {
+    display: flex;
+    padding: 10px;
+    box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    min-height: 10vh;
+    width: 40vw; 
+    height: 8.5rem;
+    font-size: 15px;
+    align-items: flex-start;
+}
+
+.row {
+    padding-left: 10px;
+    display: flex;
+}
+
+.col {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding-right: 2rem;
+}
+
+.header {
+    font-weight: bold;
+    justify-content: left;
+}
+
+.desc {
+    font-style: italic;
+}
+
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover{
+    text-decoration: underline;
+}

@@ -9,7 +9,7 @@ export default function RequestRow(props) {
   return(
     <div className="horizontal-row">
       <Link 
-        to={ props.item.type === 'request' ? `/groups/${props.item.id}` : `/profile/${props.item.id}`}
+        to={ props.item.type === 'invitation' ? `/groups/group/${props.item.groupId}` : `/profile/${props.item.id}`}
         className={css`
           font-size: 20px;
           width: 180px;
@@ -17,8 +17,8 @@ export default function RequestRow(props) {
       >
         {props.item.name}
       </Link>
-      <Button height="35px" width="85px" onClick={() => props.handleResponse(true)}>Accept</Button>
-      <Button height="35px" width="85px" onClick={() => props.handleResponse(false)}>Decline</Button>
+      <Button height="35px" width="85px" onClick={() => props.handleResponse(true, props.item)}>Accept</Button>
+      <Button height="35px" width="85px" onClick={() => props.handleResponse(false, props.item)}>Decline</Button>
     </div>
   );
 }

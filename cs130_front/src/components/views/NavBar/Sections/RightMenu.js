@@ -1,24 +1,38 @@
 import React from 'react';
 import { Menu } from 'antd';
-import axios from 'axios';
-import { USER_SERVER } from '../../../../Config';
 import { withRouter } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 
 function RightMenu(props) {
-	const user = useSelector(state => state.user);
 	const logoutHandler = () => {
-		axios.get(`${USER_SERVER}/logout`).then(response => {
-			if (response.status === 200) {
-				props.history.push('/login');
-			} else {
-				alert('Log Out Failed');
-			}
-		});
+    localStorage.setItem('userId', 'nothing');
+		props.history.push('/');
 	};
 
-	if (user.userData && !user.userData.isAuth) {
+
+	if (localStorage.getItem('userId') !== 'nothing') {
+    const classesRef = `/classes/${localStorage.getItem('userId')}`
+    const groupsRef = `/groups/${localStorage.getItem('userId')}`
+    const profileRef = `/profile/${localStorage.getItem('userId')}`
 		return (
+      <Menu mode={props.mode}>
+			<Menu.Item key="classes">
+				<a href={classesRef}>Classes</a> 
+			</Menu.Item>
+			<Menu.Item key="groups">
+				<a href={groupsRef}>Groups</a>
+			</Menu.Item>
+      <Menu.Item key="profile">
+				<a href={profileRef}>Profile</a>
+			</Menu.Item>
+			<Menu.Item key="logout">
+				<a onClick={logoutHandler}>Logout</a>
+			</Menu.Item>
+		</Menu>
+		);
+  }
+  // we need to pass current user's id here in the future.
+	return (
+		<Menu mode={props.mode}>
 			<Menu mode={props.mode}>
 				<Menu.Item key="mail">
 					<a href="/login">Login</a>
@@ -27,24 +41,7 @@ function RightMenu(props) {
 					<a href="/register">Register</a>
 				</Menu.Item>
 			</Menu>
-		);
-  }
-  // we need to pass current user's id here in the future.
-	return (
-		<Menu mode={props.mode}>
-			<Menu.Item key="classes">
-				<a href="/classes">Classes</a> 
-			</Menu.Item>
-			<Menu.Item key="groups">
-				<a href="/groups">Groups</a>
-			</Menu.Item>
-      <Menu.Item key="profile">
-				<a href="/profile">Profile</a>
-			</Menu.Item>
-			<Menu.Item key="logout">
-				<a onClick={logoutHandler}>Logout</a>
-			</Menu.Item>
-		</Menu>
+    </Menu>
 	);
 }
 

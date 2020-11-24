@@ -82,7 +82,8 @@ export default function CourseAdder(props) {
               return {
                 name: course.name,
                 keywords: course.keywords,
-                classId: course.classId
+                classId: course.id,
+                categories: course.categories
               }
             });
             mappedCourses.push({name: "Create a course"});
