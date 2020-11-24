@@ -36,12 +36,14 @@ type CreateGroupRequest struct {
 // CreateResponse fields to send back
 // HTTP status code 201 and group model in data
 type CreateGroupResponse struct {
-	ID        int       `json:"g_id"`
-	AdminID   int       `json:"admin_id"`
-	Name      string    `json:"name"`
-	CourseID  int       `json:"course_id"`
-	CreatedAt time.Time `json:"CreatedAt"`
-	UpdatedAt time.Time `json:"UpdatedAt"`
+	ID          int           `json:"g_id"`
+	AdminID     int           `json:"admin_id"`
+	Name        string        `json:"name"`
+	CourseID    int           `json:"course_id"`
+	MeetingTime string        `json:"meeting_time"`
+	Members     []models.User `json:"members"`
+	CreatedAt   time.Time     `json:"CreatedAt"`
+	UpdatedAt   time.Time     `json:"UpdatedAt"`
 }
 
 func populateGroupResponse(g *models.Group, r *CreateGroupResponse) {
@@ -100,6 +102,20 @@ func GetGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	var gr CreateGroupResponse
 	populateGroupResponse(&group, &gr)
+
+	if err := group.GetMembers(db, &gr.Members); err != nil {
+		switch err {
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+	}
+
+	if err := group.GetMeetingTime(db, &gr.MeetingTime); err != nil {
+		switch err {
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
+	}
 
 	respondWithJSON(w, http.StatusOK, gr)
 }
