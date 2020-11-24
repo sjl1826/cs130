@@ -76,6 +76,7 @@ func (a *App) initializeRoutes() {
 
 	//Group Routes
 	groupRoutes := routes.PathPrefix("/group").Subrouter()
+	groupRoutes.HandleFunc("", a.handleRequest(handlers.GetGroup)).Methods("GET")
 	groupRoutes.HandleFunc("/create", a.handleRequest(handlers.CreateGroup)).Methods("POST")
 
 	//Course Routes

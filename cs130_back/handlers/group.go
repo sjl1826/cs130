@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"time"
+	"strconv"
 
 	"github.com/jinzhu/gorm"
 )
@@ -35,7 +36,7 @@ type CreateGroupRequest struct {
 // CreateResponse fields to send back
 // HTTP status code 201 and group model in data
 type CreateGroupResponse struct {
-	ID        int       `json:"u_id"`
+	ID        int       `json:"g_id"`
 	AdminID   int       `json:"admin_id"`
 	Name      string    `json:"name"`
 	CourseID  int       `json:"course_id"`
@@ -82,4 +83,25 @@ func CreateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	populateGroupResponse(&group, &gr)
 
 	respondWithJSON(w, http.StatusCreated, gr)
+}
+
+
+// GetGroup retrieves and returns the group
+func GetGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := r.URL.Query()
+	id, ok := strconv.Atoi(vars["g_id"][0])
+	if ok != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid group id")
+		return
+	}
+	group := models.Group{ID: id}
+	if GetGroupByID(db, &group, w) == 0 {
+		return
+	}
+
+	var gr CreateGroupResponse
+	populateGroupResponse(&group, &gr)
+
+	
+	respondWithJSON(w, http.StatusOK, gr)
 }
