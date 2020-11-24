@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import ClassList from '../../CurrentClasses/ClassList';
 import GroupItem from '../GroupsPage/GroupItem';
 import Text from '../../Text/Text';
-import '../../../App.css';
 import Button from '../../Button/Button';
 import * as Colors from '../../../constants/Colors';
-import CreateGroup from '../GroupsPage/CreateGroup';
 
 export default function ViewGroupPage(props) {
   const members = [
@@ -15,29 +12,14 @@ export default function ViewGroupPage(props) {
 
   const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm" }
 
-  const classes2 = [
-    { name: "Discrete Mathematics", courseId: 1, groups: [currentGroup2], },
-    { name: "Computer Architecture", courseId: 2, groups: [currentGroup2] }
-  ]
+  const [currentGroup, setCurrentGroup] = useState(currentGroup2);
 
-  const groupInformation = [
-    { name: "Group name", value: "" },
-  ];
+  function makeRequest() {
 
-  const reqs = [{ name: "Al Squad", id: 223, types: "invitation" }, { name: "Calc Gang", id: 223, types: "invitation" }]
-
-  const [requests, setRequests] = useState(reqs);
-  const [currentGroup, setCurrentGroup] = useState(classes2[0].groups[0]);
-  const [classes, setClasses] = useState(classes2);
-
-  // Pass this to ClassList
-  function groupClicked(group) {
-    //set main content to be for title
-    setCurrentGroup(group);
   }
 
-  function getClassesList() {
-    setClasses(classes2);
+  function getGroup() {
+    setCurrentGroup(currentGroup2);
   }
 
 
@@ -74,6 +56,7 @@ export default function ViewGroupPage(props) {
               height="45px"
               textWeight="800"
               color={Colors.Blue}
+              onClick={() => makeRequest()}
             >
               Join Group
             </Button>
