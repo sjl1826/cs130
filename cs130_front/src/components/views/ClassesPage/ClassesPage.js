@@ -10,6 +10,7 @@ import './styles.css';
 import StudyBuddyList from '../../StudyBuddies/StudyBuddyList';
 import SearchBar from '../../Search/SearchBar';
 import Text from '../../Text/Text';
+import ListingCreator from '../../ListingCreator/ListingCreator'
 
 function ClassesPage(props) {
   const items = [{name: "Wow Squad", groupId: 123}, {name: "CA Squad", groupId: 124}, {name: "DM Squad", groupId: 125}]
@@ -61,8 +62,12 @@ function ClassesPage(props) {
         </div>
         <div style={{paddingTop: '0px'}} className="panel">
           <div className="column">
-            <Inviter user={user} items={items} handleGroupInvite={handleGroupInvite}/> 
-            <Dropdown options={items} sendSelection={() => {}}/>
+            {currentTab == "Listings" ?
+            
+              <ListingCreator user={user} course_name={mainTitleState} items={items}></ListingCreator>
+              :
+              <Inviter user={user} items={items} handleGroupInvite={handleGroupInvite}/> 
+            }
           </div>
           <div className="column">
             <Tabs setTabVar={setTabVar} >
