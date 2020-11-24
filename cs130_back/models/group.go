@@ -20,7 +20,6 @@ type Group struct {
 	CourseName  string        `json:"course_name"`
 	CourseID    int           `json:"course_id"`
 	AdminID     int           `json:"admin_id"`
-	MeetingTime string        `json:"meeting_time"`
 	Members     pq.Int64Array `gorm:"type:integer[]" json:"members"`
 }
 

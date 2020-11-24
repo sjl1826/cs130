@@ -4,9 +4,9 @@ package handlers
 
 import (
 	"cs130_back/models"
+	"encoding/json"
 	"net/http"
 	"time"
-	"encoding/json"
 
 	"github.com/jinzhu/gorm"
 )
@@ -27,20 +27,20 @@ func GetGroupByID(db *gorm.DB, g *models.Group, w http.ResponseWriter) int {
 
 // CreateGroupRequest required fields to create a group
 type CreateGroupRequest struct {
-	AdminID	  int	 `json:"admin_id"`
-	Name	  string `json:"name"`
-	CourseID  int	 `json:"course_id"`
+	AdminID  int    `json:"admin_id"`
+	Name     string `json:"name"`
+	CourseID int    `json:"course_id"`
 }
 
 // CreateResponse fields to send back
 // HTTP status code 201 and group model in data
 type CreateGroupResponse struct {
-	ID        int    `json:"u_id"`
-	AdminID	  int	 `json:"admin_id"`
-	Name	  string `json:"name"`
-	CourseID  int	 `json:"course_id"`
-	CreatedAt         time.Time `json:"CreatedAt"`
-	UpdatedAt         time.Time `json:"UpdatedAt"`
+	ID        int       `json:"u_id"`
+	AdminID   int       `json:"admin_id"`
+	Name      string    `json:"name"`
+	CourseID  int       `json:"course_id"`
+	CreatedAt time.Time `json:"CreatedAt"`
+	UpdatedAt time.Time `json:"UpdatedAt"`
 }
 
 func populateGroupResponse(g *models.Group, r *CreateGroupResponse) {
@@ -62,13 +62,19 @@ func CreateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	group := models.Group{}
+	group := models.Group{Name: p.Name, CourseID: p.CourseID, AdminID: p.AdminID}
 	if err := group.CreateGroup(db); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	if GetGroupByID(db, &group, w) == 0 {
+	if err := group.GetGroup(db); err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			respondWithError(w, http.StatusNotFound, "Group not found")
+		default:
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+		}
 		return
 	}
 
