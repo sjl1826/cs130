@@ -3,6 +3,8 @@ import ClassList from '../../CurrentClasses/ClassList';
 import GroupItem from '../GroupsPage/GroupItem';
 import Text from '../../Text/Text';
 import '../../../App.css';
+import Button from '../../Button/Button';
+import * as Colors from '../../../constants/Colors';
 import CreateGroup from '../GroupsPage/CreateGroup';
 
 export default function ViewGroupPage(props) {
@@ -22,6 +24,9 @@ export default function ViewGroupPage(props) {
     { name: "Group name", value: "" },
   ];
 
+  const reqs = [{ name: "Al Squad", id: 223, types: "invitation" }, { name: "Calc Gang", id: 223, types: "invitation" }]
+
+  const [requests, setRequests] = useState(reqs);
   const [currentGroup, setCurrentGroup] = useState(classes2[0].groups[0]);
   const [classes, setClasses] = useState(classes2);
 
@@ -52,18 +57,26 @@ export default function ViewGroupPage(props) {
       <div className="panel">
         <div className="column">
           <div className="text-container">
-            <Text color="black" size="24px" weight="800">
+            <Text color="black" size="50px" weight="1000">
               {currentGroup.courseName}
             </Text>
           </div>
-          <CreateGroup options={groupInformation} />
         </div>
         <div className="column">
           {renderMainPanel()}
         </div>
         <div className="column">
           <div className="group-with-margin-bottom">
-            <ClassList classList={classes} titleClicked={groupClicked} clickable={true} />
+            <Button
+              textColor={Colors.White}
+              textSize="28px"
+              width="275px"
+              height="45px"
+              textWeight="800"
+              color={Colors.Blue}
+            >
+              Join Group
+            </Button>
           </div>
         </div>
       </div>
