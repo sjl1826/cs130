@@ -7,7 +7,6 @@ import ListingList from '../../Listings/ListingList';
 import '../../../App.css';
 import ClassTitle from '../../CurrentClasses/ClassTitle';
 import './styles.css';
-import StudyBuddyList from '../../StudyBuddies/StudyBuddyList';
 import SearchBar from '../../Search/SearchBar';
 import Text from '../../Text/Text';
 import ListingCreator from '../../ListingCreator/ListingCreator'
