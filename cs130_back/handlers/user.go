@@ -519,6 +519,90 @@ func GetAllUsers(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, response)
 }
 
+// CourseViewDetails contains all the information needed for a Course page
+type CourseViewDetails struct {
+	CourseName		string
+	StudyBuddies 	[]StudyBuddy
+	Listings 		[]models.Listing
+}
+
+// StudyBuddy is a User object without certain 'private' fields
+type StudyBuddy struct {
+	ID				int		`json:"u_id"`
+	FirstName		string	`json:"first_name"`
+	LastName		string	`json:"last_name"`
+	Email			string	`json:"u_email"`
+	Biography		string	`json:"biography"`
+	Timezone		string 	`json:"timezone"`
+	SchoolName		string 	`json:"school_name"` 
+	Availability	pq.Int64Array	`json:"availability"`
+}
+
+// GetBuddiesAndListings retrieves Study Buddies and Listings for each of a user's courses
+func GetBuddiesAndListings(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := r.URL.Query()
+	id, ok := strconv.Atoi(vars["u_id"][0])
+	if ok != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user id")
+		return
+	}
+
+	//Get user object
+	p := models.User{ID: id}
+	if GetUserByID(db, &p, w) == 0 {
+		return
+	}
+
+	//Get all courses
+	var courses []models.Course
+	err := p.GetCourses(db, &courses)
+	if err != nil {
+		return
+	}
+
+	//returns map of courseIDs to their CourseViewDetails
+	response := make(map[int]CourseViewDetails)
+
+	for _, j := range courses {
+		var tempDetails CourseViewDetails
+		tempDetails.CourseName = j.Name
+
+		// Get all students enrolled in this course
+		for _, k := range j.StudyBuddies {
+			var s StudyBuddy
+			populateStudyBuddy(db, w, k, &s)
+			tempDetails.StudyBuddies = append(tempDetails.StudyBuddies, s)
+		}
+
+		// Get all Course Listings
+		err := j.GetListings(db, &tempDetails.Listings)
+		if err != nil {
+			return
+		}	
+
+		response[j.ID] = tempDetails
+	}
+
+	respondWithJSON(w, http.StatusOK, response)
+}
+
+// populateStudyBuddy takes a User ID and populates a StudyBuddy object (User with certain redacted fields)
+func populateStudyBuddy(db *gorm.DB, w http.ResponseWriter, id int64, s *StudyBuddy){
+	p := models.User{ID: int(id)}
+	if GetUserByID(db, &p, w) == 0 {  //might be an issue if we aren't careful about removing studybuddies as users are deleted
+		return
+	}
+
+	s.ID = p.ID
+	s.FirstName = p.FirstName
+	s.LastName = p.LastName
+	s.Email = p.Email
+	s.Biography = p.Biography
+	s.Timezone = p.Timezone
+	s.SchoolName = p.SchoolName
+	s.Availability = p.Availability
+}
+
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	respondWithJSON(w, code, map[string]string{"error": message})
 }
