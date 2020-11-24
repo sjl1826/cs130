@@ -22,6 +22,8 @@ function GroupsPage(props) {
     { name: "Shirly fang", id: 123, discord: "shirly#123", email: "shirly@gmail.com" }
   ]
 
+  const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm" }
+
   const groupInformation = [
     { name: "Group name", value: "" },
   ];
@@ -30,14 +32,13 @@ function GroupsPage(props) {
 
   const [requests, setRequests] = useState(reqs);
   const [mainPanelState, setMainPanel] = useState();
-  const [currentGroup, setCurrentGroup] = useState({ name: "DM Squad", groupId: 1 });
+  const [currentGroup, setCurrentGroup] = useState(currentGroup2);
   const [classes, setClasses] = useState(classes2);
 
   // Pass this to ClassList
-  function groupClicked(title) {
+  function groupClicked(group) {
     //set main content to be for title
-    setMainPanel(title);
-    setCurrentGroup();
+    setCurrentGroup(group);
   }
 
   function getClassesList() {
@@ -64,7 +65,7 @@ function GroupsPage(props) {
       case 'noGroupSelected':
         return <Text color="black" size="24px" weight="800"> Select a group! </Text>
       default:
-        return <GroupItem className="group-with-margin-centered" day="Firday" time="4 PM" groupName={currentGroup.name} groupId={currentGroup.id} />
+        return <GroupItem className="group-with-margin-centered" group={currentGroup} />
     }
   }
   //{getCourse(currentGroup.courseId).name}
@@ -74,7 +75,7 @@ function GroupsPage(props) {
         <div className="column">
           <div className="text-container">
             <Text color="black" size="24px" weight="800">
-              Course
+              {currentGroup.courseName}
             </Text>
           </div>
           <CreateGroup options={groupInformation} />
