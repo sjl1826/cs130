@@ -489,6 +489,36 @@ func GetClassesInfo(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, response)
 }
 
+// UserSearchDetails contains details displayed during user search
+type UserSearchDetails struct {
+	ID				int
+	FirstName 		string		
+	LastName		string
+	Email			string
+
+}
+
+// GetAllUsers retrieves all users in the DB (for search functionality)
+func GetAllUsers(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	response := make(map[string][]UserSearchDetails)
+
+	rows, err := db.Model(&models.User{}).Select("id, first_name, last_name, email").Rows()
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	var UserDetails []UserSearchDetails
+	for rows.Next() {
+		var details UserSearchDetails
+		db.ScanRows(rows, &details)
+		UserDetails = append(UserDetails, details)
+	}
+
+	response["users"] = UserDetails
+	respondWithJSON(w, http.StatusOK, response)
+}
+
 func respondWithError(w http.ResponseWriter, code int, message string) {
 	respondWithJSON(w, code, map[string]string{"error": message})
 }
