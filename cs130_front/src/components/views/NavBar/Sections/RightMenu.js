@@ -8,18 +8,21 @@ function RightMenu(props) {
 		props.history.push('/');
 	};
 
-  console.log(localStorage.getItem('userId'));
+
 	if (localStorage.getItem('userId') !== 'nothing') {
+    const classesRef = `/classes/${localStorage.getItem('userId')}`
+    const groupsRef = `/groups/${localStorage.getItem('userId')}`
+    const profileRef = `/profile/${localStorage.getItem('userId')}`
 		return (
       <Menu mode={props.mode}>
 			<Menu.Item key="classes">
-				<a href="/classes">Classes</a> 
+				<a href={classesRef}>Classes</a> 
 			</Menu.Item>
 			<Menu.Item key="groups">
-				<a href="/groups">Groups</a>
+				<a href={groupsRef}>Groups</a>
 			</Menu.Item>
       <Menu.Item key="profile">
-				<a href="/profile">Profile</a>
+				<a href={profileRef}>Profile</a>
 			</Menu.Item>
 			<Menu.Item key="logout">
 				<a onClick={logoutHandler}>Logout</a>

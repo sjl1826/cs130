@@ -14,7 +14,7 @@ const ClassList = (props) => {
     { props.classList.map((data,index) => {
         if (data) {
           return (
-            <div >
+            <div key={index}>
               <ClassItem data={data} titleClicked={props.titleClicked} clickable={props.clickable}/>
 	          </div>	
     	    );	

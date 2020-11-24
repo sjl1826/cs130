@@ -23,10 +23,8 @@ function RegisterPage(props) {
         first_name: firstName,
         last_name: lastName
       }
-      console.log(dataToSubmit)
       const response = await axios.post(`${USER_SERVER}/register`,  dataToSubmit)
       if (response) {
-        console.log(response)
         props.history.push('/login');
       }
     } catch(error) {

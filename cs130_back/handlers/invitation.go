@@ -6,7 +6,6 @@ import (
 	"cs130_back/models"
 	"encoding/json"
 	"net/http"
-
 	"github.com/jinzhu/gorm"
 )
 
@@ -47,12 +46,19 @@ func UpdateInvitation(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	
 	if p.Status == "ACCEPT" {
-		invit.Status = true
-	} else {
-		invit.Status = false
-	}
+		//add user to members of group
+		group := models.Group{ID: invit.GroupID}
+		if GetGroupByID(db, &group, w) == 0 {
+			return
+		}
+		if err := group.AddMember(db, invit.ReceiveID); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	} 
 
-	if err := invit.UpdateInvitation(db); err != nil {
+	//delete invitation after response
+	if err := invit.DeleteInvitation(db); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
