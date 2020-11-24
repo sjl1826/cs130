@@ -12,17 +12,17 @@ import CreateGroup from './CreateGroup';
 function GroupsPage(props) {
 
 
-  const classes2 = [
-    { name: "Discrete Mathematics", courseId: 1, groups: [{ name: "DM Squad", groupId: 1 }, { name: "DM Squad II", groupId: 1 }] },
-    { name: "Computer Architecture", courseId: 2, groups: [{ name: "CA Squad", groupId: 3 }] }
-  ]
-
   const members = [
     { name: "Shirly fang", school: "UCLA", id: 123, discord: "shirly#123", email: "shirly@gmail.com" },
     { name: "Shirly fang", id: 123, discord: "shirly#123", email: "shirly@gmail.com" }
   ]
 
   const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm" }
+
+  const classes2 = [
+    { name: "Discrete Mathematics", courseId: 1, groups: [currentGroup2], },
+    { name: "Computer Architecture", courseId: 2, groups: [currentGroup2] }
+  ]
 
   const groupInformation = [
     { name: "Group name", value: "" },
@@ -31,8 +31,7 @@ function GroupsPage(props) {
   const reqs = [{ name: "Al Squad", id: 223, types: "invitation" }, { name: "Calc Gang", id: 223, types: "invitation" }]
 
   const [requests, setRequests] = useState(reqs);
-  const [mainPanelState, setMainPanel] = useState();
-  const [currentGroup, setCurrentGroup] = useState(currentGroup2);
+  const [currentGroup, setCurrentGroup] = useState(classes2[0].groups[0]);
   const [classes, setClasses] = useState(classes2);
 
   // Pass this to ClassList
@@ -61,7 +60,7 @@ function GroupsPage(props) {
   const goToUserProfile = user => () => { props.history.push(`/profile/${user.id}`); }
 
   function renderMainPanel() {
-    switch (mainPanelState) {
+    switch (currentGroup) {
       case 'noGroupSelected':
         return <Text color="black" size="24px" weight="800"> Select a group! </Text>
       default:
