@@ -105,3 +105,47 @@ func GetGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	
 	respondWithJSON(w, http.StatusOK, gr)
 }
+
+
+type UpdateGroupRequest struct {
+	ID				int    	`json:"g_id"`
+	Name     		string  `json:"name"`
+	AdminID  		int     `json:"admin_id"`
+}
+
+// UpdateGroup will update the values of the specified group
+func UpdateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var p UpdateGroupRequest
+	decoder := json.NewDecoder(r.Body)
+	if err := decoder.Decode(&p); err != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid request payload")
+		return
+	}
+	defer r.Body.Close()
+
+	group := models.Group{ID: p.ID}
+	if GetGroupByID(db, &group, w) == 0 {
+		return
+	}
+
+	if p.Name != "" {
+		group.Name = p.Name
+	}
+	if p.AdminID != 0 {
+		group.AdminID = p.AdminID
+	}
+	
+
+	if err := group.UpdateGroup(db); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	var gr CreateGroupResponse
+	populateGroupResponse(&group, &gr)
+
+	
+	respondWithJSON(w, http.StatusOK, gr)
+}
+
+
