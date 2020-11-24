@@ -55,6 +55,10 @@ func populateGroupResponse(g *models.Group, r *CreateGroupResponse) {
 	r.UpdatedAt = g.UpdatedAt
 }
 
+type CreateGroupResponses struct {
+	GroupResponses	[]CreateGroupResponse	`json:"group_responses"`
+}
+
 // CreateGroup initializes a new group in the database
 func CreateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var p CreateGroupRequest
