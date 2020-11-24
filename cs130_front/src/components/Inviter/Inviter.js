@@ -10,10 +10,15 @@ export default function Inviter(props) {
   function sendSelection(group){
     setGroup(group);
   }
-
+  
   return(
+    props.invitedUser == "" ?
     <div className="small-rounded-box">
-      <Text size="24px" weight="800">Invite to group</Text>
+      <Text size="24px" weight="800">Select a user to invite to a group</Text>
+    </div>
+    :
+    <div className="small-rounded-box">
+      <Text size="24px" weight="800">Invite {props.invitedUser.split(' ')[0]} to group</Text>
       <Dropdown width="20vw" options={props.items} sendSelection={sendSelection}/>
       <Button textWeight="800" onClick={() => props.handleGroupInvite(props.user, group)}>Invite</Button>
     </div>
