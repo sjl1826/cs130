@@ -6,8 +6,8 @@ import (
 	"cs130_back/models"
 	"encoding/json"
 	"net/http"
-	"time"
 	"strconv"
+	"time"
 
 	"github.com/jinzhu/gorm"
 )
@@ -85,7 +85,6 @@ func CreateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusCreated, gr)
 }
 
-
 // GetGroup retrieves and returns the group
 func GetGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	vars := r.URL.Query()
@@ -102,15 +101,13 @@ func GetGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var gr CreateGroupResponse
 	populateGroupResponse(&group, &gr)
 
-	
 	respondWithJSON(w, http.StatusOK, gr)
 }
 
-
 type UpdateGroupRequest struct {
-	ID				int    	`json:"g_id"`
-	Name     		string  `json:"name"`
-	AdminID  		int     `json:"admin_id"`
+	ID      int    `json:"g_id"`
+	Name    string `json:"name"`
+	AdminID int    `json:"admin_id"`
 }
 
 // UpdateGroup will update the values of the specified group
@@ -134,7 +131,6 @@ func UpdateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	if p.AdminID != 0 {
 		group.AdminID = p.AdminID
 	}
-	
 
 	if err := group.UpdateGroup(db); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -144,8 +140,27 @@ func UpdateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var gr CreateGroupResponse
 	populateGroupResponse(&group, &gr)
 
-	
 	respondWithJSON(w, http.StatusOK, gr)
 }
 
+// DeleteGroup deletes the group permanently
+func DeleteGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := r.URL.Query()
+	id, ok := strconv.Atoi(vars["g_id"][0])
+	if ok != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid Group ID")
+		return
+	}
 
+	group := models.Group{ID: id}
+	if GetGroupByID(db, &group, w) == 0 {
+		return
+	}
+
+	if err := group.DeleteGroup(db); err != nil {
+		respondWithError(w, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}

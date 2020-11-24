@@ -80,6 +80,7 @@ func (a *App) initializeRoutes() {
 
 	groupRoutes.HandleFunc("", a.handleRequest(handlers.GetGroup)).Methods("GET")
 	groupRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateGroup)).Methods("PUT")
+	groupRoutes.HandleFunc("/delete", a.handleRequest(handlers.DeleteGroup)).Methods("DELETE")
 
 	//Course Routes
 	courseRoutes := routes.PathPrefix("/course").Subrouter()
