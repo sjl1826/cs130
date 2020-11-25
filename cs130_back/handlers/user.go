@@ -10,8 +10,10 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"log"
 
 	"github.com/jinzhu/gorm"
+	"github.com/lib/pq"
 )
 
 // GetUserByID gets the user by ID
@@ -40,6 +42,14 @@ func CourseByID(db *gorm.DB, c *models.Course, w http.ResponseWriter) int {
 		return 0
 	}
 	return 1
+}
+
+type ClassesInfoResponse struct {
+	Courses map[string]map[string][]interface{} `json:"courses"`
+}
+
+func populateClassesInfoResponse(c map[string]map[string][]interface{}, r *ClassesInfoResponse) {
+	r.Courses = c
 }
 
 // CreateRequest required fields to create a user
@@ -127,6 +137,7 @@ type LoginResponse struct {
 	ExpiresIn        time.Duration `json:"expires_in"`
 	RefreshToken     string        `json:"refresh_token"`
 	RefreshExpiresIn time.Duration `json:"refresh_expires_in"`
+	ID 							 int 			 `json: "id"`
 }
 
 // LoginUser checks for a valid email and password to generate an access token
@@ -157,6 +168,7 @@ func LoginUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		response.ExpiresIn = newToken.AccessExpiresIn
 		response.RefreshToken = newToken.RefreshToken
 		response.RefreshExpiresIn = newToken.RefreshExpiresIn
+		response.ID = user.ID
 		respondWithJSON(w, http.StatusOK, response)
 	} else {
 		respondWithError(w, http.StatusBadRequest, "Invalid user credentials")
@@ -388,6 +400,9 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 type CourseRequest struct {
 	ID				int      `json:"u_id"`
 	CourseID		int 	 `json:"course_id,omit_empty"`
+	CourseName		string   `json:"course_name"`
+	Keywords		[]string `json:"keywords"`
+	Categories		[]string `json:"categories"`
 }
 
 // AddCourse will add a course for the user
@@ -405,19 +420,26 @@ func AddCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	course := models.Course{ID: p.CourseID}
-	if CourseByID(db, &course, w) == 0 {
-		return
-	}
+	if p.CourseID == 0 {
+		// Creates a new course if it doesn't exist
+		var arr pq.Int64Array
+		arr = append(arr, int64(p.ID))
+		c := models.Course{Name: p.CourseName, Keywords: p.Keywords, Categories: p.Categories, StudyBuddies: arr}
+		if err := c.CreateCourse(db); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
+	} else {
+		// Adds user to course if the course already exists
+		course := models.Course{ID: p.CourseID}
+		if CourseByID(db, &course, w) == 0 {
+			return
+		}
 
-	if err := course.AddStudyBuddy(db, p.ID); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
-	if err := user.AddCourse(db, p.CourseID); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
+		if err := course.AddStudyBuddy(db, p.ID); err != nil {
+			respondWithError(w, http.StatusInternalServerError, err.Error())
+			return
+		}
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
@@ -448,11 +470,6 @@ func RemoveCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := user.RemoveCourse(db, p.CourseID); err != nil {
-		respondWithError(w, http.StatusInternalServerError, err.Error())
-		return
-	}
-
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
 }
 
@@ -476,6 +493,169 @@ func DeleteUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
+func GetClassesInfo(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var course models.Course
+	var institutions map[string][]models.Course
+	institutions = make(map[string][]models.Course)
+	var categories map[string]map[string][]interface{}
+	categories = make(map[string]map[string][]interface{})
+
+	rows, err := db.Raw("SELECT * FROM courses").Rows()
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+	for rows.Next() {
+		db.ScanRows(rows, &course)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if val, ok := institutions[course.Categories[0]]; ok {
+			institutions[course.Categories[0]] = append(val, course)
+		} else {
+			institutions[course.Categories[0]] = append(institutions[course.Categories[0]], course)
+		}
+	}
+	for _, courses := range institutions {
+		for _, course := range courses {
+			var shortened map[string]interface{}
+			shortened = make(map[string]interface{})
+			shortened["id"] = course.ID
+			shortened["keywords"] = course.Keywords
+			shortened["name"] = course.Name
+			shortened["categories"] = course.Categories
+			if val, ok := categories[course.Categories[0]]; ok {
+				if val2, ok2 := val[course.Categories[1]]; ok2 {
+					val[course.Categories[1]] = append(val2, shortened)
+				} else {
+					categories[course.Categories[0]][course.Categories[1]] = append(categories[course.Categories[0]][course.Categories[1]], shortened)
+				}
+			} else {
+				categories[course.Categories[0]] = make(map[string][]interface{})
+				categories[course.Categories[0]][course.Categories[1]] = append(categories[course.Categories[0]][course.Categories[1]], shortened)
+			}
+		}
+	}
+
+	var response ClassesInfoResponse
+	populateClassesInfoResponse(categories, &response)
+	respondWithJSON(w, http.StatusOK, response)
+}
+
+// UserSearchDetails contains details displayed during user search
+type UserSearchDetails struct {
+	ID				int
+	FirstName 		string		
+	LastName		string
+	Email			string
+
+}
+
+// GetAllUsers retrieves all users in the DB (for search functionality)
+func GetAllUsers(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	response := make(map[string][]UserSearchDetails)
+
+	rows, err := db.Model(&models.User{}).Select("id, first_name, last_name, email").Rows()
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	var UserDetails []UserSearchDetails
+	for rows.Next() {
+		var details UserSearchDetails
+		db.ScanRows(rows, &details)
+		UserDetails = append(UserDetails, details)
+	}
+
+	response["users"] = UserDetails
+	respondWithJSON(w, http.StatusOK, response)
+}
+
+// CourseViewDetails contains all the information needed for a Course page
+type CourseViewDetails struct {
+	CourseName		string
+	StudyBuddies 	[]StudyBuddy
+	Listings 		[]models.Listing
+}
+
+// StudyBuddy is a User object without certain 'private' fields
+type StudyBuddy struct {
+	ID				int		`json:"u_id"`
+	FirstName		string	`json:"first_name"`
+	LastName		string	`json:"last_name"`
+	Email			string	`json:"u_email"`
+	Biography		string	`json:"biography"`
+	Timezone		string 	`json:"timezone"`
+	SchoolName		string 	`json:"school_name"` 
+	Availability	pq.Int64Array	`json:"availability"`
+}
+
+// GetBuddiesAndListings retrieves Study Buddies and Listings for each of a user's courses
+func GetBuddiesAndListings(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := r.URL.Query()
+	id, ok := strconv.Atoi(vars["u_id"][0])
+	if ok != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user id")
+		return
+	}
+
+	//Get user object
+	p := models.User{ID: id}
+	if GetUserByID(db, &p, w) == 0 {
+		return
+	}
+
+	//Get all courses
+	var courses []models.Course
+	err := p.GetCourses(db, &courses)
+	if err != nil {
+		return
+	}
+
+	//returns map of courseIDs to their CourseViewDetails
+	response := make(map[int]CourseViewDetails)
+
+	for _, j := range courses {
+		var tempDetails CourseViewDetails
+		tempDetails.CourseName = j.Name
+
+		// Get all students enrolled in this course
+		for _, k := range j.StudyBuddies {
+			var s StudyBuddy
+			populateStudyBuddy(db, w, k, &s)
+			tempDetails.StudyBuddies = append(tempDetails.StudyBuddies, s)
+		}
+
+		// Get all Course Listings
+		err := j.GetListings(db, &tempDetails.Listings)
+		if err != nil {
+			return
+		}	
+
+		response[j.ID] = tempDetails
+	}
+
+	respondWithJSON(w, http.StatusOK, response)
+}
+
+// populateStudyBuddy takes a User ID and populates a StudyBuddy object (User with certain redacted fields)
+func populateStudyBuddy(db *gorm.DB, w http.ResponseWriter, id int64, s *StudyBuddy){
+	p := models.User{ID: int(id)}
+	if GetUserByID(db, &p, w) == 0 {  //might be an issue if we aren't careful about removing studybuddies as users are deleted
+		return
+	}
+
+	s.ID = p.ID
+	s.FirstName = p.FirstName
+	s.LastName = p.LastName
+	s.Email = p.Email
+	s.Biography = p.Biography
+	s.Timezone = p.Timezone
+	s.SchoolName = p.SchoolName
+	s.Availability = p.Availability
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {

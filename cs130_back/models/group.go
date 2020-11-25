@@ -91,7 +91,6 @@ func (g *Group) GetInvitations(db *gorm.DB, invitations *[]Invitation) error {
 	return retVal.Error
 }
 
-
 const numSlots = 336
 
 //GetAvailability retrieves the availability object of the group
