@@ -302,6 +302,13 @@ func GetUserGroups(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 			}
 		}
 
+		if err := g.GetInvitations(db, &gr.Invitations); err != nil {
+			switch err {
+			default:
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+			}
+		}
+
 		responses = append(responses, gr)
 	}
 

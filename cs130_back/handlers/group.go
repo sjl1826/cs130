@@ -36,14 +36,15 @@ type CreateGroupRequest struct {
 // CreateResponse fields to send back
 // HTTP status code 201 and group model in data
 type CreateGroupResponse struct {
-	ID          int           `json:"g_id"`
-	AdminID     int           `json:"admin_id"`
-	Name        string        `json:"name"`
-	CourseID    int           `json:"course_id"`
-	MeetingTime string        `json:"meeting_time"`
-	Members     []models.User `json:"members"`
-	CreatedAt   time.Time     `json:"CreatedAt"`
-	UpdatedAt   time.Time     `json:"UpdatedAt"`
+	ID          int                 `json:"g_id"`
+	AdminID     int                 `json:"admin_id"`
+	Name        string              `json:"name"`
+	CourseID    int                 `json:"course_id"`
+	MeetingTime string              `json:"meeting_time"`
+	Members     []models.User 	    `json:"members"`
+	Invitations []models.Invitation `json:"invitations"`
+	CreatedAt   time.Time           `json:"CreatedAt"`
+	UpdatedAt   time.Time           `json:"UpdatedAt"`
 }
 
 func populateGroupResponse(g *models.Group, r *CreateGroupResponse) {
