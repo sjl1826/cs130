@@ -11,7 +11,7 @@ export default function ListingItem(props) {
                 <div className="row">
                     <div className="col">
                         <h3 className="header clickable" onClick={props.goToUserProfile(props.data.poster)} onmouseover="">{props.data.poster}</h3>
-                        <h3 style={{color: Colors.Gray, marginTop: "-10px"}}>{props.data.school} </h3>
+                        <h3 style={{color: "gray", marginTop: "-10px"}}>{props.data.school} </h3>
                     </div>
                     {props.data.groupId ?
                         <div className="col">
