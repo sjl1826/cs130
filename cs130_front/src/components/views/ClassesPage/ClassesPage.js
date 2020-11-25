@@ -28,7 +28,7 @@ function ClassesPage(props) {
   const [mainListings, setMainListings] = useState(classes[0].listings);
   const [currentTab, setCurrentTab] = useState("Study Buddies");
   const [input, setInput] = useState('');
-  const [invitedUser, setInvitedUser] = useState('');
+  const [invitedUser, setInvitedUser] = useState(null);
   //inviter is used by including it as an optional element for each user row in the user list 
   //show if invite to group button is clicked etc, then pass the user info from the row to the inviter
   //and groups information for current user can be gotten from the groups endpoint
@@ -58,7 +58,7 @@ function ClassesPage(props) {
       setMainListings(mainListingsDefault);
     }
     if (name == "Study Buddies"){
-      setInvitedUser("");
+      setInvitedUser(null);
     }
   }
 
@@ -80,7 +80,7 @@ function ClassesPage(props) {
             
               <ListingCreator user={user} course_name={mainTitleState} items={items}></ListingCreator>
               :
-              <Inviter user={user} items={items} handleGroupInvite={handleGroupInvite} invitedUser={invitedUser}/> 
+              <Inviter user={invitedUser} items={items} handleGroupInvite={handleGroupInvite}/> 
               
             }
           </div>

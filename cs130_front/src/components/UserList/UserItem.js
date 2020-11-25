@@ -20,7 +20,7 @@ const userItem = (props) => (
             }
         </div>
         <div className="col-centered">
-          {props.optionalElement ? <Button onClick={ () => props.optionalClick(props.user.name)}> Invite to group </Button> : null}
+            {props.optionalElement ? <Button onClick={ () => props.optionalClick(props.user)}> Invite to group </Button> : null}
         </div>
     </div>
 )
