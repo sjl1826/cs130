@@ -76,22 +76,6 @@ func CreateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if GetListingByID(db, &listing, w) == 0 {
-		return
-	}
-
-	//Get user object
-	user := models.User{ID: p.Poster}
-	if GetUserByID(db, &user, w) == 0 {
-		return
-	}
-
-	//Get course object
-	course := models.Course{ID: p.CourseID}
-	if GetCourseByID(db, &course, w) == 0 {
-		return
-	}
-
 	var clr CreateListingResponse
 	populateListingResponse(&listing, &clr)
 
