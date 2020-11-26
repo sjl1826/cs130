@@ -92,6 +92,12 @@ func (a *App) initializeRoutes() {
 	courseRoutes := routes.PathPrefix("/course").Subrouter()
 	courseRoutes.HandleFunc("/addListing", a.handleRequest(handlers.CreateListing)).Methods("POST")
 
+	//Invitation Routes
+	invitationRoutes := routes.PathPrefix("/invitation").Subrouter()
+	invitationRoutes.HandleFunc("/create", a.handleRequest(handlers.SendInvitation)).Methods("POST")
+
+	invitationRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateInvitation)).Methods("PUT")
+
 	//Miscellaneous
 	routes.HandleFunc("/getAllUsers", a.handleRequest(handlers.GetAllUsers)).Methods("GET")
 	
