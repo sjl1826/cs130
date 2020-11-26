@@ -33,7 +33,7 @@ type CreateGroupRequest struct {
 	CourseID int    `json:"course_id"`
 }
 
-// CreateResponse fields to send back
+// CreateGroupResponse fields to send back
 // HTTP status code 201 and group model in data
 type CreateGroupResponse struct {
 	ID          int                 `json:"g_id"`
