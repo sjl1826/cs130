@@ -85,6 +85,12 @@ func (g *Group) GetMembers(db *gorm.DB, members *[]User) error {
 	return retVal.Error
 }
 
+// GetInvitations returns the groups requests
+func (g *Group) GetInvitations(db *gorm.DB, invitations *[]Invitation) error {
+	retVal := db.Raw("SELECT * FROM invitations WHERE " + strconv.Itoa(g.ID) + " = group_id" + " AND " + "true" + " = type" ).Scan(&invitations)	
+	return retVal.Error
+}
+
 const numSlots = 336
 
 //GetAvailability retrieves the availability object of the group
