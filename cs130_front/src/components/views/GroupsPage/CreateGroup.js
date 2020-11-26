@@ -22,7 +22,7 @@ export default function CreateGroup(props) {
                 textColor={Colors.White}
                 textSize="28px"
                 width="275px"
-                height="45px"
+                height="65px"
                 textWeight="800"
                 color={Colors.Blue}
                 onClick={() => props.saveInfoClicked(firstInput)}

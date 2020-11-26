@@ -48,18 +48,18 @@ export default function ViewGroupPage(props) {
           {renderMainPanel()}
         </div>
         <div className="column">
-          <div className="group-with-margin-bottom">
+          <div className="text-container">
             <Button
-              textColor={Colors.White}
-              textSize="28px"
-              width="275px"
-              height="45px"
-              textWeight="800"
-              color={Colors.Blue}
-              onClick={() => makeRequest()}
-            >
-              Join Group
-            </Button>
+                textColor={Colors.White}
+                textSize="28px"
+                width="275px"
+                height="45px"
+                textWeight="800"
+                color={Colors.Blue}
+                onClick={() => makeRequest()}
+              >
+                Join Group
+              </Button>
           </div>
         </div>
       </div>

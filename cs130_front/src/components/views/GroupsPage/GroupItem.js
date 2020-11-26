@@ -11,8 +11,8 @@ function GroupItem(props) {
     const [keywords, setCourseKeywords] = useState('');
     return (
         <div className="group-container">
+            <Text size="44px" weight="800"> {props.group.name} </Text>
             <Text size="24px" weight="600"> Group meeting time is {props.group.day}, {props.group.time}. </Text>
-            <Text size="30px" weight="800"> {props.group.name} </Text>
             <UserList users={props.group.members}
                 goToUserProfile={goToUserProfile}
                 adminPrivilege={props.adminPrivilege}

@@ -65,21 +65,19 @@ function GroupsPage(props) {
         return <Text color="black" size="24px" weight="800"> Select a group! </Text>
       default:
         return <GroupItem className="group-with-margin-centered"
-          group={currentGroup}
-          adminPrivilege={true} />
+          group={currentGroup} />
     }
   }
   //{getCourse(currentGroup.courseId).name}
   function myGroupAdmin() {
     return (
       <div className="panel">
-        <div className="column">
+        <div className="column-left">
           <div className="text-container">
-            <Text color="black" size="24px" weight="800">
+            <Text color="black" size="44px" weight="800">
               {currentGroup.courseName}
             </Text>
           </div>
-          <CreateGroup options={groupInformation} />
           <Requests title="Requests" items={requests} handleResponse={handleRequest} />
         </div>
         <div className="column">
@@ -89,6 +87,7 @@ function GroupsPage(props) {
           <div className="group-with-margin-bottom">
             <ClassList classList={classes} titleClicked={groupClicked} clickable={true} />
           </div>
+          <CreateGroup options={groupInformation} />
         </div>
       </div>
     );
