@@ -29,6 +29,7 @@ function LoginPage(props) {
       if (response) {
         localStorage.setItem('accessToken', response.data.access_token);
         localStorage.setItem('userId', response.data.ID);
+        localStorage.setItem('userName', response.data.Name);
         props.history.push(`/profile/${response.data.ID}`)
       }
     } catch(error) {

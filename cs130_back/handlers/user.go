@@ -277,6 +277,60 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	respondWithJSON(w, http.StatusOK, cr)
 }
 
+// GetUserGroups retrieves and returns the user's group objects
+func GetUserGroups(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := r.URL.Query()
+	id, ok := strconv.Atoi(vars["u_id"][0])
+	if ok != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user id")
+		return
+	}
+	p := models.User{ID: id}
+	if GetUserByID(db, &p, w) == 0 {
+		return
+	}
+
+	var  groups []models.Group
+
+	p.GetGroups(db, &groups)
+
+	var responses []CreateGroupResponse
+
+	for _, g := range groups{
+		var gr CreateGroupResponse
+		populateGroupResponse(&g, &gr)
+
+		if err := g.GetMembers(db, &gr.Members); err != nil {
+			switch err {
+			default:
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+			}
+		}
+
+		if err := g.GetMeetingTime(db, &gr.MeetingTime); err != nil {
+			switch err {
+			default:
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+			}
+		}
+
+		if err := g.GetInvitations(db, &gr.Invitations); err != nil {
+			switch err {
+			default:
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+			}
+		}
+
+		responses = append(responses, gr)
+	}
+
+	var grps CreateGroupResponses
+	grps.GroupResponses = responses
+
+	respondWithJSON(w, http.StatusOK, grps)
+}
+
+
 // UpdateRequest for user requests parsing
 type UpdateRequest struct {
 	ID				int    	`json:"u_id"`

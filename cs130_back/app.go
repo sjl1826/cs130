@@ -74,9 +74,11 @@ func (a *App) initializeRoutes() {
 	authUserRoutes.HandleFunc("/addCourse", a.handleRequest(handlers.AddCourse)).Methods("PUT")
 	authUserRoutes.HandleFunc("/removeCourse", a.handleRequest(handlers.RemoveCourse)).Methods("PUT")
 	authUserRoutes.HandleFunc("/updateListing", a.handleRequest(handlers.UpdateListing)).Methods("PUT")
+	authUserRoutes.HandleFunc("/getUserGroups", a.handleRequest(handlers.GetUserGroups)).Methods("GET")
 	authUserRoutes.HandleFunc("/updateInvitation", a.handleRequest(handlers.UpdateInvitation)).Methods("PUT")
 	authUserRoutes.HandleFunc("/getBuddiesListings", a.handleRequest(handlers.GetBuddiesAndListings)).Methods("GET")
 	authUserRoutes.HandleFunc("/deleteListing", a.handleRequest(handlers.DeleteListing)).Methods("DELETE")
+
 
 	//Group Routes
 	groupRoutes := routes.PathPrefix("/group").Subrouter()
@@ -89,6 +91,12 @@ func (a *App) initializeRoutes() {
 	//Course Routes
 	courseRoutes := routes.PathPrefix("/course").Subrouter()
 	courseRoutes.HandleFunc("/addListing", a.handleRequest(handlers.CreateListing)).Methods("POST")
+
+	//Invitation Routes
+	invitationRoutes := routes.PathPrefix("/invitation").Subrouter()
+	invitationRoutes.HandleFunc("/create", a.handleRequest(handlers.SendInvitation)).Methods("POST")
+
+	invitationRoutes.HandleFunc("/update", a.handleRequest(handlers.UpdateInvitation)).Methods("PUT")
 
 	//Miscellaneous
 	routes.HandleFunc("/getAllUsers", a.handleRequest(handlers.GetAllUsers)).Methods("GET")

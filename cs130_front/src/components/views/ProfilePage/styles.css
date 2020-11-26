@@ -12,6 +12,12 @@
   align-items: center;
   height: 100vh;
 }
+.column-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100vh;;
+}
 
 .group-with-margin {
   margin-top: 50px;
@@ -43,7 +49,7 @@
   height: 100%;
 }
 
-.shadow-box {
+.shadow-box-listing {
   display: flex;
   justify-content: space-between;
   align-items: center;
