@@ -25,7 +25,6 @@ function ProfilePage(props) {
   const [mainPanelState, setMainPanel] = useState('CourseAdder');
   const userId = props.match.params.id;
   const myId = localStorage.getItem('userId');
-
   const config = {
     headers: {
       'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
@@ -70,7 +69,6 @@ function ProfilePage(props) {
       return { id: listing.id, courseName: listing.course_name, content: listing.text_description }
     })
     const inviteData = response.data.invitations.map(invite => {
-      console.log(invite)
       return { name: invite.group_name, groupId: invite.group_id, inviteId:invite.id, id: invite.receive_id, type: "invitation" };
     })
     const fetchedCourses = response.data.courses.map(course => {
@@ -147,7 +145,6 @@ function ProfilePage(props) {
   }
 
   function editListing(content, listing) {
-    console.log(content, listing);
     if(content == 'Close') {
       axios.delete(`${USER_SERVER_AUTH}/deleteListing?id=${listing.id}`, config).then(response => {
         return getProfile();
@@ -226,7 +223,6 @@ function ProfilePage(props) {
 
   function groupClicked(item) {
     //navigate to group page
-    console.log(item);
   }
 
   function viewOnlyProfile() {
@@ -253,7 +249,7 @@ function ProfilePage(props) {
     return (
       <div className="panel">
   
-        <div className="column"> 
+        <div className="column-left"> 
           <div className="text-container">
             <Text color="black" size="24px" weight="800"> 
               Hi Student, edit your class and other information to start studying with others!
