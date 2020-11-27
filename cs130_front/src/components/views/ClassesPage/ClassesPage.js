@@ -171,6 +171,7 @@ function ClassesPage(props) {
     setMainListingsDefault(item.listings);
     setMainListings(item.listings);
     setMainGroups(allGroups[item.name]);
+    setMainStudyBuddies(item.studyBuddies);
     setInvitedUser(null);
   }
 
