@@ -5,7 +5,7 @@ import Button from '../Button/Button';
 const userItem = (props) => (
     <div className='userBox'>
         <div>
-            <p className='topLineName' onClick={props.goToUserProfile(props.user)}> {props.user.name} </p>
+            <p className='topLineName' onClick={props.goToUserProfile(props.user.id)}> {props.user.name} </p>
             <p className='bottomLine'> {props.user.school} </p>
         </div>
         <div>

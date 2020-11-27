@@ -10,30 +10,24 @@ import Dropdown from '../Dropdown/Dropdown';
 
 function ListingCreator(props) {
   const [message, setMessage] = useState('');
-  const[group, setGroup] = useState(props.items[0]);
+  const[group, setGroup] = useState(props.items != null ? props.items[0] : null);
   const noGroupOption = {name: "None",groupId: 0};
-
-  async function createListing() {
-    try {
-      const dataToSubmit = {
-        poster: props.user,
-        course_name: props.course_name,
-        course_id: 0, // TODO, get courseID from course
-        text_description: message,
-        group_id: 0, // TODO, get groupID from group
-      }
-      console.log(dataToSubmit)
-      const response = await axios.post(`${USER_SERVER}/classes/addListing`,  dataToSubmit)
-      if (response) {
-        console.log(response)
-      }
-    } catch(error) {
-      console.log(error);
-    }
+  const dataToSubmit = {
+    poster: props.userId,
+    course_id: props.course_id,
+    text_description: message,
+    course_name: props.course_name
   }
 
   function sendSelection(group){
     setGroup(group);
+  }
+
+  function createListing(){
+    dataToSubmit.group_id = group.groupId;
+    dataToSubmit.group_name = group.name;
+    props.createListing(dataToSubmit);
+    document.getElementById("message").value = "";
   }
 
   return (
@@ -54,7 +48,7 @@ function ListingCreator(props) {
             </div>
             <div className="input-box">
                 <Text>Tag group in listing</Text>
-                <Dropdown width="20vw" options={[noGroupOption].concat(props.items)} sendSelection={sendSelection}/>
+                <Dropdown width="20vw" options={props.items != null ? [noGroupOption].concat(props.items) : [noGroupOption]} sendSelection={sendSelection}/>
             </div>
         </div>
         <div className="small-box">
