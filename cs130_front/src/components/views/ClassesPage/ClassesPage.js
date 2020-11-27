@@ -100,7 +100,7 @@ function ClassesPage(props) {
         const id = data[key]["StudyBuddies"][key2]["u_id"];
         const school = data[key]["StudyBuddies"][key2]["school_name"];
         const email = data[key]["StudyBuddies"][key2]["u_email"];
-        const discord = "None";
+        const discord = null;
         if (!(id == parseInt(userId))){
           studyBuddies.push({name: name, school: school, id: id, discord: discord, email: email});
         }
