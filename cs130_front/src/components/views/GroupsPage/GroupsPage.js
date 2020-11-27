@@ -89,7 +89,7 @@ function GroupsPage(props) {
               {currentGroup.courseName}
             </Text>
           </div>
-          {currentGroup.requests.length > 0}<Requests title="Requests" items={currentGroup.requests} handleResponse={handleRequest} />
+          {currentGroup.requests.length > 0 ? <Requests title="Requests" items={currentGroup.requests} handleResponse={handleRequest} /> : null}
         </div>
         <div className="column">
           {renderMainPanel()}
@@ -98,7 +98,7 @@ function GroupsPage(props) {
           <div className="group-with-margin-bottom">
             <ClassList classList={classes} titleClicked={groupClicked} clickable={true} />
           </div>
-          {classes.length > 0 ? <CreateGroup options={groupInformation} createGroup={createGroup} courses={classes}/> : null }
+            {classes.length > 0 ? <CreateGroup options={groupInformation} createGroup={createGroup} courses={classes}/> : null }
         </div>
       </div>
     );
