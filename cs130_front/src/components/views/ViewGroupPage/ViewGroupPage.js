@@ -22,7 +22,6 @@ export default function ViewGroupPage(props) {
     setCurrentGroup(currentGroup2);
   }
 
-
   const goToUserProfile = user => () => { props.history.push(`/profile/${user.id}`); }
 
   function renderMainPanel() {
