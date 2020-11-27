@@ -4,20 +4,18 @@ import GroupItem from './GroupItem';
 import Text from '../../Text/Text';
 import Button from '../../Button/Button';
 import Requests from '../../Requests/Requests';
-import * as Colors from '../../../constants/Colors';
-import UserList from '../../UserList/UserList';
 import '../../../App.css';
 import CreateGroup from './CreateGroup';
 
 function GroupsPage(props) {
-
-
   const members = [
     { name: "Shirly fang", school: "UCLA", id: 123, discord: "shirly#123", email: "shirly@gmail.com" },
     { name: "Shirly fang", id: 123, discord: "shirly#123", email: "shirly@gmail.com" }
   ]
 
-  const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm" }
+  const reqs = [{ name: "John Smith", id: 223, type: "request", userId: 1 }, { name: "John Oliver", id: 223, type: "request", userId: 2 }]
+
+  const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm" , requests: reqs}
 
   const classes2 = [
     { name: "Discrete Mathematics", courseId: 1, groups: [currentGroup2], },
@@ -28,9 +26,6 @@ function GroupsPage(props) {
     { name: "Group name", value: "" },
   ];
 
-  const reqs = [{ name: "Al Squad", id: 223, types: "invitation" }, { name: "Calc Gang", id: 223, types: "invitation" }]
-
-  const [requests, setRequests] = useState(reqs);
   const [currentGroup, setCurrentGroup] = useState(classes2[0].groups[0]);
   const [classes, setClasses] = useState(classes2);
 
@@ -40,24 +35,40 @@ function GroupsPage(props) {
     setCurrentGroup(group);
   }
 
-  function getClassesList() {
-    setClasses(classes2);
+  useEffect(() => {
+    async function initGroups() {
+      try {
+        const response = await getClassesAndGroups();
+        handleClassesAndGroupsResponse(response);
+      } catch (err) {
+        // Handle err here. Either ignore the error, or surface the error up to the user somehow.
+      }
+    }
+    initGroups();
+  }, []);
+
+  function getClassesAndGroups() {
+    //fetch the endpoints for groups and courses in order to populate current classes section. 
   }
 
-  function getCourse(courseId) {
-    //get course from backend
+  function handleClassesAndGroupsResponse(response){
+    //these sets are for mocked values now but should be the real values from response
+    setClasses(classes2); //handle null case if no classes, show a message about adding course in order to add groups
+    setCurrentGroup(classes2[0].groups[0]); // handle null case if no groups at all. this is just setting to first group of first class.
+    //not necessarily handle here but need to handle overall
   }
 
-  function getMeetingTime() {
-    //get time from backend
-  }
-
-  function handleRequest(request) {
+  function handleRequest(status, request) {
+    console.log(status, request);
     //update request with accept/decline
-    // and remove from list then fetch again to update ui
+    //fetch again to update ui
   }
 
-  const goToUserProfile = user => () => { props.history.push(`/profile/${user.id}`); }
+  function createGroup(group, course) {
+    console.log(group, course);
+    //create a group for this course and fetch classes and groups again to rerender 
+    //current classes to show new group.
+  }
 
   function renderMainPanel() {
     switch (currentGroup) {
@@ -78,7 +89,7 @@ function GroupsPage(props) {
               {currentGroup.courseName}
             </Text>
           </div>
-          <Requests title="Requests" items={requests} handleResponse={handleRequest} />
+          {currentGroup.requests.length > 0 ? <Requests title="Requests" items={currentGroup.requests} handleResponse={handleRequest} /> : null}
         </div>
         <div className="column">
           {renderMainPanel()}
@@ -87,17 +98,12 @@ function GroupsPage(props) {
           <div className="group-with-margin-bottom">
             <ClassList classList={classes} titleClicked={groupClicked} clickable={true} />
           </div>
-          <CreateGroup options={groupInformation} />
+            {classes.length > 0 ? <CreateGroup options={groupInformation} createGroup={createGroup} courses={classes}/> : null }
         </div>
       </div>
     );
   }
 
-  /*return (
-    <div className="App">
-      <UserList users={members} goToUserProfile={goToUserProfile} optionalElement={true} optionalClick={() => {}}/>
-    </div>
-  );*/
   return myGroupAdmin();
 
 }
