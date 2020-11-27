@@ -85,7 +85,7 @@ function ProfilePage(props) {
     setInvitations(inviteData);
     setListings(fetchedListings);
     setMyCourses(fetchedCourses);
-    setAvailability(response.data.availability);
+    setAvailability(response.data.availability == null ? [] : response.data.availability);
   }
 
   function handleClassesInfoResponse(courses) {
