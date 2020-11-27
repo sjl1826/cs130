@@ -15,10 +15,12 @@ export default function ViewGroupPage(props) {
   const [currentGroup, setCurrentGroup] = useState(currentGroup2);
 
   function makeRequest() {
-
+    const myId = localStorage.getItem('userId'); //receiveid
+    const myName = localStorage.getItem('userName'); //receivename
   }
 
   function getGroup() {
+    const groupId = props.match.params.id; // from url
     setCurrentGroup(currentGroup2);
   }
 
