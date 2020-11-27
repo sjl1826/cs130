@@ -12,7 +12,7 @@ import SearchBar from '../../Search/SearchBar';
 import Text from '../../Text/Text';
 import ListingCreator from '../../ListingCreator/ListingCreator'
 import UserList from '../../UserList/UserList';
-import { ROUTE, USER_SERVER_AUTH, COURSE_SERVER, INVITATION_SERVER } from '../../../Config';
+import { USER_SERVER_AUTH, COURSE_SERVER, INVITATION_SERVER } from '../../../Config';
 
 function ClassesPage(props) {
   const [classes, setClasses] = useState([]);
@@ -20,6 +20,7 @@ function ClassesPage(props) {
   const [mainClassId, setMainClassId] = useState(null);
   const [mainListingsDefault, setMainListingsDefault] = useState([]);
   const [mainListings, setMainListings] = useState([]);
+  const [addedListing, setAddedListing] = useState(null);
   const [mainStudyBuddies, setMainStudyBuddies] = useState([]);
   const [allGroups, setAllGroups] = useState({});
   const [mainGroups, setMainGroups] = useState([]);
@@ -41,7 +42,6 @@ function ClassesPage(props) {
         const allGroups = handleUserResponse(userResponse.data.groups);
         const courseResponse = await getCourses();
         handleBuddiesListingsResponse(courseResponse.data, allGroups);
-        const g = await getUsers();
 			} catch (err) {
 				// Handle err here. Either ignore the error, or surface the error up to the user somehow.
 			}
@@ -49,16 +49,27 @@ function ClassesPage(props) {
     initCourses();
   }, []);
 
+  useEffect(() => {
+    async function initCourses() {
+      try {
+        classes.forEach(course => {
+          if (addedListing.course_id == course.courseId) {
+            classClicked(course);
+          }
+        })
+      } catch (err) {
+        // Handle err here. Either ignore the error, or surface the error up to the user somehow.
+      }
+    }
+    initCourses();
+  }, [addedListing, classes]);
+
   function getCourses() {
     return axios.get(`${USER_SERVER_AUTH}/getBuddiesListings?u_id=${userId}`, config);
   }
 
   function getUser() {
     return axios.get(`${USER_SERVER_AUTH}?u_id=${userId}`, config);
-  }
-
-  function getUsers () {
-    return axios.get(`${ROUTE}/getAllUsers`);
   }
 
   function handleUserResponse(data) {
@@ -107,9 +118,7 @@ function ClassesPage(props) {
         const description = data[key]["Listings"][key2]["text_description"];
         const group_id = data[key]["Listings"][key2]["group_id"];
         const group_name = data[key]["Listings"][key2]["group_name"];
-        if (!(data[key]["Listings"][key2]["poster"] == parseInt(userId))){
-          listings.push({poster: poster, name: name, school: school, description: description, group_id: group_id, group_name: group_name});
-        }
+        listings.push({poster: poster, name: name, school: school, description: description, group_id: group_id, group_name: group_name});
       });
       classes.push({name:name, courseId: courseId, listings: listings, studyBuddies: studyBuddies});
     });
@@ -117,6 +126,7 @@ function ClassesPage(props) {
     setMainTitle(classes[0].name);
     setMainClassId(classes[0].courseId);
     setMainListingsDefault(classes[0].listings);
+    setMainListings(classes[0].listings);
     setMainStudyBuddies(classes[0].studyBuddies);
     setMainGroups(allGroups[classes[0].name]);
   }
@@ -134,7 +144,13 @@ function ClassesPage(props) {
       body["group_name"] = listing.group_name;
     }
 
-    axios.post(`${COURSE_SERVER}/addListing?u_id=${userId}`, body, config);
+    axios.post(`${COURSE_SERVER}/addListing?u_id=${userId}`, body, config).then(response => {
+      return axios.all([getCourses(), getUser()]);
+    }).then( axios.spread((data1, data2) => {
+      const allGroups = handleUserResponse(data2.data.groups);
+      handleBuddiesListingsResponse(data1.data, allGroups);
+      setAddedListing(listing);
+    }));
   }
 
   function createInvitation(user, group){

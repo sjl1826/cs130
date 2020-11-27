@@ -10,7 +10,7 @@ import Dropdown from '../Dropdown/Dropdown';
 
 function ListingCreator(props) {
   const [message, setMessage] = useState('');
-  const[group, setGroup] = useState(props.items[0]);
+  const[group, setGroup] = useState(props.items != null ? props.items[0] : null);
   const noGroupOption = {name: "None",groupId: 0};
   const dataToSubmit = {
     poster: props.userId,
@@ -48,7 +48,7 @@ function ListingCreator(props) {
             </div>
             <div className="input-box">
                 <Text>Tag group in listing</Text>
-                <Dropdown width="20vw" options={[noGroupOption].concat(props.items)} sendSelection={sendSelection}/>
+                <Dropdown width="20vw" options={props.items != null ? [noGroupOption].concat(props.items) : [noGroupOption]} sendSelection={sendSelection}/>
             </div>
         </div>
         <div className="small-box">
