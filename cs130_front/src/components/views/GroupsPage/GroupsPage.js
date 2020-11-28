@@ -17,7 +17,7 @@ function GroupsPage(props) {
 
   const reqs = [{ name: "John Smith", id: 223, type: "request", userId: 1 }, { name: "John Oliver", id: 223, type: "request", userId: 2 }]
 
-  const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm" , requests: reqs}
+  const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm", requests: reqs }
 
   const classes2 = [
     { name: "Discrete Mathematics", courseId: 1, groups: [currentGroup2], },
@@ -46,9 +46,9 @@ function GroupsPage(props) {
   useEffect(() => {
     async function initGroups() {
       try {
-        const response = await getClassesAndGroups();
-        console.log(response);
-        handleClassesAndGroupsResponse(response);
+        const groupResponse = await getGroups();
+        const classResponse = await getClasses();
+        handleClassesAndGroupsResponse(groupResponse.data.group_responses, classResponse.data);
       } catch (err) {
         // Handle err here. Either ignore the error, or surface the error up to the user somehow.
       }
@@ -56,20 +56,80 @@ function GroupsPage(props) {
     initGroups();
   }, []);
 
-  function getClassesAndGroups() {
+  function getGroups() {
     return axios.get(`${USER_SERVER_AUTH}/getUserGroups?u_id=${userId}`, config);
     //fetch the endpoints for groups and courses in order to populate current classes section. 
   }
 
-  function handleClassesAndGroupsResponse(response){
+  function getClasses() {
+    return axios.get(`${USER_SERVER_AUTH}/getBuddiesListings?u_id=${userId}`, config);
+  }
+
+  function handleClassesAndGroupsResponse(groupResponse, classResponse) {
+    //console.log(classResponse);
+    // Popoulate classes
+    const classes = []
+    Object.keys(classResponse).forEach(function (key) {
+      const name = classResponse[key]["CourseName"];
+      classes.push({ name: name, courseId: key, groups: [] });
+    });
+
+    // Populate groups
+    const groups = []
+    Object.keys(groupResponse).forEach(function (key) {
+      const name = groupResponse[key]["name"];
+      const id = groupResponse[key]["g_id"];
+      const meetingTime = groupResponse[key]["meeting_time"];
+
+      // Populate members
+      const members = []
+      Object.keys(groupResponse[key]["members"]).forEach(function (key2) {
+        const memberName = groupResponse[key]["members"][key2]["first_name"] + " " + groupResponse[key]["members"][key2]["last_name"];
+        const school = groupResponse[key]["members"][key2]["school_name"];
+        const memberId = groupResponse[key]["members"][key2]["u_id"];
+        const facebook = groupResponse[key]["members"][key2]["facebook"];
+        const discord = groupResponse[key]["members"][key2]["discord"];
+        const email = groupResponse[key]["members"][key2]["u_email"];
+        members.push({ name: memberName, school: school, id: memberId, facebook: facebook, discord: discord, email: email });
+      });
+
+      // Populate requests
+      const reqs = []
+      Object.keys(groupResponse[key]["invitations"]).forEach(function (key2) {
+        const reqName = groupResponse[key]["invitations"][key2]["receive_name"];
+        const reqId = groupResponse[key]["invitations"][key2]["receive_id"];
+        const reqGroupId = groupResponse[key]["invitations"][key2]["group_id"];
+        const reqInviteId = groupResponse[key]["invitations"][key2]["id"];
+        reqs.push({ name: reqName, groupId: reqGroupId, inviteId: reqInviteId, id: reqId, type: "request" });
+      });
+
+      Object.keys(classes).forEach(function (key2) {
+        const targetId = groupResponse[key]["course_id"];
+        if (classes[key2]["courseId"] == targetId) {
+          const courseName = classes[key2]["name"];
+          groups.push({ id: id, name: name, courseName: courseName, meetingTime: meetingTime, members: members, requests: reqs });
+          classes[key2]["groups"].push({ id: id, name: name, courseName: courseName, meetingTime: meetingTime, members: members, requests: reqs });
+        }
+      });
+    });
     //these sets are for mocked values now but should be the real values from response
-    setClasses(classes2); //handle null case if no classes, show a message about adding course in order to add groups
-    setCurrentGroup(classes2[0].groups[0]); // handle null case if no groups at all. this is just setting to first group of first class.
+    setClasses(classes); //handle null case if no classes, show a message about adding course in order to add groups
+    setCurrentGroup(classes[0].groups[0]); // handle null case if no groups at all. this is just setting to first group of first class.
     //not necessarily handle here but need to handle overall
   }
 
   function handleRequest(status, request) {
     console.log(status, request);
+    const body = {
+      u_id: parseInt(request.id),
+      invitation_id: request.inviteId,
+      status: status ? 'ACCEPT' : 'DECLINE'
+    }
+    axios.put(`${USER_SERVER_AUTH}/updateInvitation`, body, config).then(response => {
+      return getGroups();
+    }).then(getResponse => {
+      handleClassesAndGroupsResponse(getResponse);
+    });
     //update request with accept/decline
     //fetch again to update ui
   }
@@ -108,7 +168,7 @@ function GroupsPage(props) {
           <div className="group-with-margin-bottom">
             <ClassList classList={classes} titleClicked={groupClicked} clickable={true} />
           </div>
-            {classes.length > 0 ? <CreateGroup options={groupInformation} createGroup={createGroup} courses={classes}/> : null }
+          {classes.length > 0 ? <CreateGroup options={groupInformation} createGroup={createGroup} courses={classes} /> : null}
         </div>
       </div>
     );
