@@ -6,6 +6,8 @@ import Button from '../../Button/Button';
 import Requests from '../../Requests/Requests';
 import '../../../App.css';
 import CreateGroup from './CreateGroup';
+import axios from 'axios';
+import { USER_SERVER_AUTH } from '../../../Config';
 
 function GroupsPage(props) {
   const members = [
@@ -28,6 +30,12 @@ function GroupsPage(props) {
 
   const [currentGroup, setCurrentGroup] = useState(classes2[0].groups[0]);
   const [classes, setClasses] = useState(classes2);
+  const userId = localStorage.getItem('userId');
+  const config = {
+    headers: {
+      'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+    }
+  }
 
   // Pass this to ClassList
   function groupClicked(group) {
@@ -39,6 +47,7 @@ function GroupsPage(props) {
     async function initGroups() {
       try {
         const response = await getClassesAndGroups();
+        console.log(response);
         handleClassesAndGroupsResponse(response);
       } catch (err) {
         // Handle err here. Either ignore the error, or surface the error up to the user somehow.
@@ -48,6 +57,7 @@ function GroupsPage(props) {
   }, []);
 
   function getClassesAndGroups() {
+    return axios.get(`${USER_SERVER_AUTH}/getUserGroups?u_id=${userId}`, config);
     //fetch the endpoints for groups and courses in order to populate current classes section. 
   }
 
