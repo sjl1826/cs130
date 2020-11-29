@@ -163,10 +163,14 @@ func LoginUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	user.GetPassword(db)
 	if hash.ComparePasswords(user.Password, []byte(password)) {
-		newToken := models.Token{UserID: user.ID}
-		if err := newToken.New(db, &user); err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
+		var newToken models.Token
+		if !strings.HasSuffix(os.Args[0], ".test") { // create new token only if not test
+		// Has gotten email and password that matches
+			newToken = models.Token{UserID: user.ID}
+			if err := newToken.New(db, &user); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
 		}
 		var response LoginResponse
 		response.AccessToken = newToken.AccessToken

@@ -56,6 +56,29 @@ func TestRegisterUser(t *testing.T) {
 	}
 }
 
+func TestLoginUser(t *testing.T) {
+	mock, DB := GetMock();
+	defer DB.Close()
+
+	handler := GetHandler(DB)
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	e := httpexpect.New(t, server.URL)
+
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM users WHERE ID=0")).WillReturnRows(sqlmock.NewRows(userColumns).AddRow(1, c, c, "Hunter", "Hunter", "hunter@ymail.com", "thismypassword", "", "", "", "", "", nil))
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT password FROM users where email='hunter@ymail.com'")).WillReturnRows(sqlmock.NewRows([]string{"password"}).AddRow("thismypassword"))
+
+	e.POST("/login").WithFormField("email", "hunter@ymail.com").WithFormField("password", "thismypassword").
+	Expect().
+	Status(http.StatusOK).JSON().Object().ContainsKey("access_token")
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
 var columns = []string{"id", "first_name", "last_name", "email"}
 
 
