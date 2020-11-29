@@ -141,9 +141,8 @@ function GroupsPage(props) {
       name: group.value,
       course_id: parseInt(course.courseId)
     }
-    console.log(body);
     axios.post(`${GROUP_SERVER}/create`, body, config).then(response => {
-      return axios.all[getGroups(), getClasses()];
+      return axios.all([getGroups(), getClasses()]);
     }).then(axios.spread((groupResponse, classResponse) => {
       console.log(groupResponse);
       console.log(classResponse);
