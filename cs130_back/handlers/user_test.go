@@ -15,6 +15,47 @@ import (
 	"github.com/lib/pq"
 )
 
+var userColumns = []string{"u_id", "CreatedAt", "UpdatedAt", 
+"first_name", "last_name", "u_email", "password", 
+"biography", "discord", "facebook", "timezone", "school_name", "availability"}
+func TestRegisterUser(t *testing.T) {
+	mock, DB := GetMock();
+	defer DB.Close()
+
+	handler := GetHandler(DB)
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	e := httpexpect.New(t, server.URL)
+
+	//First calls INSERT to Create object. Then SELECT to retrieve it
+	mock.ExpectBegin()
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "users"`)).
+		WithArgs( AnyTime{}, AnyTime{}, "Hunter", "Hunter", "hunter@ymail.com", "", "", "", "", "", "", nil).
+		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
+	mock.ExpectCommit()
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "users"`)).
+		WillReturnRows(sqlmock.NewRows(userColumns).AddRow(1, c, c, "Hunter", "Hunter", "hunter@ymail.com", "", "", "", "", "", "", nil))
+	mock.ExpectQuery(regexp.QuoteMeta("SELECT * FROM users WHERE ID=0")).WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
+	
+	
+	tempUser := map[string]interface{} {
+		"first_name": "Hunter",
+		"last_name": "Hunter",
+		"u_email": "hunter@ymail.com",
+		"password": "",
+	}
+
+	e.POST("/register").WithJSON(tempUser).
+	Expect().
+	Status(http.StatusCreated).JSON().Object().ContainsKey("u_id").ValueEqual("u_id", 0)
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
 var columns = []string{"id", "first_name", "last_name", "email"}
 
 
@@ -27,9 +68,6 @@ var addCourseRequest = map[string]interface{}{
 	"keywords": nil,
 	"categories": []string{"Physics", "Math"},
 }
-var userColumns = []string{"u_id", "CreatedAt", "UpdatedAt", 
-"first_name", "last_name", "u_email", "password", 
-"biography", "discord", "facebook", "timezone", "school_name", "availability"}
 func TestAddCourse(t *testing.T) {
 	mock, DB := GetMock();
 	defer DB.Close()

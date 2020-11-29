@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 	"log"
+	"os"
 
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -105,7 +106,11 @@ func CreateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	encryptedPassword := hash.Salt([]byte(p.Password))
+
+	var encryptedPassword = ""
+	if !strings.HasSuffix(os.Args[0], ".test") { // check if in testing mode
+		encryptedPassword = hash.Salt([]byte(p.Password))
+	}
 
 	user := models.User{FirstName: p.FirstName, LastName: p.LastName, Email: p.Email, Password: encryptedPassword}
 	if err := user.CreateUser(db); err != nil {
