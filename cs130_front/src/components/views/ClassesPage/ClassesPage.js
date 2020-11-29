@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import Tabs from '../../Tabs/Tabs';
-import Dropdown from '../../Dropdown/Dropdown';
 import Inviter from '../../Inviter/Inviter';
 import ClassList from '../../CurrentClasses/ClassList';
 import ListingList from '../../Listings/ListingList';
-import '../../../App.css';
 import ClassTitle from '../../CurrentClasses/ClassTitle';
-import './styles.css';
 import SearchBar from '../../Search/SearchBar';
 import Text from '../../Text/Text';
 import ListingCreator from '../../ListingCreator/ListingCreator'
@@ -200,30 +197,35 @@ function ClassesPage(props) {
     setInvitedUser(user);
   }
 
-  if (classes.length == 0 ) {
-    return (
-      <Text color="black" size="44px" weight="800">
-      Add some courses to view Study Buddies and Listings!
-    </Text>
-    )  
-  }
+  setTimeout(
+    () => {
+      if (classes.length == 0 ) {
+        return (
+          <Text color="black" size="44px" weight="800">
+          Add some courses to view Study Buddies and Listings!
+        </Text>
+        )  
+      }
+    }, 
+    500
+  );
+
 
   return (
-    <div className="App">
-        <div style={{display: 'flex', flexDirection: 'row', paddingTop: '20px', justifyContent: "center"}}>
-          <ClassTitle option={mainTitleState}/>
-        </div>
+    <div className="panel">
         <div style={{paddingTop: '0px'}} className="panel">
           <div className="column">
-            {currentTab == "Listings" ?
-            
+            <div className="group-with-margin">
+              {currentTab == "Listings" ?
+              
               <ListingCreator userId={parseInt(userId)} course_id={mainClassId} course_name={mainTitleState} items={mainGroups} createListing={createListing}/>
               :
-              <Inviter user={invitedUser} items={mainGroups} handleGroupInvite={createInvitation}/> 
-              
-            }
+              <Inviter user={invitedUser} items={mainGroups} handleGroupInvite={createInvitation}/>   
+              }
+            </div>
           </div>
           <div className="column">
+            <ClassTitle option={mainTitleState}/>
             <Tabs setTabVar={setTabVar} >
                 <UserList type="Study Buddies" users={mainStudyBuddies} goToUserProfile={goToUserProfile} optionalElement={true} optionalClick={optionalClick} />
                 <ListingList type="Listings" listingList={mainListings} goToUserProfile={goToUserProfile} goToGroup={goToGroup}/>

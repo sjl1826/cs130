@@ -164,7 +164,7 @@ func (g *Group) GetMeetingTime(db *gorm.DB, m *string) error {
 			meridie = "am"
 		}
 
-		*m = fmt.Sprintf("The Group Meeting Day is %s at %d%s %s", days[day], hour, minutes, meridie)
+		*m = fmt.Sprintf("The group meeting time is %s at %d%s %s", days[day], hour, minutes, meridie)
 	} else {
 		*m = fmt.Sprintf("No group meeting time available")
 	}

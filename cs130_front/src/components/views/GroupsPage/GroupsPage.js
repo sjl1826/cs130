@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import ClassList from '../../CurrentClasses/ClassList';
 import GroupItem from './GroupItem';
 import Text from '../../Text/Text';
-import Button from '../../Button/Button';
 import Requests from '../../Requests/Requests';
 import '../../../App.css';
 import CreateGroup from './CreateGroup';
@@ -15,7 +14,7 @@ function GroupsPage(props) {
   ];
 
   const [currentGroup, setCurrentGroup] = useState(null);
-  const [classes, setClasses] = useState(null);
+  const [classes, setClasses] = useState([]);
   const userId = localStorage.getItem('userId');
   const config = {
     headers: {
@@ -142,6 +141,20 @@ function GroupsPage(props) {
     }
   }
 
+  setTimeout(
+    () => {
+      if (classes.length == 0) {
+        return (
+          <Text color="black" size="44px" weight="800">
+            Add some courses to start joining groups!
+          </Text>
+        );
+        
+      }
+    }, 
+    500
+  );
+
   function myGroupAdmin() {
     return (
       <div className="panel">
@@ -171,16 +184,7 @@ function GroupsPage(props) {
     );
   }
 
-  if (classes != null) {
-    return myGroupAdmin();
-  } else {
-    return (
-      <Text color="black" size="44px" weight="800">
-        Add some courses to start joining groups!
-      </Text>
-    );
-  }
-
+  return myGroupAdmin();
 }
 
 export default GroupsPage;
