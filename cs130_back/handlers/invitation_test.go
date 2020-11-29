@@ -94,4 +94,37 @@ func TestSendInvitationDatabaseFailure(t *testing.T) {
 	if err := mock.ExpectationsWereMet(); err != nil {
 		t.Errorf("there were unfulfilled expectations: %s", err)
 	}
-}	
+}
+
+var updateInvRequest = map[string]interface{} {
+	"u_id": 1,
+	"invitation_id": 1,
+	"status": "REJECT",
+}
+var updateInvColumns = []string{"id", "CreatedAt", "UpdatedAt", "group_name", "group_id", "receive_id", "receive_name", "type", "status"}
+var empty = []string{}
+
+func TestUpdateInvitation(t *testing.T) {
+	mock, DB := GetMock();
+	defer DB.Close()
+
+	handler := GetHandler(DB)	
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	e := httpexpect.New(t, server.URL)
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "invitations"`)).
+		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "invitations" WHERE "invitations"."id" = $1 ORDER BY "invitations"."id" ASC`)).
+		WillReturnRows(sqlmock.NewRows(updateInvColumns).AddRow(1, c, c, "", 1, 1, "Hunter", false, false))
+	mock.ExpectExec("DELETE FROM invitations WHERE ID=1" ).WillReturnResult(sqlmock.NewResult(0, 0))
+
+	e.PUT("/updateInvitation").WithJSON(updateInvRequest).
+	Expect()
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
