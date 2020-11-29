@@ -138,13 +138,15 @@ function GroupsPage(props) {
 
     const body = {
       admin_id: parseInt(userId),
-      name: group.name,
-      course_id: course.courseId
+      name: group.value,
+      course_id: parseInt(course.courseId)
     }
-
-    axios.put(`${GROUP_SERVER}/create`, body, config).then(response => {
+    console.log(body);
+    axios.post(`${GROUP_SERVER}/create`, body, config).then(response => {
       return axios.all[getGroups(), getClasses()];
     }).then(axios.spread((groupResponse, classResponse) => {
+      console.log(groupResponse);
+      console.log(classResponse);
       handleClassesAndGroupsResponse(groupResponse.data.group_responses, classResponse.data);
     }));
   }
@@ -163,7 +165,7 @@ function GroupsPage(props) {
     return (
       <div className="panel">
         {currentGroup != null ?
-          <div>
+          <div className="panel-third">
             <div className="column-left">
               <div className="text-container">
                 <Text color="black" size="44px" weight="800">
@@ -176,14 +178,15 @@ function GroupsPage(props) {
               {renderMainPanel()}
             </div>
           </div>
-          : null}
+          : null
+        }
         <div className="column">
           <div className="group-with-margin-bottom">
             <ClassList classList={classes} titleClicked={groupClicked} clickable={true} />
           </div>
           {classes.length > 0 ? <CreateGroup options={groupInformation} createGroup={createGroup} courses={classes} /> : null}
         </div>
-      </div>
+      </div >
     );
   }
 
