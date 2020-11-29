@@ -7,7 +7,7 @@ import Requests from '../../Requests/Requests';
 import '../../../App.css';
 import CreateGroup from './CreateGroup';
 import axios from 'axios';
-import { USER_SERVER_AUTH } from '../../../Config';
+import { USER_SERVER_AUTH, GROUP_SERVER } from '../../../Config';
 
 function GroupsPage(props) {
   const members = [
@@ -28,8 +28,8 @@ function GroupsPage(props) {
     { name: "Group name", value: "" },
   ];
 
-  const [currentGroup, setCurrentGroup] = useState(classes2[0].groups[0]);
-  const [classes, setClasses] = useState(classes2);
+  const [currentGroup, setCurrentGroup] = useState(null);
+  const [classes, setClasses] = useState(null);
   const userId = localStorage.getItem('userId');
   const config = {
     headers: {
@@ -125,19 +125,28 @@ function GroupsPage(props) {
       invitation_id: request.inviteId,
       status: status ? 'ACCEPT' : 'DECLINE'
     }
+
     axios.put(`${USER_SERVER_AUTH}/updateInvitation`, body, config).then(response => {
-      return getGroups();
-    }).then(getResponse => {
-      handleClassesAndGroupsResponse(getResponse);
-    });
-    //update request with accept/decline
-    //fetch again to update ui
+      return axios.all[getGroups(), getClasses()];
+    }).then(axios.spread((groupResponse, classResponse) => {
+      handleClassesAndGroupsResponse(groupResponse.data.group_responses, classResponse.data);
+    }));
   }
 
   function createGroup(group, course) {
     console.log(group, course);
-    //create a group for this course and fetch classes and groups again to rerender 
-    //current classes to show new group.
+
+    const body = {
+      admin_id: parseInt(userId),
+      name: group.name,
+      course_id: course.courseId
+    }
+
+    axios.put(`${GROUP_SERVER}/create`, body, config).then(response => {
+      return axios.all[getGroups(), getClasses()];
+    }).then(axios.spread((groupResponse, classResponse) => {
+      handleClassesAndGroupsResponse(groupResponse.data.group_responses, classResponse.data);
+    }));
   }
 
   function renderMainPanel() {
@@ -149,21 +158,25 @@ function GroupsPage(props) {
           group={currentGroup} />
     }
   }
-  //{getCourse(currentGroup.courseId).name}
+
   function myGroupAdmin() {
     return (
       <div className="panel">
-        <div className="column-left">
-          <div className="text-container">
-            <Text color="black" size="44px" weight="800">
-              {currentGroup.courseName}
-            </Text>
+        {currentGroup != null ?
+          <div>
+            <div className="column-left">
+              <div className="text-container">
+                <Text color="black" size="44px" weight="800">
+                  {currentGroup.courseName}
+                </Text>
+              </div>
+              {currentGroup.requests.length > 0 ? <Requests title="Requests" items={currentGroup.requests} handleResponse={handleRequest} /> : null}
+            </div>
+            <div className="column">
+              {renderMainPanel()}
+            </div>
           </div>
-          {currentGroup.requests.length > 0 ? <Requests title="Requests" items={currentGroup.requests} handleResponse={handleRequest} /> : null}
-        </div>
-        <div className="column">
-          {renderMainPanel()}
-        </div>
+          : null}
         <div className="column">
           <div className="group-with-margin-bottom">
             <ClassList classList={classes} titleClicked={groupClicked} clickable={true} />
@@ -174,7 +187,15 @@ function GroupsPage(props) {
     );
   }
 
-  return myGroupAdmin();
+  if (currentGroup != null && classes != null) {
+    return myGroupAdmin();
+  } else {
+    return (
+      <Text color="black" size="44px" weight="800">
+        Join some groups!
+      </Text>
+    );
+  }
 
 }
 
