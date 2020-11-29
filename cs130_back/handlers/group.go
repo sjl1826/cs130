@@ -31,6 +31,7 @@ type CreateGroupRequest struct {
 	AdminID  int    `json:"admin_id"`
 	Name     string `json:"name"`
 	CourseID int    `json:"course_id"`
+	CourseName string    `json:"course_name"`
 }
 
 // CreateGroupResponse fields to send back
@@ -70,11 +71,15 @@ func CreateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	group := models.Group{Name: p.Name, CourseID: p.CourseID, AdminID: p.AdminID}
+	var members []int64
+	members = append(members, int64(p.AdminID))
+
+	group := models.Group{Name: p.Name, CourseID: p.CourseID, CourseName: p.CourseName, AdminID: p.AdminID, Members: members}
 	if err := group.CreateGroup(db); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+
 
 	if err := group.GetGroup(db); err != nil {
 		switch err {

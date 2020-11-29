@@ -248,7 +248,6 @@ function ProfilePage(props) {
   function myProfile() {
     return (
       <div className="panel">
-  
         <div className="column-left"> 
           <div className="text-container">
             <Text color="black" size="24px" weight="800"> 
