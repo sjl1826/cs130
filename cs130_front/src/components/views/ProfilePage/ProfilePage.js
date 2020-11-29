@@ -221,8 +221,8 @@ function ProfilePage(props) {
     setMainPanel(title);
   }
 
-  function groupClicked(item) {
-    //navigate to group page
+  function groupClicked(group) {
+    props.history.push(`/groups/group/${group.id}`); 
   }
 
   function viewOnlyProfile() {
@@ -233,7 +233,7 @@ function ProfilePage(props) {
             <Text color="black" size="32px" weight="800"> 
             {additionalInfo[0].value} Profile
             </Text>
-            <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={groupClicked} clickable={false}/>
+            <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={groupClicked} clickable={true}/>
             <Infos title="Contact Information" options={contactInfo} titleClicked={titleClicked} clickable={false}/>
             <Infos title="Additional Information" options={additionalInfo} titleClicked={titleClicked} clickable={false}/>
           </div>

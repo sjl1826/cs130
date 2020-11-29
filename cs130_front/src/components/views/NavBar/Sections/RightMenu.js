@@ -15,6 +15,9 @@ function RightMenu(props) {
     const profileRef = `/profile/${localStorage.getItem('userId')}`
 		return (
       <Menu mode={props.mode}>
+      <Menu.Item key="search">
+				<a href={"/search"}>Search</a> 
+			</Menu.Item>
 			<Menu.Item key="classes">
 				<a href={classesRef}>Classes</a> 
 			</Menu.Item>

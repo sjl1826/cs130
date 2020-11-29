@@ -5,7 +5,7 @@ import { withRouter } from 'react-router-dom';
 import './styles.css';
 
 function GroupItem(props) {
-    const goToUserProfile = user => () => { props.history.push(`/profile/${user.id}`); }
+    const goToUserProfile = id => () => { props.history.push(`/profile/${id}`); }
     return (
         <div className="group-container">
             <Text size="44px" weight="800"> {props.group.name} </Text>

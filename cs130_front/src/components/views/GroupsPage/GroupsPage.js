@@ -15,6 +15,7 @@ function GroupsPage(props) {
 
   const [currentGroup, setCurrentGroup] = useState(null);
   const [classes, setClasses] = useState([]);
+  const [addedRequest, setAddedRequest] = useState(null);
   const userId = localStorage.getItem('userId');
   const config = {
     headers: {
@@ -27,6 +28,24 @@ function GroupsPage(props) {
     //set main content to be for title
     setCurrentGroup(group);
   }
+
+  useEffect(() => {
+    async function initCourses() {
+      try {
+        classes.forEach(course => {
+          course.groups.forEach(group => {
+            if (addedRequest.groupId == group.id) {
+              groupClicked(group);
+            }
+          })
+
+        })
+      } catch (err) {
+        // Handle err here. Either ignore the error, or surface the error up to the user somehow.
+      }
+    }
+    initCourses();
+  }, [addedRequest, classes]);
 
   useEffect(() => {
     async function initGroups() {
@@ -57,6 +76,10 @@ function GroupsPage(props) {
       const name = classResponse[key]["CourseName"];
       tempClasses.push({ name: name, courseId: key, groups: [] });
     });
+    if (groupResponse == null) {
+      setClasses(tempClasses)
+      return
+    }
     // Populate groups
     const groups = []
     Object.keys(groupResponse).forEach(function (key) {
@@ -95,7 +118,6 @@ function GroupsPage(props) {
         }
       });
     });
-
     //these sets are for mocked values now but should be the real values from response
     setClasses(tempClasses); //handle null case if no classes, show a message about adding course in order to add groups
     setCurrentGroup(tempClasses[0].groups[0]); // handle null case if no groups at all. this is just setting to first group of first class.
@@ -103,6 +125,7 @@ function GroupsPage(props) {
   }
 
   function handleRequest(status, request) {
+    console.log(status, request);
     const body = {
       u_id: parseInt(request.id),
       invitation_id: request.inviteId,
@@ -113,6 +136,7 @@ function GroupsPage(props) {
       return axios.all([getGroups(), getClasses()]);
     }).then(axios.spread((groupResponse, classResponse) => {
       handleClassesAndGroupsResponse(groupResponse.data.group_responses, classResponse.data);
+      setAddedRequest(request);
     }));
   }
 
@@ -141,20 +165,14 @@ function GroupsPage(props) {
     }
   }
 
-  setTimeout(
-    () => {
-      if (classes.length == 0) {
-        return (
-          <Text color="black" size="44px" weight="800">
-            Add some courses to start joining groups!
-          </Text>
-        );
-        
-      }
-    }, 
-    500
-  );
-
+  if (classes.length == 0) {
+    return (
+      <Text color="black" size="44px" weight="800">
+        Add some courses to start joining groups!
+      </Text>
+    );
+  }
+ 
   function myGroupAdmin() {
     return (
       <div className="panel">

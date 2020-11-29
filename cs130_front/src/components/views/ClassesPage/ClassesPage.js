@@ -24,6 +24,7 @@ function ClassesPage(props) {
   const [currentTab, setCurrentTab] = useState("Study Buddies");
   const [input, setInput] = useState('');
   const [invitedUser, setInvitedUser] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const userId = localStorage.getItem('userId');
   const config = {
@@ -158,7 +159,12 @@ function ClassesPage(props) {
       receive_name: user.name,
       type: false
     }
-    axios.post(`${INVITATION_SERVER}/create?u_id=${userId}`, body, config);
+    axios.post(`${INVITATION_SERVER}/create?u_id=${userId}`, body, config).then(response =>{
+      setSuccessMessage('Invitation sent!');
+      setTimeout(() => {
+				setSuccessMessage('');
+			}, 3000);
+    })
   }
 
   function classClicked(item) {
@@ -197,20 +203,13 @@ function ClassesPage(props) {
     setInvitedUser(user);
   }
 
-  setTimeout(
-    () => {
-      if (classes.length == 0 ) {
-        return (
-          <Text color="black" size="44px" weight="800">
-          Add some courses to view Study Buddies and Listings!
-        </Text>
-        )  
-      }
-    }, 
-    500
-  );
-
-
+  if ( classes.length == 0 ) {
+    return (
+      <Text color="black" size="44px" weight="800">
+      Add some courses to view Study Buddies and Listings!
+    </Text>
+    )  
+  }
   return (
     <div className="panel">
         <div style={{paddingTop: '0px'}} className="panel">
@@ -222,6 +221,7 @@ function ClassesPage(props) {
               :
               <Inviter user={invitedUser} items={mainGroups} handleGroupInvite={createInvitation}/>   
               }
+              {successMessage && <Text color="green">{successMessage}</Text> }
             </div>
           </div>
           <div className="column">

@@ -56,7 +56,7 @@ const SearchPage = (props) => {
   
   return (
     <div style={{fontFamily: Fonts.Primary, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      <h1 style = {{fontSize: '40px'}}>Search User</h1>
+      <h1 style = {{fontSize: '40px'}}>Search Users</h1>
       <div> 
         <SearchBar input={input} onChange={updateInput} width="30rem" fontSize="30px"/>
       </div>
