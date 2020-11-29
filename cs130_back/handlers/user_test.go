@@ -17,6 +17,53 @@ import (
 
 var columns = []string{"id", "first_name", "last_name", "email"}
 
+
+var categoriesCourse = []string{"Physics", "Math"}
+var addCourseIDs = []int64{1}
+var addCourseRequest = map[string]interface{}{
+	"u_id": 1,
+	"course_id": 0,
+	"course_name": "Physics",
+	"keywords": nil,
+	"categories": []string{"Physics", "Math"},
+}
+var userColumns = []string{"u_id", "CreatedAt", "UpdatedAt", 
+"first_name", "last_name", "u_email", "password", 
+"biography", "discord", "facebook", "timezone", "school_name", "availability"}
+func TestAddCourse(t *testing.T) {
+	mock, DB := GetMock();
+	defer DB.Close()
+
+	handler := GetHandler(DB)
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	e := httpexpect.New(t, server.URL)
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM users WHERE ID=1`)).
+		WillReturnRows(sqlmock.NewRows(userColumns).AddRow(1, c, c, "Hunter", "Hunter", "hunter@ymail.com", "gibberish", "", "", "", "", "", nil))
+	mock.ExpectBegin()
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "courses"`)).
+		WithArgs( AnyTime{}, AnyTime{}, "Physics", nil, pq.Array(categoriesCourse), pq.Int64Array(addCourseIDs)).
+		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
+	mock.ExpectCommit()
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "courses"`)).
+		WillReturnRows(sqlmock.NewRows(classColumns).AddRow(1, c, c, "Physics", nil, pq.Array(categoriesCourse), nil))
+
+
+	obj :=	e.PUT("/addCourse").WithJSON(addCourseRequest).
+			Expect().
+			Status(http.StatusOK).JSON().Object()
+
+	obj.ContainsKey("result").ValueEqual("result", "success")
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
+
 var classColumns = []string{"id", "CreatedAt", "UpdatedAt", "name", "keywords", "categories", "study_buddies"}
 var categories = []string{"Math", "Biology"}
 
