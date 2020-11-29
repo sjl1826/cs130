@@ -10,20 +10,6 @@ import axios from 'axios';
 import { USER_SERVER_AUTH, GROUP_SERVER } from '../../../Config';
 
 function GroupsPage(props) {
-  const members = [
-    { name: "Shirly fang", school: "UCLA", id: 123, discord: "shirly#123", email: "shirly@gmail.com" },
-    { name: "Shirly fang", id: 123, discord: "shirly#123", email: "shirly@gmail.com" }
-  ]
-
-  const reqs = [{ name: "John Smith", id: 223, type: "request", userId: 1 }, { name: "John Oliver", id: 223, type: "request", userId: 2 }]
-
-  const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm", requests: reqs }
-
-  const classes2 = [
-    { name: "Discrete Mathematics", courseId: 1, groups: [currentGroup2], },
-    { name: "Computer Architecture", courseId: 2, groups: [currentGroup2] }
-  ]
-
   const groupInformation = [
     { name: "Group name", value: "" },
   ];
@@ -66,14 +52,12 @@ function GroupsPage(props) {
   }
 
   function handleClassesAndGroupsResponse(groupResponse, classResponse) {
-    //console.log(classResponse);
     // Popoulate classes
-    const classes = []
+    var tempClasses = []
     Object.keys(classResponse).forEach(function (key) {
       const name = classResponse[key]["CourseName"];
-      classes.push({ name: name, courseId: key, groups: [] });
+      tempClasses.push({ name: name, courseId: key, groups: [] });
     });
-
     // Populate groups
     const groups = []
     Object.keys(groupResponse).forEach(function (key) {
@@ -103,23 +87,23 @@ function GroupsPage(props) {
         reqs.push({ name: reqName, groupId: reqGroupId, inviteId: reqInviteId, id: reqId, type: "request" });
       });
 
-      Object.keys(classes).forEach(function (key2) {
+      Object.keys(tempClasses).forEach(function (key2) {
         const targetId = groupResponse[key]["course_id"];
-        if (classes[key2]["courseId"] == targetId) {
-          const courseName = classes[key2]["name"];
+        if (tempClasses[key2]["courseId"] == targetId) {
+          const courseName = tempClasses[key2]["name"];
           groups.push({ id: id, name: name, courseName: courseName, meetingTime: meetingTime, members: members, requests: reqs });
-          classes[key2]["groups"].push({ id: id, name: name, courseName: courseName, meetingTime: meetingTime, members: members, requests: reqs });
+          tempClasses[key2]["groups"].push({ id: id, name: name, courseName: courseName, meetingTime: meetingTime, members: members, requests: reqs });
         }
       });
     });
+
     //these sets are for mocked values now but should be the real values from response
-    setClasses(classes); //handle null case if no classes, show a message about adding course in order to add groups
-    setCurrentGroup(classes[0].groups[0]); // handle null case if no groups at all. this is just setting to first group of first class.
+    setClasses(tempClasses); //handle null case if no classes, show a message about adding course in order to add groups
+    setCurrentGroup(tempClasses[0].groups[0]); // handle null case if no groups at all. this is just setting to first group of first class.
     //not necessarily handle here but need to handle overall
   }
 
   function handleRequest(status, request) {
-    console.log(status, request);
     const body = {
       u_id: parseInt(request.id),
       invitation_id: request.inviteId,
@@ -127,26 +111,23 @@ function GroupsPage(props) {
     }
 
     axios.put(`${USER_SERVER_AUTH}/updateInvitation`, body, config).then(response => {
-      return axios.all[getGroups(), getClasses()];
+      return axios.all([getGroups(), getClasses()]);
     }).then(axios.spread((groupResponse, classResponse) => {
       handleClassesAndGroupsResponse(groupResponse.data.group_responses, classResponse.data);
     }));
   }
 
   function createGroup(group, course) {
-    console.log(group, course);
-
+    console.log(group, course)
     const body = {
       admin_id: parseInt(userId),
       name: group.value,
-      course_id: parseInt(course.courseId)
+      course_id: parseInt(course.courseId),
+      course_name: course.name
     }
-    console.log(body);
     axios.post(`${GROUP_SERVER}/create`, body, config).then(response => {
-      return axios.all[getGroups(), getClasses()];
+      return axios.all([getGroups(), getClasses()]);
     }).then(axios.spread((groupResponse, classResponse) => {
-      console.log(groupResponse);
-      console.log(classResponse);
       handleClassesAndGroupsResponse(groupResponse.data.group_responses, classResponse.data);
     }));
   }
@@ -190,12 +171,12 @@ function GroupsPage(props) {
     );
   }
 
-  if (currentGroup != null && classes != null) {
+  if (classes != null) {
     return myGroupAdmin();
   } else {
     return (
       <Text color="black" size="44px" weight="800">
-        Join some groups!
+        Add some courses to start joining groups!
       </Text>
     );
   }

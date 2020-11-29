@@ -91,50 +91,45 @@ func (g *Group) GetInvitations(db *gorm.DB, invitations *[]Invitation) error {
 	return retVal.Error
 }
 
-const numSlots = 336
-
 //GetAvailability retrieves the availability object of the group
-func (g *Group) GetAvailability(db *gorm.DB, availability *[numSlots]int64) error {
-	avSet := [][numSlots]int64{}
+func (g *Group) GetAvailability(db *gorm.DB, availability *[]int64) error {
+	avSet := [][]int64{}
 	retVal := db.Raw("SELECT * FROM groups WHERE ID=" + strconv.Itoa(g.ID)).Scan(&g)
 	for _, j := range g.Members {
 		tempMember := User{ID: int(j)}
 		db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(tempMember.ID)).Scan(&tempMember)
-		var tempAvailability [numSlots]int64
-		tempMember.Availability.Scan(&tempAvailability)
+		var tempAvailability []int64
+		tempAvailability = tempMember.Availability
 		avSet = append(avSet, tempAvailability)
 
 	}
-
-	availability = computeOverlap(avSet)
-
+	*availability = computeOverlap(avSet)
 	return retVal.Error
 }
 
-func computeOverlap(avSet [][numSlots]int64) *[numSlots]int64 {
-	overlap := [numSlots]int64{}
+func computeOverlap(avSet [][]int64) []int64 {
+	overlap := make([]int64, 336)
 
 	for _, i := range avSet {
 		for j := 0; j < len(i); j++ {
 			overlap[j] = overlap[j] + i[j]
 		}
 	}
-
-	return &overlap
+	return overlap
 }
 
 //GetMeetingTime retrieves the meeting time string for the group
 func (g *Group) GetMeetingTime(db *gorm.DB, m *string) error {
-	var availability *[numSlots]int64
+	var availability []int64
 
-	retVal := g.GetAvailability(db, availability)
-
+	retVal := g.GetAvailability(db, &availability)
+	
 	var highest int64 = 0
 
 	var highestLoc int = -1
 
 	if availability != nil {
-		for loc, val := range *availability {
+		for loc, val := range availability {
 			if val > highest {
 				highest = val
 				highestLoc = loc

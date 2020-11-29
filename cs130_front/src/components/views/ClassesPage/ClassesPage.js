@@ -200,6 +200,14 @@ function ClassesPage(props) {
     setInvitedUser(user);
   }
 
+  if (classes.length == 0 ) {
+    return (
+      <Text color="black" size="44px" weight="800">
+      Add some courses to view Study Buddies and Listings!
+    </Text>
+    )  
+  }
+
   return (
     <div className="App">
         <div style={{display: 'flex', flexDirection: 'row', paddingTop: '20px', justifyContent: "center"}}>

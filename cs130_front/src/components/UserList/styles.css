@@ -10,6 +10,11 @@
     margin-bottom: 10px;
 }
 
+.halfUserBox {
+  width: 12vw;
+  height: 70px;
+}
+
 .col-centered {
   display: flex;
   height: 70px;
