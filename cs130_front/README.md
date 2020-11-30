@@ -25,5 +25,7 @@ The first file focuses on testing the components that show up across many pages 
 The second file focuses on testing the pages/components that are page specific. 
 Running yarn test will automatically run the tests and output their result. 
 
+If yarn test gives a MutationObserver error, use `yarn test --env jest-environment-jsdom-fourteen`
+
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
