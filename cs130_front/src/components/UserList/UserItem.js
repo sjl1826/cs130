@@ -4,11 +4,11 @@ import Button from '../Button/Button';
 
 const userItem = (props) => (
     <div className='userBox'>
-        <div>
-            <p className='topLineName' onClick={props.goToUserProfile(props.user)}> {props.user.name} </p>
+        <div className='halfUserBox'>
+            <p className='topLineName' onClick={props.goToUserProfile(props.user.id)}> {props.user.name} </p>
             <p className='bottomLine'> {props.user.school} </p>
         </div>
-        <div>
+        <div className='halfUserBox'>
             {props.user.discord
                 ? <p className='topLine'> Discord: </p>
                 : <p className='topLine'> Email: </p>
@@ -20,7 +20,8 @@ const userItem = (props) => (
             }
         </div>
         <div className="col-centered">
-          {props.optionalElement ? <Button onClick={ () => props.optionalClick(props.user)}> Invite to group </Button> : null}
+            {props.optionalElement ? <Button height="40px" width="150px" onClick={() => props.optionalClick(props.user)}> Invite to group </Button> : null}
+            {props.adminPrivilege ? <Button height="40px" width="150px" onClick={() => props.optionalClick(props.user)}> Remove </Button> : null}
         </div>
     </div>
 )

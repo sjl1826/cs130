@@ -1,0 +1,14 @@
+.group-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40vw;
+  height: 40vh;
+}
+
+.panel-third {
+  width: 70vw;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}

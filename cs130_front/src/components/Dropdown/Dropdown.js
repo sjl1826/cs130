@@ -22,7 +22,7 @@ export default function Dropdown({width = '20vw', options=[], ...props}) {
 
 	const [items, setItems] = useState(options);
 	const [showMenuState, setMenu] = useState(false);
-  const [selected, setSelected] = useState(options[0]);
+  const [selected, setSelected] = useState(options != null ? options[0] : null);
   const { sendSelection } = props;
   
   useEffect(() => {

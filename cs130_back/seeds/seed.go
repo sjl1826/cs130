@@ -159,6 +159,8 @@ var listings = []models.Listing{
 		CourseName: "Human Anatomy",
 		Poster: 	3,
 		CourseID: 	155,
+		GroupName: "48ers",
+		GroupID: 1,
 		Tags:		[]string {"Casual"},
 	},
 }

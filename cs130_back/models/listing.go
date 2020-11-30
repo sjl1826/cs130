@@ -19,7 +19,8 @@ type Listing struct {
 	Poster			int				`json:"poster"`
 	CourseID		int				`json:"course_id"`
 	Description		string			`json:"text_description"`
-	GroupID			int				`json:"group_id"`		//optional group		
+	GroupID			int				`json:"group_id"`		//optional group	
+	GroupName		string 			`json:"group_name"`		//optional group
 	Tags			pq.StringArray 	`gorm:"type:varchar(64)[]" json:"tags"`
 }
 

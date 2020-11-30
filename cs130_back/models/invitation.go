@@ -17,7 +17,7 @@ type Invitation struct {
 	GroupName		string			`json:"group_name"`
 	GroupID			int				`json:"group_id"`
 	ReceiveID		int				`json:"receive_id"`
-	ReceiveName string 		`json:"receive_name"`
+	ReceiveName 	string 			`json:"receive_name"`
 	Type			bool			`json:"type"`
 	Status			bool			`json:"status"`
 }
