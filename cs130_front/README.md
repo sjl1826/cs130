@@ -6,6 +6,8 @@ In the project directory, you can run:
 
 ### `yarn`
 
+*Very important to do this*
+
 Downloads dependencies in yarn.lock. Do this before yarn start.
 
 ### `yarn start`
@@ -18,45 +20,12 @@ You will also see any lint errors in the console.
 
 ### `yarn test`
 
+There are two test files on the front end: Component.test.js and View.test.js.
+The first file focuses on testing the components that show up across many pages of the app.
+The second file focuses on testing the pages/components that are page specific. 
+Running yarn test will automatically run the tests and output their result. 
+
+If yarn test gives a MutationObserver error, use `yarn test --env jest-environment-jsdom-fourteen`
+
 Launches the test runner in the interactive watch mode.<br />
 See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
-
-### `yarn build`
-
-Builds the app for production to the `build` folder.<br />
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-The build is minified and the filenames include the hashes.<br />
-Your app is ready to be deployed!
-
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/code-splitting
-
-### Analyzing the Bundle Size
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size
-
-### Making a Progressive Web App
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app
-
-### Advanced Configuration
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/advanced-configuration
-
-### Deployment
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/deployment
-
-### `yarn build` fails to minify
-
-This section has moved here: https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify

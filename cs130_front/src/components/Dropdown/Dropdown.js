@@ -24,6 +24,7 @@ export default function Dropdown({width = '20vw', options=[], ...props}) {
 	const [showMenuState, setMenu] = useState(false);
   const [selected, setSelected] = useState(options != null ? options[0] : null);
   const { sendSelection } = props;
+  
   useEffect(() => {
     sendSelection(selected);
   }, [selected, sendSelection]);
