@@ -187,6 +187,39 @@ func TestGetAllUsersSuccess(t *testing.T) {
 	}
 }
 
+func TestGetUserGroups(t *testing.T) {
+	mock, DB := GetMock();
+	defer DB.Close()
+
+	handler := GetHandler(DB)
+	server := httptest.NewServer(handler)
+	defer server.Close()
+
+	e := httpexpect.New(t, server.URL)
+
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM users WHERE ID=1`)).
+		WillReturnRows(sqlmock.NewRows(userColumns).AddRow(1, c, c, "Hunter", "Hunter", "hunter@ymail.com", "", "", "", "", "", "", nil))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM groups WHERE 1 = ANY (members)`)).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "CreatedAt", "UpdatedAt", "name", "keywords", "categories", "study_buddies"}).AddRow(1, c, c, "Physics Group", nil, nil, nil))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM groups WHERE ID=1`)).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "CreatedAt", "UpdatedAt", "name", "keywords", "categories", "study_buddies"}).AddRow(1, c, c, "Physics Group", nil, nil, nil))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM groups WHERE ID=1`)).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "CreatedAt", "UpdatedAt", "name", "keywords", "categories", "study_buddies"}).AddRow(1, c, c, "Physics Group", nil, nil, nil))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM invitations WHERE 1 = group_id AND true = type`)).
+		WillReturnRows(sqlmock.NewRows([]string{"id", "CreatedAt", "UpdatedAt", "group_name", "group_id", "receive_id", "receive_name", "type", "status"}).AddRow(1, c, c, "Physics Group", 1, 1, "Hunter", true, true))
+
+	obj :=	e.GET("/getUserGroups").WithQuery("u_id", 1).
+			Expect().
+			Status(http.StatusOK).JSON().Object()
+
+	obj.Keys().Contains("group_responses")
+
+	// we make sure that all expectations were met
+	if err := mock.ExpectationsWereMet(); err != nil {
+		t.Errorf("there were unfulfilled expectations: %s", err)
+	}
+}
+
 //For Test Scenario (Create and Update Listing)
 type AnyTime struct{}
 
@@ -254,6 +287,10 @@ func GetHandler(db *gorm.DB) http.Handler {
 
 	mux.HandleFunc("/getAllUsers", func(w http.ResponseWriter, r *http.Request) {
 		GetAllUsers(db, w, r)
+	})
+
+	mux.HandleFunc("/getUserGroups", func(w http.ResponseWriter, r *http.Request) {
+		GetUserGroups(db, w, r)
 	})
 
 	return mux
