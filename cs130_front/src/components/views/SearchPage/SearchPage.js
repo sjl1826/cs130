@@ -52,7 +52,10 @@ const SearchPage = (props) => {
     setUserList(filtered);
   }
 
-  const goToUserProfile = user => () => { props.history.push(`/profile/${user.id}`); }
+  function goToUserProfile(user) {
+    window.open(`/profile/${user.id}`, "_blank");
+  }
+
   
   return (
     <div style={{fontFamily: Fonts.Primary, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>

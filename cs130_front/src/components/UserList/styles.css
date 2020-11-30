@@ -5,14 +5,14 @@
     align-items: flex-start;
     text-align: center;
     width: 35vw;
-    height: 70px;
     padding: 10px;
     margin-bottom: 10px;
 }
 
 .halfUserBox {
   width: 12vw;
-  height: 70px;
+  min-height: 70px;
+  overflow-wrap: break-word;
 }
 
 .col-centered {

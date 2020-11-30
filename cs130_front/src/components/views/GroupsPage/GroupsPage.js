@@ -69,7 +69,9 @@ function GroupsPage(props) {
     return axios.get(`${USER_SERVER_AUTH}/getBuddiesListings?u_id=${userId}`, config);
   }
 
+  let groupFound = 0;
   function handleClassesAndGroupsResponse(groupResponse, classResponse) {
+    console.log(groupResponse, classResponse)
     // Popoulate classes
     var tempClasses = []
     Object.keys(classResponse).forEach(function (key) {
@@ -108,10 +110,10 @@ function GroupsPage(props) {
         const reqInviteId = groupResponse[key]["invitations"][key2]["id"];
         reqs.push({ name: reqName, groupId: reqGroupId, inviteId: reqInviteId, id: reqId, type: "request" });
       });
-
       Object.keys(tempClasses).forEach(function (key2) {
         const targetId = groupResponse[key]["course_id"];
         if (tempClasses[key2]["courseId"] == targetId) {
+          groupFound = key2;
           const courseName = tempClasses[key2]["name"];
           groups.push({ id: id, name: name, courseName: courseName, meetingTime: meetingTime, members: members, requests: reqs });
           tempClasses[key2]["groups"].push({ id: id, name: name, courseName: courseName, meetingTime: meetingTime, members: members, requests: reqs });
@@ -120,7 +122,7 @@ function GroupsPage(props) {
     });
     //these sets are for mocked values now but should be the real values from response
     setClasses(tempClasses); //handle null case if no classes, show a message about adding course in order to add groups
-    setCurrentGroup(tempClasses[0].groups[0]); // handle null case if no groups at all. this is just setting to first group of first class.
+    setCurrentGroup(tempClasses[groupFound].groups[0]); // handle null case if no groups at all. this is just setting to first group of first class.
     //not necessarily handle here but need to handle overall
   }
 

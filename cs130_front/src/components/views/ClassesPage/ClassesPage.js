@@ -196,8 +196,13 @@ function ClassesPage(props) {
     }
   }
 
-  const goToUserProfile = user => () => { props.history.push(`/profile/${user}`); }
-  const goToGroup = groupId => () => { props.history.push(`/groups/group/${groupId}`); }
+  function goToUserProfile(user) {
+    window.open(`/profile/${user}`, "_blank");
+  }
+
+  function goToGroup(groupId) {
+    window.open(`/groups/group/${groupId}`, "_blank");
+  }
 
   function optionalClick(user){
     setInvitedUser(user);

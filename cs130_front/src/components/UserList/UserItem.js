@@ -7,7 +7,7 @@ function userItem(props) {
   return(
     <div className='userBox'>
       <div className='halfUserBox'>
-          <p className='topLineName' onClick={props.goToUserProfile(props.user.id)}> {props.user.name} </p>
+          <p className='topLineName' onClick={() => props.goToUserProfile(props.user.id)}> {props.user.name} </p>
           <p className='bottomLine'> {props.user.school} </p>
       </div>
       <div className='halfUserBox'>
