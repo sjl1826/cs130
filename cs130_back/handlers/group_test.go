@@ -30,8 +30,8 @@ func TestCreateGroupSuccess(t *testing.T) {
 
 	//CreateGroup
 	mock.ExpectBegin()
-	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "groups"`)).
-		WithArgs(AnyTime{}, AnyTime{}, grpRequest["name"], "", grpRequest["course_id"], grpRequest["admin_id"], nil).
+	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "groups"`)).													
+		WithArgs(AnyTime{}, AnyTime{}, grpRequest["name"], "", grpRequest["course_id"], grpRequest["admin_id"], "{3}"). // we add group creator to list of members <--
 		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
 	mock.ExpectCommit()
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "groups"`)).
@@ -41,7 +41,7 @@ func TestCreateGroupSuccess(t *testing.T) {
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "groups"`)).
 		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "groups"`)).
-		WillReturnRows(sqlmock.NewRows(groupColumns).AddRow(c, c, grpRequest["name"], nil, grpRequest["course_id"], grpRequest["admin_id"], nil))
+		WillReturnRows(sqlmock.NewRows(groupColumns).AddRow(c, c, grpRequest["name"], nil, grpRequest["course_id"], grpRequest["admin_id"], "{3}"))
 
 	obj :=	e.POST("/createGroup").WithJSON(grpRequest).
 			Expect().
