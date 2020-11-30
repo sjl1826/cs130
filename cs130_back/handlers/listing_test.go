@@ -33,12 +33,17 @@ func TestCreateListingSuccess(t *testing.T) {
 	//First calls INSERT to Create object. Then SELECT to retrieve it
 	mock.ExpectBegin()
 	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "listings"`)).
-		WithArgs( AnyTime{}, AnyTime{}, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags).
+		WithArgs(AnyTime{}, AnyTime{}, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.GroupName, l.Tags).
 		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
 	mock.ExpectCommit()
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "listings"`)).
-		WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, "TEST COURSE", l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags)) //only thing that works
+		WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, "TEST COURSE", l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags)) 
 	
+	//GetListing
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "listings"`)).
+		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
+	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "listings"`)).
+	WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, "TEST COURSE", l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags))
 	
 	list := map[string]interface{}{
 		"Poster": 1,
