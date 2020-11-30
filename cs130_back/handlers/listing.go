@@ -76,6 +76,10 @@ func CreateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if GetListingByID(db, &listing, w) == 0 {
+		return
+	}
+
 	var clr CreateListingResponse
 	populateListingResponse(&listing, &clr)
 
