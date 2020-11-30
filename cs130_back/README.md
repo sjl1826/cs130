@@ -4,6 +4,8 @@
 1. Golang 1.9 or higher
 2. Postgres
 3. jwt-go
+4. go-sqlmock
+5. httpexpect
 
 ## Setup
 Get the above dependencies. For jwt-go, you can use the go get command and the Github repo. 
