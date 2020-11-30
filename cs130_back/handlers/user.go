@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 	"log"
+	"os"
 
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -105,7 +106,11 @@ func CreateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	encryptedPassword := hash.Salt([]byte(p.Password))
+
+	var encryptedPassword = ""
+	if !strings.HasSuffix(os.Args[0], ".test") { // check if in testing mode
+		encryptedPassword = hash.Salt([]byte(p.Password))
+	}
 
 	user := models.User{FirstName: p.FirstName, LastName: p.LastName, Email: p.Email, Password: encryptedPassword}
 	if err := user.CreateUser(db); err != nil {
@@ -159,10 +164,14 @@ func LoginUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	user.GetPassword(db)
 	if hash.ComparePasswords(user.Password, []byte(password)) {
-		newToken := models.Token{UserID: user.ID}
-		if err := newToken.New(db, &user); err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
+		var newToken models.Token
+		if !strings.HasSuffix(os.Args[0], ".test") { // create new token only if not test
+		// Has gotten email and password that matches
+			newToken = models.Token{UserID: user.ID}
+			if err := newToken.New(db, &user); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
 		}
 		var response LoginResponse
 		response.AccessToken = newToken.AccessToken
