@@ -7,6 +7,7 @@ function UserList(props) {
         <div className='userlist-container'>
             {props.users.map((user, index) => (
                 <UserItem user={user}
+                    key={user.id}
                     goToUserProfile={props.goToUserProfile}
                     adminPrivilege={props.adminPrivilege}
                     optionalElement={props.optionalElement}

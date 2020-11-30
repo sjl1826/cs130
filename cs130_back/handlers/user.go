@@ -143,6 +143,7 @@ type LoginResponse struct {
 	RefreshToken     string        `json:"refresh_token"`
 	RefreshExpiresIn time.Duration `json:"refresh_expires_in"`
 	ID 							 int 			 `json: "id"`
+	Name 							string 			 `json: "name"`
 }
 
 // LoginUser checks for a valid email and password to generate an access token
@@ -178,6 +179,7 @@ func LoginUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		response.RefreshToken = newToken.RefreshToken
 		response.RefreshExpiresIn = newToken.RefreshExpiresIn
 		response.ID = user.ID
+		response.Name = user.FirstName + " " + user.LastName
 		respondWithJSON(w, http.StatusOK, response)
 	} else {
 		respondWithError(w, http.StatusBadRequest, "Invalid user credentials")
@@ -247,10 +249,6 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	reqToken = strings.TrimSpace(splitToken[1])
 	fullToken := models.Token{AccessToken: reqToken}
 	if err := fullToken.GetTokenByAccess(db); err != nil {
-		respondWithError(w, http.StatusNotFound, "Invalid Token")
-		return
-	}
-	if fullToken.UserID != id {
 		respondWithError(w, http.StatusNotFound, "Invalid Token")
 		return
 	}

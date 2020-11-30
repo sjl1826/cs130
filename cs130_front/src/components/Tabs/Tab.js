@@ -8,6 +8,7 @@ const tabListItem = css`
   border-width: 1px;
   padding: 0.5rem;
   width: 250px;
+  text-align: center;
   &:hover {
     cursor: pointer;
   } 

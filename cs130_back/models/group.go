@@ -91,84 +91,84 @@ func (g *Group) GetInvitations(db *gorm.DB, invitations *[]Invitation) error {
 	return retVal.Error
 }
 
-const numSlots = 336
-
 //GetAvailability retrieves the availability object of the group
-func (g *Group) GetAvailability(db *gorm.DB, availability *[numSlots]int64) error {
-	var avSet *[][numSlots]int64
+func (g *Group) GetAvailability(db *gorm.DB, availability *[]int64) error {
+	avSet := [][]int64{}
 	retVal := db.Raw("SELECT * FROM groups WHERE ID=" + strconv.Itoa(g.ID)).Scan(&g)
 	for _, j := range g.Members {
 		tempMember := User{ID: int(j)}
 		db.Raw("SELECT * FROM users WHERE ID=" + strconv.Itoa(tempMember.ID)).Scan(&tempMember)
-		var tempAvailability [numSlots]int64
-		tempMember.Availability.Scan(&tempAvailability)
-		(*avSet) = append((*avSet), tempAvailability)
+		var tempAvailability []int64
+		tempAvailability = tempMember.Availability
+		avSet = append(avSet, tempAvailability)
 
 	}
-
-	availability = computeOverlap(avSet)
-
+	*availability = computeOverlap(avSet)
 	return retVal.Error
 }
 
-func computeOverlap(avSet *[][numSlots]int64) *[numSlots]int64 {
-	var overlap [numSlots]int64
+func computeOverlap(avSet [][]int64) []int64 {
+	overlap := make([]int64, 336)
 
-	for _, i := range *avSet {
+	for _, i := range avSet {
 		for j := 0; j < len(i); j++ {
 			overlap[j] = overlap[j] + i[j]
 		}
 	}
-
-	return &overlap
+	return overlap
 }
 
 //GetMeetingTime retrieves the meeting time string for the group
 func (g *Group) GetMeetingTime(db *gorm.DB, m *string) error {
-	var availability *[numSlots]int64
+	var availability []int64
 
-	retVal := g.GetAvailability(db, availability)
-
+	retVal := g.GetAvailability(db, &availability)
+	
 	var highest int64 = 0
 
 	var highestLoc int = -1
 
-	for loc, val := range *availability {
-		if val > highest {
-			highest = val
-			highestLoc = loc
+	if availability != nil {
+		for loc, val := range availability {
+			if val > highest {
+				highest = val
+				highestLoc = loc
+			}
 		}
-	}
 
-	days := [7]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
+		days := [7]string{"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"}
 
-	day := highestLoc / 48 // 335 /48 = 6 = Saturday
+		day := highestLoc / 48 // 335 /48 = 6 = Saturday
 
-	timeBlock := highestLoc % 48 //335 mod 48 = 47(11:30 PM)
+		timeBlock := highestLoc % 48 //335 mod 48 = 47(11:30 PM)
 
-	hour := (timeBlock / 2) % 12 // 47/2 = 23 mod 12 = 11
+		hour := (timeBlock / 2) % 12 // 47/2 = 23 mod 12 = 11
 
-	if hour == 0 {
-		hour = 12
-	}
+		if hour == 0 {
+			hour = 12
+		}
 
-	var minutes string
+		var minutes string
 
-	if timeBlock%2 == 1 { //  odd parity
-		minutes = ":30"
+		if timeBlock%2 == 1 { //  odd parity
+			minutes = ":30"
+		} else {
+			minutes = ":00"
+		}
+
+		var meridie string
+
+		if timeBlock > 23 {
+			meridie = "pm"
+		} else {
+			meridie = "am"
+		}
+
+		*m = fmt.Sprintf("The group meeting time is %s at %d%s %s", days[day], hour, minutes, meridie)
 	} else {
-		minutes = ":00"
+		*m = fmt.Sprintf("No group meeting time available")
 	}
 
-	var meridie string
-
-	if timeBlock > 23 {
-		meridie = "pm"
-	} else {
-		meridie = "am"
-	}
-
-	*m = fmt.Sprintf("The Group Meeting Day is %s at %d%s %s", days[day], hour, minutes, meridie)
 
 	return retVal
 }

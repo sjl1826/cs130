@@ -73,10 +73,12 @@ function SchedulerPage(props) {
     } 
     userId = props.match.params.id;
   }
-  if(props.passedSelections != undefined) {
+  const passed = props.passedSelections != undefined && props.passedSelections != null;
+  if(passed) {
     initSelections = props.passedSelections;
     selections = props.passedSelections;
   }
+
 
   function saveSelections() {
     const config = {
@@ -159,47 +161,47 @@ function SchedulerPage(props) {
     <div className="scheduler-container">
       <div className="scheduler-parent-container">
         <Text>Monday</Text>
-        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={monInitial}>
+        <Selection enabled={!passed} onSelectionChange={updateSelection} initialSelected={monInitial}>
           {data.slice(0,48)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Tuesday</Text>
-        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={tuesInitial}>
+        <Selection enabled={!passed} onSelectionChange={updateSelection} initialSelected={tuesInitial}>
           {data.slice(48,96)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Wednesday</Text>
-        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={wedInitial}>
+        <Selection enabled={!passed} onSelectionChange={updateSelection} initialSelected={wedInitial}>
           {data.slice(96,144)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Thursday</Text>
-        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={thursInitial}>
+        <Selection enabled={!passed} onSelectionChange={updateSelection} initialSelected={thursInitial}>
           {data.slice(144,192)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Friday</Text>
-        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={friInitial}>
+        <Selection enabled={!passed} onSelectionChange={updateSelection} initialSelected={friInitial}>
           {data.slice(192,240)}
         </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Saturday</Text>
-      <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={satInitial}>
+      <Selection enabled={!passed} onSelectionChange={updateSelection} initialSelected={satInitial}>
         {data.slice(240,288)}
       </Selection>
       </div>
       <div className="scheduler-parent-container">
         <Text>Sunday</Text>
-        <Selection enabled={props.passedSelections == undefined} onSelectionChange={updateSelection} initialSelected={sunInitial}>
+        <Selection enabled={!passed} onSelectionChange={updateSelection} initialSelected={sunInitial}>
           {data.slice(288,336)}
         </Selection>
       </div>
-      {props.passedSelections == undefined &&       
+      {!passed &&       
       <div className="column-center">
         <Button onClick={() => saveSelections()}>
           <Text color="white">Save</Text>

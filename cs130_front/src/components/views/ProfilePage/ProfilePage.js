@@ -85,7 +85,7 @@ function ProfilePage(props) {
     setInvitations(inviteData);
     setListings(fetchedListings);
     setMyCourses(fetchedCourses);
-    setAvailability(response.data.availability);
+    setAvailability(response.data.availability == null ? [] : response.data.availability);
   }
 
   function handleClassesInfoResponse(courses) {
@@ -248,7 +248,6 @@ function ProfilePage(props) {
   function myProfile() {
     return (
       <div className="panel">
-  
         <div className="column-left"> 
           <div className="text-container">
             <Text color="black" size="24px" weight="800"> 
