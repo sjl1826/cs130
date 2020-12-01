@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 	"log"
+	"os"
 
 	"github.com/jinzhu/gorm"
 	"github.com/lib/pq"
@@ -105,7 +106,11 @@ func CreateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	defer r.Body.Close()
-	encryptedPassword := hash.Salt([]byte(p.Password))
+
+	var encryptedPassword = ""
+	if !strings.HasSuffix(os.Args[0], ".test") { // check if in testing mode
+		encryptedPassword = hash.Salt([]byte(p.Password))
+	}
 
 	user := models.User{FirstName: p.FirstName, LastName: p.LastName, Email: p.Email, Password: encryptedPassword}
 	if err := user.CreateUser(db); err != nil {
@@ -138,6 +143,7 @@ type LoginResponse struct {
 	RefreshToken     string        `json:"refresh_token"`
 	RefreshExpiresIn time.Duration `json:"refresh_expires_in"`
 	ID 							 int 			 `json: "id"`
+	Name 							string 			 `json: "name"`
 }
 
 // LoginUser checks for a valid email and password to generate an access token
@@ -158,10 +164,14 @@ func LoginUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 	user.GetPassword(db)
 	if hash.ComparePasswords(user.Password, []byte(password)) {
-		newToken := models.Token{UserID: user.ID}
-		if err := newToken.New(db, &user); err != nil {
-			respondWithError(w, http.StatusInternalServerError, err.Error())
-			return
+		var newToken models.Token
+		if !strings.HasSuffix(os.Args[0], ".test") { // create new token only if not test
+		// Has gotten email and password that matches
+			newToken = models.Token{UserID: user.ID}
+			if err := newToken.New(db, &user); err != nil {
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+				return
+			}
 		}
 		var response LoginResponse
 		response.AccessToken = newToken.AccessToken
@@ -169,6 +179,7 @@ func LoginUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		response.RefreshToken = newToken.RefreshToken
 		response.RefreshExpiresIn = newToken.RefreshExpiresIn
 		response.ID = user.ID
+		response.Name = user.FirstName + " " + user.LastName
 		respondWithJSON(w, http.StatusOK, response)
 	} else {
 		respondWithError(w, http.StatusBadRequest, "Invalid user credentials")
@@ -241,10 +252,6 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		respondWithError(w, http.StatusNotFound, "Invalid Token")
 		return
 	}
-	if fullToken.UserID != id {
-		respondWithError(w, http.StatusNotFound, "Invalid Token")
-		return
-	}
 
 	var cr CreateResponse
 	populateResponse(&p, &cr)
@@ -276,6 +283,60 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	respondWithJSON(w, http.StatusOK, cr)
 }
+
+// GetUserGroups retrieves and returns the user's group objects
+func GetUserGroups(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := r.URL.Query()
+	id, ok := strconv.Atoi(vars["u_id"][0])
+	if ok != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user id")
+		return
+	}
+	p := models.User{ID: id}
+	if GetUserByID(db, &p, w) == 0 {
+		return
+	}
+
+	var  groups []models.Group
+
+	p.GetGroups(db, &groups)
+
+	var responses []CreateGroupResponse
+
+	for _, g := range groups{
+		var gr CreateGroupResponse
+		populateGroupResponse(&g, &gr)
+
+		if err := g.GetMembers(db, &gr.Members); err != nil {
+			switch err {
+			default:
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+			}
+		}
+
+		if err := g.GetMeetingTime(db, &gr.MeetingTime); err != nil {
+			switch err {
+			default:
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+			}
+		}
+
+		if err := g.GetInvitations(db, &gr.Invitations); err != nil {
+			switch err {
+			default:
+				respondWithError(w, http.StatusInternalServerError, err.Error())
+			}
+		}
+
+		responses = append(responses, gr)
+	}
+
+	var grps CreateGroupResponses
+	grps.GroupResponses = responses
+
+	respondWithJSON(w, http.StatusOK, grps)
+}
+
 
 // UpdateRequest for user requests parsing
 type UpdateRequest struct {
@@ -471,6 +532,7 @@ func GetClassesInfo(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 			shortened["id"] = course.ID
 			shortened["keywords"] = course.Keywords
 			shortened["name"] = course.Name
+			shortened["categories"] = course.Categories
 			if val, ok := categories[course.Categories[0]]; ok {
 				if val2, ok2 := val[course.Categories[1]]; ok2 {
 					val[course.Categories[1]] = append(val2, shortened)
@@ -487,6 +549,120 @@ func GetClassesInfo(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	var response ClassesInfoResponse
 	populateClassesInfoResponse(categories, &response)
 	respondWithJSON(w, http.StatusOK, response)
+}
+
+// UserSearchDetails contains details displayed during user search
+type UserSearchDetails struct {
+	ID				int
+	FirstName 		string		
+	LastName		string
+	Email			string
+
+}
+
+// GetAllUsers retrieves all users in the DB (for search functionality)
+func GetAllUsers(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	response := make(map[string][]UserSearchDetails)
+
+	rows, err := db.Model(&models.User{}).Select("id, first_name, last_name, email").Rows()
+	if err != nil {
+		return
+	}
+	defer rows.Close()
+
+	var UserDetails []UserSearchDetails
+	for rows.Next() {
+		var details UserSearchDetails
+		db.ScanRows(rows, &details)
+		UserDetails = append(UserDetails, details)
+	}
+
+	response["users"] = UserDetails
+	respondWithJSON(w, http.StatusOK, response)
+}
+
+// CourseViewDetails contains all the information needed for a Course page
+type CourseViewDetails struct {
+	CourseName		string
+	StudyBuddies 	[]StudyBuddy
+	Listings 		[]models.Listing
+}
+
+// StudyBuddy is a User object without certain 'private' fields
+type StudyBuddy struct {
+	ID				int		`json:"u_id"`
+	FirstName		string	`json:"first_name"`
+	LastName		string	`json:"last_name"`
+	Email			string	`json:"u_email"`
+	Biography		string	`json:"biography"`
+	Timezone		string 	`json:"timezone"`
+	SchoolName		string 	`json:"school_name"` 
+	Availability	pq.Int64Array	`json:"availability"`
+}
+
+// GetBuddiesAndListings retrieves Study Buddies and Listings for each of a user's courses
+func GetBuddiesAndListings(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	vars := r.URL.Query()
+	id, ok := strconv.Atoi(vars["u_id"][0])
+	if ok != nil {
+		respondWithError(w, http.StatusBadRequest, "Invalid user id")
+		return
+	}
+
+	//Get user object
+	p := models.User{ID: id}
+	if GetUserByID(db, &p, w) == 0 {
+		return
+	}
+
+	//Get all courses
+	var courses []models.Course
+	err := p.GetCourses(db, &courses)
+	if err != nil {
+		return
+	}
+
+	//returns map of courseIDs to their CourseViewDetails
+	response := make(map[int]CourseViewDetails)
+
+	for _, j := range courses {
+		var tempDetails CourseViewDetails
+		tempDetails.CourseName = j.Name
+
+		// Get all students enrolled in this course
+		for _, k := range j.StudyBuddies {
+			var s StudyBuddy
+			populateStudyBuddy(db, w, k, &s)
+			tempDetails.StudyBuddies = append(tempDetails.StudyBuddies, s)
+		}
+
+		// Get all Course Listings
+		err := j.GetListings(db, &tempDetails.Listings)
+		if err != nil {
+			return
+		}	
+
+		response[j.ID] = tempDetails
+	}
+
+	respondWithJSON(w, http.StatusOK, response)
+}
+
+// populateStudyBuddy takes a User ID and populates a StudyBuddy object (User with certain redacted fields)
+func populateStudyBuddy(db *gorm.DB, w http.ResponseWriter, id int64, s *StudyBuddy){
+	p := models.User{ID: int(id)}
+	if GetUserByID(db, &p, w) == 0 {  //might be an issue if we aren't careful about removing studybuddies as users are deleted
+		return
+	}
+
+	s.ID = p.ID
+	s.FirstName = p.FirstName
+	s.LastName = p.LastName
+	s.Email = p.Email
+	s.Biography = p.Biography
+	s.Timezone = p.Timezone
+	s.SchoolName = p.SchoolName
+	s.Availability = p.Availability
 }
 
 func respondWithError(w http.ResponseWriter, code int, message string) {

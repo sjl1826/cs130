@@ -17,6 +17,7 @@ type Invitation struct {
 	GroupName		string			`json:"group_name"`
 	GroupID			int				`json:"group_id"`
 	ReceiveID		int				`json:"receive_id"`
+	ReceiveName 	string 			`json:"receive_name"`
 	Type			bool			`json:"type"`
 	Status			bool			`json:"status"`
 }
@@ -44,7 +45,7 @@ func (r *Invitation) GetInvitation(db *gorm.DB) error {
 }
 
 // DeleteInvitation deletes invitation from database
-func (r *Invitation) DeleteInviation(db *gorm.DB) error {
+func (r *Invitation) DeleteInvitation(db *gorm.DB) error {
 	retVal := db.Exec("DELETE FROM invitations WHERE ID=" + strconv.Itoa(r.ID))
 	return retVal.Error
 }

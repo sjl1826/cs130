@@ -29,7 +29,10 @@ func GetListingByID(db *gorm.DB, l *models.Listing, w http.ResponseWriter) int {
 type CreateListingRequest struct {
 	Poster		int 			`json:"poster"`
 	CourseID  	int 			`json:"course_id"`
+	CourseName	string 			`json:"course_name"`
 	Description	string 			`json:"text_description"`
+	GroupID		int 			`json:"group_id"`
+	GroupName	string			`json:"group_name"`
 	Tags		pq.StringArray 	`json:"tags"`
 }
 
@@ -42,7 +45,8 @@ type CreateListingResponse struct {
 	Poster			int				`json:"poster"`
 	CourseID		int				`json:"course_id"`
 	Description		string			`json:"text_description"`
-	GroupID			int				`json:"group_id"`		//optional group		
+	GroupID			int				`json:"group_id"`		//optional group
+	GroupName		string			`json:"group_name"`		//optional group		
 	Tags			pq.StringArray 	`json:"tags"`
 }
 
@@ -55,6 +59,7 @@ func populateListingResponse(l *models.Listing, r *CreateListingResponse) {
 	r.CourseID = l.CourseID
 	r.Description = l.Description
 	r.GroupID = l.GroupID
+	r.GroupName = l.GroupName
 	r.Tags = l.Tags
 }
 
@@ -69,7 +74,7 @@ func CreateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	defer r.Body.Close()
 
 	listing := models.Listing{
-		Poster: p.Poster, CourseID: p.CourseID, Description: p.Description, Tags: p.Tags}
+		Poster: p.Poster, CourseID: p.CourseID, Description: p.Description, GroupID: p.GroupID, GroupName: p.GroupName, CourseName: p.CourseName, Tags: p.Tags}
 
 	if err := listing.CreateListing(db); err != nil {
 		respondWithError(w, http.StatusInternalServerError, err.Error())
@@ -77,18 +82,6 @@ func CreateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if GetListingByID(db, &listing, w) == 0 {
-		return
-	}
-
-	//Get user object
-	user := models.User{ID: p.Poster}
-	if GetUserByID(db, &user, w) == 0 {
-		return
-	}
-
-	//Get course object
-	course := models.Course{ID: p.CourseID}
-	if GetCourseByID(db, &course, w) == 0 {
 		return
 	}
 
@@ -177,18 +170,6 @@ func DeleteListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	listing := models.Listing{ID: id}
 	if GetListingByID(db, &listing, w) == 0 {
-		return
-	}
-
-	//Remove ListingID from user
-	user := models.User{ID: listing.Poster}
-	if GetUserByID(db, &user, w) == 0 {
-		return 				//what if user has been deleted?
-	}
-
-	//Remove ListingID from course
-	course := models.Course{ID: listing.CourseID}
-	if CourseByID(db, &course, w) == 0 {
 		return
 	}
 

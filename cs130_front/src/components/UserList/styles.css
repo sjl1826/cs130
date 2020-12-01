@@ -5,8 +5,14 @@
     align-items: flex-start;
     text-align: center;
     width: 35vw;
-    height: 70px;
+    padding: 10px;
     margin-bottom: 10px;
+}
+
+.halfUserBox {
+  width: 12vw;
+  min-height: 70px;
+  overflow-wrap: break-word;
 }
 
 .col-centered {
@@ -14,27 +20,30 @@
   height: 70px;
   flex-direction: column;
   justify-content: center;
+  margin-top: -5px;
 }
 
 .topLine {
     margin-bottom: 0px;
     text-align: left;
-    font-size: 28px;
+    font-size: 20px;
     font-family: Poppins;
+    font-weight: bold;
     color: black;
 }
 
 .topLineName {
     margin-bottom: 0px;
     text-align: left;
-    font-size: 28px;
+    font-size: 20px;
     font-family: Poppins;
+    font-weight: bold;
     color: black;
     transition: 0.3s;
+    cursor: pointer;
 }
 
 .topLineName:hover {
-    color: gray;
     text-decoration: underline;
     transition: 0.3s;
 }
@@ -42,17 +51,22 @@
 .bottomLine {
     margin-bottom: 0px;
     text-align: left;
-    font-size: 27px;
+    font-size: 20px;
     font-family: Poppins;
     color: gray;
 }
 
-.user-container {
-    width: 50vw;
-    padding: 20px;
+.userlist-container {
     display: flex;
+    align-items: flex-start;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
+    padding: 10px;
     box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+    margin-top: 10px;
+    margin-bottom: 10px;
+    width: 40vw; 
+    font-size: 15px;
 }
+
+button:focus {outline:0;}

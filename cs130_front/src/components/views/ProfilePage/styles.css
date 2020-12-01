@@ -6,11 +6,18 @@
   padding: 20px;
   padding-top: 50px;
 }
+
 .column {
   display: flex;
   flex-direction: column;
   align-items: center;
   height: 100vh;
+}
+.column-left {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100vh;;
 }
 
 .group-with-margin {
@@ -43,7 +50,7 @@
   height: 100%;
 }
 
-.shadow-box {
+.shadow-box-listing {
   display: flex;
   justify-content: space-between;
   align-items: center;
