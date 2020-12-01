@@ -79,7 +79,6 @@ function SchedulerPage(props) {
     selections = props.passedSelections;
   }
 
-
   function saveSelections() {
     const config = {
       headers: {

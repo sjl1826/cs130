@@ -14,7 +14,7 @@ import (
 
 var c = time.Now()
 
-var listingColumns = []string{"created_at", "updated_at", "course_name", "poster", "course_id", "description", "group_id", "tags"}
+var listingColumns = []string{"created_at", "updated_at", "course_name", "poster", "course_id", "description", "group_id", "group_name", "tags"}
 
 type AnyTime struct{}
 // Match satisfies sqlmock.Argument interface
@@ -51,11 +51,11 @@ func TestCreateListing(t *testing.T) {
 	//First calls INSERT to Create object. Then SELECT to retrieve it
 	mock.ExpectBegin()
 	mock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO "listings"`)).
-		WithArgs(AnyTime{}, AnyTime{}, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags).
+		WithArgs(AnyTime{}, AnyTime{}, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID,"", l.Tags).
 		WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
 	mock.ExpectCommit()
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "listings"`)).
-		WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags)) //only thing that works
+		WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID,"", l.Tags)) 
 
 	// now we execute our method
 	if err := l.CreateListing(DB); err != nil {
@@ -83,7 +83,7 @@ func TestUpdateListing(t *testing.T) {
 	//Calls Update on object to update it, then SELECT to retrieve it
 	mock.ExpectBegin()
 	mock.ExpectExec("UPDATE").
-		WithArgs(AnyTime{},  l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags, l.ID).WillReturnResult(sqlmock.NewResult(0,0))
+		WithArgs(AnyTime{},  l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID,"", l.Tags, l.ID).WillReturnResult(sqlmock.NewResult(0,0))
 	mock.ExpectCommit()
 	mock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM "listings" WHERE "listings"."id" = $1 ORDER BY "listings"."id" ASC LIMIT 1`)).
 		WithArgs(1).WillReturnRows(sqlmock.NewRows([]string{"ID"}).AddRow("1"))
@@ -117,10 +117,10 @@ func TestGetListing(t *testing.T) {
 
 	//Calls SELECT to retrieve object
 	mock.ExpectQuery(`SELECT * FROM "listings"  WHERE "listings"."id" = $1 AND (("listings"."id" = 1)) ORDER BY "listings"."id" ASC LIMIT 1`).
-		WithArgs(l.ID).WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags))
+		WithArgs(l.ID).WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.GroupName, l.Tags))
 
 	mock.ExpectQuery(`SELECT * FROM "listings"  WHERE "listings"."id" = $1 ORDER BY "listings"."id" ASC`).
-		WithArgs(l.ID).WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.Tags))
+		WithArgs(l.ID).WillReturnRows(sqlmock.NewRows(listingColumns).AddRow(c, c, l.CourseName, l.Poster, l.CourseID, l.Description, l.GroupID, l.GroupName, l.Tags))
 	 	
 	// now we execute our method
 	if err := l.GetListing(DB); err != nil {

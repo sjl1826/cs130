@@ -9,8 +9,8 @@ const UserList = (props) => {
     { props.userList.map((data,index) => {
         if (data) {
           return (
-            <div style={ListStyling} key={data.name} onClick={() => props.goToUserProfile(data)}>
-              <h1 className="listItem" onmouseover="">{data.name}</h1>
+            <div data-testid="user" style={ListStyling} key={data.name} onClick={props.goToUserProfile(data)}>
+              <h1 className="listItem" onMouseOver={() => {}}>{data.name}</h1>
 	          </div>	
     	    );	
     	  }
