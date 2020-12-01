@@ -1,4 +1,4 @@
-### CS130 Full Application Directions
+## CS130 Full Application Directions
 
 ## Setup
 Go into cs130_back and cs130_front and follow the instructions in their respective READMEs for both to get dependencies and set-up. 
