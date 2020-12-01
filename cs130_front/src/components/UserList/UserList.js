@@ -3,6 +3,7 @@ import UserItem from "./UserItem";
 import './styles.css'
 
 function UserList(props) {
+  console.log(props.users)
     return (
         <div className='userlist-container'>
             {props.users.map((user, index) => (

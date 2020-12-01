@@ -23,6 +23,7 @@ function ProfilePage(props) {
   const [myCourses, setMyCourses] = useState([]);
   const [availability, setAvailability] = useState([]);
   const [mainPanelState, setMainPanel] = useState('CourseAdder');
+  const [successMessage, setSuccessMessage] = useState('');
   const userId = props.match.params.id;
   const myId = localStorage.getItem('userId');
   const config = {
@@ -160,6 +161,10 @@ function ProfilePage(props) {
         return getProfile();
       }).then( getResponse => {
         handleGetUserResponse(getResponse);
+        setSuccessMessage('Listing updated!');
+        setTimeout(() => {
+          setSuccessMessage('');
+        }, 3000);
       }); 
     }
   }
@@ -221,8 +226,8 @@ function ProfilePage(props) {
     setMainPanel(title);
   }
 
-  function groupClicked(item) {
-    //navigate to group page
+  function groupClicked(group) {
+    window.open(`/groups/group/${group.id}`, "_blank");
   }
 
   function viewOnlyProfile() {
@@ -233,7 +238,7 @@ function ProfilePage(props) {
             <Text color="black" size="32px" weight="800"> 
             {additionalInfo[0].value} Profile
             </Text>
-            <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={groupClicked} clickable={false}/>
+            <ClassList classList={userId == myId ? coursesOnly() : myCourses} titleClicked={groupClicked} clickable={true}/>
             <Infos title="Contact Information" options={contactInfo} titleClicked={titleClicked} clickable={false}/>
             <Infos title="Additional Information" options={additionalInfo} titleClicked={titleClicked} clickable={false}/>
           </div>
@@ -254,6 +259,7 @@ function ProfilePage(props) {
               Hi Student, edit your class and other information to start studying with others!
             </Text>
           </div>
+          {successMessage && <Text color="green">{successMessage}</Text> }
           <MyListings items={listings} editListing={editListing}/> 
           { invitations.length > 0 ? 
             <Requests title="Invitations" items={invitations} handleResponse={handleInvitation}/> : null

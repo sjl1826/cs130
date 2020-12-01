@@ -52,11 +52,14 @@ const SearchPage = (props) => {
     setUserList(filtered);
   }
 
-  const goToUserProfile = user => () => { props.history.push(`/profile/${user.id}`); }
+  function goToUserProfile(user) {
+    window.open(`/profile/${user.id}`, "_blank");
+  }
+
   
   return (
     <div style={{fontFamily: Fonts.Primary, display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
-      <h1 style = {{fontSize: '40px'}}>Search User</h1>
+      <h1 style = {{fontSize: '40px'}}>Search Users</h1>
       <div> 
         <SearchBar input={input} onChange={updateInput} width="30rem" fontSize="30px"/>
       </div>

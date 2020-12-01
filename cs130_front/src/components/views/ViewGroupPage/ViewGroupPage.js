@@ -13,14 +13,8 @@ export default function ViewGroupPage(props) {
     }
   }
 
-  const members = [
-    { name: "Shirly fang", school: "UCLA", id: 123, discord: "shirly#123", email: "shirly@gmail.com" },
-    { name: "Shirly fang", id: 123, discord: "shirly#123", email: "shirly@gmail.com" }
-  ]
-
-  const currentGroup2 = { id: 123, name: "DM Squad", courseName: "Calculus", members: members, day: "friday", time: "4:30pm" }
-
   const [currentGroup, setCurrentGroup] = useState(null);
+  const [successMessage, setSuccessMessage] = useState('');
 
   useEffect(() => {
     async function initGroup() {
@@ -46,7 +40,12 @@ export default function ViewGroupPage(props) {
       receive_name: myName,
       type: true
     }
-    axios.post(`${INVITATION_SERVER}/create?u_id=${myId}`, body, config);
+    axios.post(`${INVITATION_SERVER}/create?u_id=${myId}`, body, config).then(response => {
+      setSuccessMessage('Request sent!');
+      setTimeout(() => {
+				setSuccessMessage('');
+			}, 3000);
+    })
   }
 
   async function getClassesInfo() {
@@ -130,7 +129,8 @@ export default function ViewGroupPage(props) {
               onClick={() => makeRequest()}
             >
               Join Group
-              </Button>
+            </Button>
+            {successMessage && <Text color="green">{successMessage}</Text> }
           </div>
         </div>
       </div>

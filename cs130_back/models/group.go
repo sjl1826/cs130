@@ -128,7 +128,15 @@ func (g *Group) GetMeetingTime(db *gorm.DB, m *string) error {
 
 	var highestLoc int = -1
 
+	nonZero := false
+
 	if availability != nil {
+		for _, val := range availability {
+			if val > 0 {
+				nonZero = true
+			}
+		}
+
 		for loc, val := range availability {
 			if val > highest {
 				highest = val
@@ -164,7 +172,11 @@ func (g *Group) GetMeetingTime(db *gorm.DB, m *string) error {
 			meridie = "am"
 		}
 
-		*m = fmt.Sprintf("The group meeting time is %s at %d%s %s", days[day], hour, minutes, meridie)
+		if nonZero {
+			*m = fmt.Sprintf("The group meeting time is %s at %d%s %s", days[day], hour, minutes, meridie)
+		} else {
+			*m = fmt.Sprintf("No group meeting time available")
+		}
 	} else {
 		*m = fmt.Sprintf("No group meeting time available")
 	}
