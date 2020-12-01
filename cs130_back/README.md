@@ -13,7 +13,8 @@ Get the above dependencies. For jwt-go, go-sqlmock, and httpexpect, use the "go 
 Initialize a postgres database and update username, password, and database title variables in app.go accordingly. This can be done easily using pg Admin when downloading Postgres. 
 
 Due to pathing issues with src, you may need to rename the root folder name to "src" and run
-```export GOPATH=$(pwd)
+```
+export GOPATH=$(pwd)
 ```
 in the directory containing src. 
 
