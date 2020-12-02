@@ -34,9 +34,9 @@ type CreateGroupRequest struct {
 	CourseName string    `json:"course_name"`
 }
 
-// CreateGroupResponse fields to send back
+// GroupResponse fields to send back
 // HTTP status code 201 and group model in data
-type CreateGroupResponse struct {
+type GroupResponse struct {
 	ID          int                 `json:"g_id"`
 	AdminID     int                 `json:"admin_id"`
 	Name        string              `json:"name"`
@@ -48,7 +48,7 @@ type CreateGroupResponse struct {
 	UpdatedAt   time.Time           `json:"UpdatedAt"`
 }
 
-func populateGroupResponse(g *models.Group, r *CreateGroupResponse) {
+func populateGroupResponse(g *models.Group, r *GroupResponse) {
 	r.ID = g.ID
 	r.AdminID = g.AdminID
 	r.Name = g.Name
@@ -57,8 +57,8 @@ func populateGroupResponse(g *models.Group, r *CreateGroupResponse) {
 	r.UpdatedAt = g.UpdatedAt
 }
 
-type CreateGroupResponses struct {
-	GroupResponses	[]CreateGroupResponse	`json:"group_responses"`
+type GroupResponses struct {
+	GroupResponses	[]GroupResponse	`json:"group_responses"`
 }
 
 // CreateGroup initializes a new group in the database
@@ -91,7 +91,7 @@ func CreateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var gr CreateGroupResponse
+	var gr GroupResponse
 	populateGroupResponse(&group, &gr)
 
 	respondWithJSON(w, http.StatusCreated, gr)
@@ -110,7 +110,7 @@ func GetGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var gr CreateGroupResponse
+	var gr GroupResponse
 	populateGroupResponse(&group, &gr)
 
 	if err := group.GetMembers(db, &gr.Members); err != nil {
@@ -163,7 +163,7 @@ func UpdateGroup(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var gr CreateGroupResponse
+	var gr GroupResponse
 	populateGroupResponse(&group, &gr)
 
 	respondWithJSON(w, http.StatusOK, gr)

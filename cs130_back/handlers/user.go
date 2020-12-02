@@ -45,14 +45,6 @@ func CourseByID(db *gorm.DB, c *models.Course, w http.ResponseWriter) int {
 	return 1
 }
 
-type ClassesInfoResponse struct {
-	Courses map[string]map[string][]interface{} `json:"courses"`
-}
-
-func populateClassesInfoResponse(c map[string]map[string][]interface{}, r *ClassesInfoResponse) {
-	r.Courses = c
-}
-
 // CreateRequest required fields to create a user
 type CreateRequest struct {
 	FirstName string `json:"first_name"`
@@ -61,9 +53,9 @@ type CreateRequest struct {
 	Password  string `json:"password"`
 }
 
-// CreateResponse fields to send back
+// UserResponse fields to send back
 // HTTP status code 201 and user model in data
-type CreateResponse struct {
+type UserResponse struct {
 	ID                int                 `json:"u_id"`
 	CreatedAt         time.Time           `json:"CreatedAt"`
 	UpdatedAt         time.Time           `json:"UpdatedAt"`
@@ -82,7 +74,7 @@ type CreateResponse struct {
 	Invitations       []models.Invitation `json:"invitations"`
 }
 
-func populateResponse(u *models.User, r *CreateResponse) {
+func populateResponse(u *models.User, r *UserResponse) {
 	r.ID = u.ID
 	r.CreatedAt = u.CreatedAt
 	r.UpdatedAt = u.UpdatedAt
@@ -128,7 +120,7 @@ func CreateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cr CreateResponse
+	var cr UserResponse
 	populateResponse(&user, &cr)
 
 	respondWithJSON(w, http.StatusCreated, cr)
@@ -253,7 +245,7 @@ func GetUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cr CreateResponse
+	var cr UserResponse
 	populateResponse(&p, &cr)
 
 	if err := p.GetCourses(db, &cr.Courses); err != nil {
@@ -301,10 +293,10 @@ func GetUserGroups(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	p.GetGroups(db, &groups)
 
-	var responses []CreateGroupResponse
+	var responses []GroupResponse
 
 	for _, g := range groups{
-		var gr CreateGroupResponse
+		var gr GroupResponse
 		populateGroupResponse(&g, &gr)
 
 		if err := g.GetMembers(db, &gr.Members); err != nil {
@@ -331,7 +323,7 @@ func GetUserGroups(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		responses = append(responses, gr)
 	}
 
-	var grps CreateGroupResponses
+	var grps GroupResponses
 	grps.GroupResponses = responses
 
 	respondWithJSON(w, http.StatusOK, grps)
@@ -397,7 +389,7 @@ func UpdateUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cr CreateResponse
+	var cr UserResponse
 	populateResponse(&user, &cr)
 
 	respondWithJSON(w, http.StatusOK, cr)
@@ -500,6 +492,14 @@ func DeleteUser(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	respondWithJSON(w, http.StatusOK, map[string]string{"result": "success"})
+}
+
+type ClassesInfoResponse struct {
+	Courses map[string]map[string][]interface{} `json:"courses"`
+}
+
+func populateClassesInfoResponse(c map[string]map[string][]interface{}, r *ClassesInfoResponse) {
+	r.Courses = c
 }
 
 func GetClassesInfo(db *gorm.DB, w http.ResponseWriter, r *http.Request) {

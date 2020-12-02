@@ -32,9 +32,9 @@ type CreateCourseRequest struct {
 	Title			string	`json:"title"`
 }
 
-// CreateCourseResponse fields to send back
+// CourseResponse fields to send back
 // HTTP status code 201 and course model in data
-type CreateCourseResponse struct {
+type CourseResponse struct {
 	ID          	int 	`json:"id"`
 	CreatedAt   	time.Time
 	UpdatedAt   	time.Time
@@ -42,7 +42,7 @@ type CreateCourseResponse struct {
 	Title			string	`json:"title"`
 }
 
-func populateCourseResponse(c *models.Course, r *CreateCourseResponse) {
+func populateCourseResponse(c *models.Course, r *CourseResponse) {
 	r.ID = c.ID
 	r.CreatedAt = c.CreatedAt
 	r.UpdatedAt = c.UpdatedAt
@@ -68,7 +68,7 @@ func CreateCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cr CreateCourseResponse
+	var cr CourseResponse
 	populateCourseResponse(&course, &cr)
 
 	respondWithJSON(w, http.StatusCreated, cr)
@@ -101,7 +101,7 @@ func UpdateCourse(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var cr CreateCourseResponse
+	var cr CourseResponse
 	populateCourseResponse(&course, &cr)
 
 	respondWithJSON(w, http.StatusOK, cr)

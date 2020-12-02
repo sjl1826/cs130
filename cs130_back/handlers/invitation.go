@@ -35,6 +35,7 @@ type SendInvitationRequest struct {
 
 // SendInvitationResponse fields to send back
 // HTTP status code 201 and group model in data
+// This is pretty much an Invitation model
 type SendInvitationResponse struct {
 	ID          	int             `json:"g_id"`
 	GroupName		string			`json:"group_name"`
