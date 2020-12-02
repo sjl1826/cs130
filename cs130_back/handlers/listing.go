@@ -36,8 +36,8 @@ type CreateListingRequest struct {
 	Tags		pq.StringArray 	`json:"tags"`
 }
 
-//CreateListingResponse provides fields sent back
-type CreateListingResponse struct {
+//ListingResponse provides fields sent back
+type ListingResponse struct {
 	ID          	int 			`json:"id"`
 	CreatedAt   	time.Time
 	UpdatedAt   	time.Time
@@ -50,7 +50,7 @@ type CreateListingResponse struct {
 	Tags			pq.StringArray 	`json:"tags"`
 }
 
-func populateListingResponse(l *models.Listing, r *CreateListingResponse) {
+func populateListingResponse(l *models.Listing, r *ListingResponse) {
 	r.ID = l.ID
 	r.CreatedAt = l.CreatedAt
 	r.UpdatedAt = l.UpdatedAt
@@ -85,7 +85,7 @@ func CreateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var clr CreateListingResponse
+	var clr ListingResponse
 	populateListingResponse(&listing, &clr)
 
 	respondWithJSON(w, http.StatusCreated, clr)
@@ -105,7 +105,7 @@ func GetListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var clr CreateListingResponse	
+	var clr ListingResponse	
 	populateListingResponse(&listing, &clr)
 
 	respondWithJSON(w, http.StatusCreated, clr)
@@ -153,7 +153,7 @@ func UpdateListing(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var clr CreateListingResponse
+	var clr ListingResponse
 	populateListingResponse(&listing, &clr)
 
 	respondWithJSON(w, http.StatusOK, clr)
